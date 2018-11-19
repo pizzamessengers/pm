@@ -2,23 +2,18 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class Messenger extends Model
 {
-    use Notifiable;
-
     public $incrementing = false;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'id', 'name', 'email', 'password', 'api_token',
+        'name', 'login', 'password', 'token', 'user_id'
     ];
 
     /**
@@ -27,6 +22,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'api_token',
+        'token', 
     ];
 }

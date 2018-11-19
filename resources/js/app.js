@@ -1,22 +1,91 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
+ * includes React and other helpers. It's a great starting point while
+ * building robust, powerful web applications using React + Laravel.
  */
 
-require('./bootstrap');
-
-window.Vue = require('vue');
+require("./bootstrap");
 
 /**
- * Next, we will create a fresh Vue application instance and attach it to
+ * Next, we will create a fresh React component instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+import React, { Component } from "react";
+import { render } from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 
-const app = new Vue({
-    el: '#app'
+/**
+ * Importing components
+ */
+
+import Example from "./components/Example.jsx";
+import Main from "./components/Main.jsx";
+
+/**
+ * Importing contexts
+ */
+
+import ApiToken from "./contexts/ApiToken";
+import Auth from "./contexts/Auth";
+
+/**
+ * CSRF
+ */
+
+$.ajaxSetup({
+  headers: {
+    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+  }
 });
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      auth: null,
+      api_token: null,
+    }
+  }
+
+  componentWillMount() {
+    axios.get("auth").then(response => {
+      this.setState({auth: response['data']});
+      this.apiToken();
+    })
+  }
+
+  apiToken = () => {
+    if (this.state.auth) {
+      axios.get('api_token').then(response => {
+        this.setState({api_token: response});
+      });
+    }
+  }
+
+  auth = () => {
+    axios.get("auth").then(response => {
+      this.setState({auth: response['data']});
+    });
+  }
+
+  render() {
+    return(
+      <Auth.Provider value={this.state.auth}>
+        <ApiToken.Provider value={this.state.api_token}>
+          <BrowserRouter>
+            <Main />
+          </BrowserRouter>
+        </ApiToken.Provider>
+      </Auth.Provider>
+    );
+  }
+}
+
+if (document.getElementById("root")) {
+  render(
+    <App />,
+    document.getElementById("root")
+  );
+}

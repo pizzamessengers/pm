@@ -47,6 +47,7 @@ class MessengerController extends Controller
 
         Auth::user()->{$request['name']} = $messenger->id;
         Auth::user()->save();
+
       }
 
     /**
@@ -95,6 +96,5 @@ class MessengerController extends Controller
         Messenger::find($id)->delete();
         Auth::user()->{$request['name']} = null;
         Auth::user()->save();
-        echo 101;
     }
 }

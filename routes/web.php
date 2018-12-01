@@ -11,25 +11,22 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::fallback(function () {
-    return view('welcome');
-});
-
-Route::get('api_token', [
+Route::fallback([
   'middleware' => 'auth',
-  'uses' => 'UserController@getApiToken',
+  'uses' => function()
+  {
+    return view('welcome');
+  }
 ]);
 
-Route::get('auth', 'UserController@auth');
+Route::get('csrf', 'UserController@csrf')->name('csrf');
 
-Route::post('/register', 'Auth\RegisterController@register')->name('register');
+Route::get('register', 'Auth\RegisterController@index');
+Route::post('register', 'Auth\RegisterController@register')->name('register');
 
-Route::post('/login', 'Auth\LoginController@login')->name('login');
+Route::get('login', 'Auth\LoginController@index');
+Route::post('login', 'Auth\LoginController@login')->name('login');
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('logout', 'Auth\LoginController@index');
 
-Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
-
-Route::get('/home', 'HomeController@index');
+Route::get('home', 'HomeController@index')->name('home');

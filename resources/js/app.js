@@ -20,8 +20,7 @@ import { BrowserRouter } from "react-router-dom";
  * Importing components
  */
 
-import Example from "./components/Example.jsx";
-import Main from "./components/Main.jsx";
+import Index from "./components/Index.jsx";
 
 /**
  * Importing contexts
@@ -30,62 +29,49 @@ import Main from "./components/Main.jsx";
 import ApiToken from "./contexts/ApiToken";
 import Auth from "./contexts/Auth";
 
-/**
- * CSRF
- */
-
-$.ajaxSetup({
-  headers: {
-    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-  }
-});
-
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      auth: null,
-      api_token: null,
-    }
-  }
 
-  componentWillMount() {
-    axios.get("auth").then(response => {
-      this.setState({auth: response['data']});
-      this.apiToken();
-    })
+    this.checkAuth = () => {
+      if (user.isAuth !== this.state.isAuth) {
+        this.setState({ isAuth: user.isAuth });
+      }
+    };
+
+    this.state = {
+      isAuth: user.isAuth,
+      checkAuth: this.checkAuth
+    };
   }
 
   apiToken = () => {
-    if (this.state.auth) {
-      axios.get('api_token').then(response => {
-        this.setState({api_token: response});
+    if (this.state.isAuth) {
+      axios.get("api_token").then(response => {
+        this.setState({ api_token: response });
       });
     }
-  }
-
-  auth = () => {
-    axios.get("auth").then(response => {
-      this.setState({auth: response['data']});
-    });
-  }
+  };
 
   render() {
-    return(
-      <Auth.Provider value={this.state.auth}>
-        <ApiToken.Provider value={this.state.api_token}>
-          <BrowserRouter>
-            <Main />
-          </BrowserRouter>
-        </ApiToken.Provider>
+    /**
+     * CSRF
+     */
+
+    axios.defaults.headers.common["X-CSRF-TOKEN"] = user.csrf;
+
+    return (
+      <Auth.Provider value={this.state}>
+        <BrowserRouter>
+          <div>
+            <Index />
+          </div>
+        </BrowserRouter>
       </Auth.Provider>
     );
   }
 }
 
 if (document.getElementById("root")) {
-  render(
-    <App />,
-    document.getElementById("root")
-  );
+  render(<App />, document.getElementById("root"));
 }

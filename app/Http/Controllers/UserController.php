@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use JavaScript;
 
 class UserController extends Controller
 {
@@ -17,13 +18,12 @@ class UserController extends Controller
         //$this->middleware('auth:api');
     }
 
-    public function getApiToken()
+    public function csrf()
     {
-        return Auth::user()->api_token;
-    }
-
-    public function auth($guard = null)
-    {
-        return json_encode(Auth::guard($guard)->check());
+      return response()->json([
+        'user' => [
+          'csrf' => csrf_token(),
+        ],
+      ]);
     }
 }

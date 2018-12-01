@@ -1,48 +1,102 @@
 import { Link } from "react-router-dom";
 import React, { Component } from "react";
-import axios from "axios";
-import Auth from "./../contexts/Auth";
 
-export default class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      auth: null
-    };
-  }
+const Header = ({ history }) => {
+  let navbarSupportedContent = React.createRef();
 
-  componentWillMount() {
-    this.setState({ auth: this.context });
-  }
-
-  render() {
-    console.log(this.state.auth);
-    let menu = this.state.auth ? (
-      <ul>
-        <li>
-          <Link to="/home">Home</Link>
+  let menu =
+    user.isAuth === false ? (
+      <ul className="navbar-nav ml-auto">
+        <li className="nav-item">
+          <Link
+            className="nav-link"
+            to="/login"
+            onClick={() => {
+              $(navbarSupportedContent.current).collapse("hide");
+            }}
+          >
+            Login
+          </Link>
         </li>
-        <li>
-          <Link to="/logout">Logout</Link>
+        <li className="nav-item">
+          <Link
+            className="nav-link"
+            to="/register"
+            onClick={() => {
+              $(navbarSupportedContent.current).collapse("hide");
+            }}
+          >
+            Register
+          </Link>
         </li>
       </ul>
     ) : (
-      <ul>
-        <li>
-          <Link to="/login">Login</Link>
-        </li>
-        <li>
-          <Link to="/register">Regiser</Link>
+      <ul className="navbar-nav ml-auto">
+        <li className="nav-item dropdown">
+          <a
+            id="navbarDropdown"
+            className="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            v-pre="true"
+          >
+            {user.name} <span className="caret" />
+          </a>
+
+          <div
+            className="dropdown-menu dropdown-menu-right"
+            aria-labelledby="navbarDropdown"
+          >
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                event.preventDefault();
+                axios.post("logout");
+                history.push('/');
+                user = {};
+                user.isAuth = false;
+              }}
+            >
+              Logout
+            </a>
+          </div>
         </li>
       </ul>
     );
 
-    return (
-      <header>
-        <nav>{menu}</nav>
-      </header>
-    );
-  }
-}
+  return (
+    <header>
+      <nav className="navbar navbar-expand-md navbar-light navbar-laravel">
+        <div className="container">
+          <Link className="navbar-brand" to="/">
+            PizzaMessengers
+          </Link>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon" />
+          </button>
 
-Header.contextType = Auth;
+          <div
+            className="collapse navbar-collapse"
+            id="navbarSupportedContent"
+            ref={navbarSupportedContent}
+          >
+            {menu}
+          </div>
+        </div>
+      </nav>
+    </header>
+  );
+};
+
+export default Header;

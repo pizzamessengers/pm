@@ -41,6 +41,16 @@ class RegisterController extends Controller
     }
 
     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('welcome');
+    }
+
+    /**
      * Get a validator for an incoming registration request.
      *
      * @param  array  $data

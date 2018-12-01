@@ -18,7 +18,7 @@ class canAddMessenger
     {
         if (Auth::user()->{$request['name']} !== null)
         {
-            return redirect()->route('alert', ['code' => 100]);
+            return;
         }
 
         return $next($request);

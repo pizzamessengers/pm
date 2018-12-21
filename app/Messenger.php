@@ -22,6 +22,6 @@ class Messenger extends Model
      * @var array
      */
     protected $hidden = [
-        'token', 
+        //'token', 
     ];
 }

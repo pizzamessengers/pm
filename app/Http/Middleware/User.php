@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use JavaScript;
+use App\Messenger;
+use App\Dialog;
 
 class User
 {
@@ -18,19 +20,44 @@ class User
     public function handle($request, Closure $next, $guard = null)
     {
         $isAuth = Auth::guard($guard)->check();
+        $user = Auth::user();
         $isAuth ? (
           JavaScript::put([
               'isAuth' => true,
-              'name' => Auth::user()->name,
-              'apiToken' => Auth::user()->api_token,
+              'name' => $user->name,
+              'apiToken' => $user->api_token,
               'csrf' => csrf_token(),
               'socials' => [
-                'vk' => Auth::user()->vk === null
-                  ? false : true,
-                'inst' => Auth::user()->inst === null
-                  ? false : true,
-                'wapp' => Auth::user()->wapp === null
-                  ? false : true,
+                'vk' => $user->vk === null ? [
+                  'connected' => false,
+                  'dialogs' => [],
+                ] : [
+                  'connected' => true,
+                  'dialogs' => Dialog::where(
+                    'messenger_id',
+                    $user->vk
+                  )->get(['id', 'name', 'updating']),
+                ],
+                'inst' => $user->inst === null ? [
+                  'connected' => false,
+                  'dialogs' => [],
+                ] : [
+                  'connected' => true,
+                  'dialogs' => Dialog::where(
+                    'messenger_id',
+                    $user->inst
+                  )->get(['id', 'name', 'updating']),
+                ],
+                'wapp' => $user->wapp === null ? [
+                  'connected' => false,
+                  'dialogs' => [],
+                ] : [
+                  'connected' => true,
+                  'dialogs' => Dialog::where(
+                    'messenger_id',
+                    $user->wapp
+                  )->get(['id', 'name', 'updating']),
+                ],
               ],
           ])
         ) : (
@@ -39,7 +66,11 @@ class User
               'name' => null,
               'apiToken' => null,
               'csrf' => csrf_token(),
-              'socials' => [],
+              'socials' => [
+                'vk' => [],
+                'inst' => [],
+                'wapp' => [],
+              ],
           ])
         );
 

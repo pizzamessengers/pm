@@ -1,9 +1,10 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Link, Switch, Route } from "react-router-dom";
 
 import Vk from "./socials/Vk";
 import Inst from "./socials/Inst";
 import Wapp from "./socials/Wapp";
+import Dialog from "./socials/Dialog";
 
 export default class Socials extends Component {
   constructor(props) {
@@ -17,9 +18,9 @@ export default class Socials extends Component {
 
   componentWillMount() {
     this.setState({
-      vk: user.socials.vk,
-      inst: user.socials.inst,
-      wapp: user.socials.wapp
+      vk: user.socials.vk.connected,
+      inst: user.socials.inst.connected,
+      wapp: user.socials.wapp.connected
     });
   }
 
@@ -32,7 +33,7 @@ export default class Socials extends Component {
     axios
       .post("./../api/v1/messengers?api_token=" + user.apiToken, data)
       .then(response => {
-        if (response.status === 200) {
+        if (response.data.success) {
           this.setState({ [mess]: true });
         }
       });
@@ -54,48 +55,53 @@ export default class Socials extends Component {
 
   render() {
     return (
-      <div>
+      <Fragment>
         <div className="d-flex col-12 justify-content-around my-3">
           <Link to="/socials/vk">vk</Link>
           <Link to="/socials/inst">inst</Link>
           <Link to="/socials/wapp">wapp</Link>
         </div>
 
-        <div className="social">
-          <Switch>
-            <Route
-              path="/socials/vk"
-              render={() => (
-                <Vk
-                  connected={this.state.vk}
-                  connect={this.connect}
-                  remove={this.remove}
-                />
-              )}
-            />
-            <Route
-              path="/socials/inst"
-              render={() => (
-                <Inst
-                  connected={this.state.inst}
-                  connect={this.connect}
-                  remove={this.remove}
-                />
-              )}
-            />
-            <Route
-              path="/socials/wapp"
-              render={() => (
-                <Wapp
-                  connected={this.state.wapp}
-                  connect={this.connect}
-                  remove={this.remove}
-                />
-              )}
-            />
-          </Switch>
-        </div>
-      </div>
+        <Switch>
+          <Route
+            exact
+            path="/socials/vk"
+            render={() => (
+              <Vk
+                connected={this.state.vk}
+                isDialog={false}
+                connect={this.connect}
+                remove={this.remove}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/socials/inst"
+            render={() => (
+              <Inst
+                connected={this.state.inst}
+                isDialog={false}
+                connect={this.connect}
+                remove={this.remove}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/socials/wapp/"
+            render={() => (
+              <Wapp
+                connected={this.state.wapp}
+                isDialog={false}
+                connect={this.connect}
+                remove={this.remove}
+              />
+            )}
+          />
+          <Route path="/socials/:mess/:dialog/" component={Dialog} />
+        </Switch>
+      </Fragment>
     );
   }
 }

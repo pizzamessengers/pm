@@ -14,13 +14,22 @@ class CreateMessengersTable extends Migration
     public function up()
     {
         Schema::create('messengers', function (Blueprint $table) {
-            $table->string('id', 32)->primary();
+            $table->string('id', 32)
+                  ->primary();
             $table->string('user_id', 32);
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
             $table->string('name');
-            $table->string('login')->unique()->nullable();
-            $table->string('password')->nullable();
-            $table->string('token')->unique()->nullable();
-            $table->string('dialogs')->nullable();
+            $table->string('login')
+                  ->unique()
+                  ->nullable();
+            $table->string('password')
+                  ->nullable();
+            $table->string('token')
+                  ->unique()
+                  ->nullable();
             $table->timestamps();
         });
     }

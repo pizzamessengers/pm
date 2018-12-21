@@ -48,6 +48,12 @@ class MessengerController extends Controller
         Auth::user()->{$request['name']} = $messenger->id;
         Auth::user()->save();
 
+        return response()->json([
+          'success' => true,
+          $request['name'] => [
+            'connected' => true,
+          ]
+        ], 200);
       }
 
     /**
@@ -96,5 +102,9 @@ class MessengerController extends Controller
         Messenger::find($id)->delete();
         Auth::user()->{$request['name']} = null;
         Auth::user()->save();
+
+        return response()->json([
+          'success' => true,
+        ]);
     }
 }

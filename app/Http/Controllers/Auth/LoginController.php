@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use JavaScript;
+use App\Dialog;
 
 class LoginController extends Controller
 {
@@ -73,12 +74,36 @@ class LoginController extends Controller
                     'apiToken' => Auth::user()->api_token,
                     'csrf' => csrf_token(),
                     'socials' => [
-                      'vk' => Auth::user()->vk === null
-                        ? false : true,
-                      'isnt' => Auth::user()->inst === null
-                        ? false : true,
-                      'wapp' => Auth::user()->wapp === null
-                        ? false : true,
+                      'vk' => $user->vk === null ? [
+                        'connected' => false,
+                        'dialogs' => [],
+                      ] : [
+                        'connected' => true,
+                        'dialogs' => Dialog::where(
+                          'messenger_id',
+                          $user->vk
+                        )->get(['id', 'name', 'updating']),
+                      ],
+                      'inst' => $user->inst === null ? [
+                        'connected' => false,
+                        'dialogs' => [],
+                      ] : [
+                        'connected' => true,
+                        'dialogs' => Dialog::where(
+                          'messenger_id',
+                          $user->inst
+                        )->get(['id', 'name', 'updating']),
+                      ],
+                      'wapp' => $user->wapp === null ? [
+                        'connected' => false,
+                        'dialogs' => [],
+                      ] : [
+                        'connected' => true,
+                        'dialogs' => Dialog::where(
+                          'messenger_id',
+                          $user->wapp
+                        )->get(['id', 'name', 'updating']),
+                      ],
                     ],
                 ],
                 'success' => true,

@@ -15,13 +15,13 @@ use Illuminate\Http\Request;
 
 Route::group(['middleware' => 'auth:api'], function()
 {
-  Route::post('v1/messengers', [
-    'uses' => 'MessengerController@addMessenger',
-  ]);
+  Route::post('v1/messengers', 'MessengerController@addMessenger');
   Route::delete('v1/messengers', 'MessengerController@deleteMessenger');
 
   Route::post('v1/dialogs', 'DialogController@addDialog');
-  Route::delete('v1/dialogs{name}', 'DialogController@deleteDialog');
+  Route::delete('v1/dialogs', 'DialogController@deleteDialog');
+  Route::put('v1/dialogs/{dialog}', 'DialogController@toggleUpdating');
 
-  Route::post('v1/message', 'MessageController@addMessage');
+  Route::post('v1/messages', 'MessageController@addMessage');
+  Route::get('v1/messages/{dialog}', 'MessageController@show');
 });

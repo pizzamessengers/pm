@@ -18,13 +18,7 @@ export default class Login extends Component {
     };
     axios.post("login", data).then(response => {
       response.data.success
-        ? ((user.isAuth = response.data.user.isAuth),
-          (user.name = response.data.user.name),
-          (user.apiToken = response.data.user.apiToken),
-          (user.csrf = response.data.user.csrf),
-          (user.socials.vk = response.data.user.socials.vk),
-          (user.socials.inst = response.data.user.socials.inst),
-          (user.socials.wapp = response.data.user.socials.wapp),
+        ? ((user = response.data.user),
           this.props.history.push(response.data.redirect),
           this.context.checkAuth())
         : alert(response.data.message);

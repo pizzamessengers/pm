@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Message;
+use App\Dialog;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -37,24 +38,24 @@ class MessageController extends Controller
     {
       $message = new Message;
       $message->id = str_random(32);
-      $message->dialog_id = $request['dialog_id'];
-      $message->text = $request['text'];
-      $message->attachments = $request['attachments'] ?: $request['attachments'];
-      $message->save();
+      $message->message_id = $request->message_id;
+      $message->dialog_id = $request->dialog_id;
+      $message->author_id = $request->author_id;
+      $message->text = $request->text;
+      //$message->attachments = $request->attachments;
 
-      Auth::user()->{$request['name']} = $messenger->id;
-      Auth::user()->save();
+      $message->save();
     }
 
     /**
-     * Display the specified resource.
+     * Display messages for the specified dialog.
      *
-     * @param  \App\Message  $message
+     * @param  \App\Dialog  $dialog
      * @return \Illuminate\Http\Response
      */
-    public function show(Message $message)
+    public function show(Dialog $dialog)
     {
-        //
+      return $dialog->messages();
     }
 
     /**

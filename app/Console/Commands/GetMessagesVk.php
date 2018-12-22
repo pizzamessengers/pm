@@ -75,23 +75,39 @@ class GetMessagesVk extends Command
       {
         for ($i=0; $i < $index; $i++)
         {
-          $author_ids = Author::where(
+          $authors = Author::where(
             'author_id',
             $messages[$index-$i-1]['from_id']
           )->get();
 
-          if (count($author_ids) > 1) {
-
+          /*if (count($author_ids) > 1) {
+            // TODO: если в разных мессенджерах будут совпадать id разных авторов, то сделать доп. проверку
           }
-          else
+          else */
+          if (count($authors) === 1) {
+            $authorId = $authors[0]['id'];
+          }
+          else if (count($authors) === 0)
           {
-            $author_id = $author_ids[0]['id'];
+            $profile = $vkClient->users()->get($token, array(
+              'user_ids' => $messages[$index-$i-1]['from_id'],
+              'fields' => 'photo_100'
+            ));
+
+            $author = new Author;
+            $author->id = str_random(32);
+            $author->author_id = $profile['id'];
+            $author->name = $profile['first_name'] . ' ' . $profile['last_name'];
+            $author->avatar = $profile['photo_100'];
+            $author->save();
+
+            $authorId = $author->id;
           }
 
           $messageData = array(
             'message_id' => $messages[$index-$i-1]['id'],
             'dialog_id' => $dialog->id,
-            'author_id' => $author_id,
+            'author_id' => $authorId,
             'text' => $messages[$index-$i-1]['text'],
             'attachments' => $messages[$index-$i-1]['attachments'],
           );

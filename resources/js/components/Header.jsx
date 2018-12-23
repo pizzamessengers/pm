@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { Component } from "react";
+import Auth from "./../contexts/Auth";
 
 const Header = ({ history }) => {
   let navbarSupportedContent = React.createRef();
@@ -45,24 +46,30 @@ const Header = ({ history }) => {
           >
             {user.name} <span className="caret" />
           </a>
-
-          <div
-            className="dropdown-menu dropdown-menu-right"
-            aria-labelledby="navbarDropdown"
-          >
-            <a
-              className="dropdown-item"
-              onClick={() => {
-                event.preventDefault();
-                axios.post("logout");
-                history.push('/');
-                user = {};
-                user.isAuth = false;
-              }}
-            >
-              Logout
-            </a>
-          </div>
+          <Auth.Consumer>
+            {auth => (
+              <div
+                className="dropdown-menu dropdown-menu-right"
+                aria-labelledby="navbarDropdown"
+              >
+                <a
+                  className="dropdown-item"
+                  onClick={() => {
+                    event.preventDefault();
+                    axios.post("logout").then(function(response) {
+                      user = {};
+                      user.isAuth = false;
+                      user.csrf = response.data.csrf;
+                      auth.checkAuth();
+                      history.push("/");
+                    });
+                  }}
+                >
+                  Logout
+                </a>
+              </div>
+            )}
+          </Auth.Consumer>
         </li>
       </ul>
     );

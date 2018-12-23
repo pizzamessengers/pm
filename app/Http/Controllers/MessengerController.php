@@ -45,9 +45,6 @@ class MessengerController extends Controller
         $messenger->password = $request['password'] ?: $request['password'];
         $messenger->save();
 
-        Auth::user()->{$request['name']} = $messenger->id;
-        Auth::user()->save();
-
         return response()->json([
           'success' => true,
           $request['name'] => [

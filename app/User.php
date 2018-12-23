@@ -29,4 +29,28 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'api_token',
     ];
+
+    /**
+     * Get the vk messenger for the user.
+     */
+    public function vk()
+    {
+        return $this->hasOne('App\Messenger')->where('name', 'vk')->first();
+    }
+
+    /**
+     * Get the inst messenger for the user.
+     */
+    public function inst()
+    {
+        return $this->hasOne('App\Messenger')->where('name', 'inst')->first();
+    }
+
+    /**
+     * Get the wapp messenger for the user.
+     */
+    public function wapp()
+    {
+        return $this->hasOne('App\Messenger')->where('name', 'wapp')->first();
+    }
 }

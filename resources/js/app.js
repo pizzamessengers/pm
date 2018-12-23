@@ -57,7 +57,6 @@ class App extends Component {
     /**
      * CSRF
      */
-
     axios.defaults.headers.common["X-CSRF-TOKEN"] = user.csrf;
 
     return (

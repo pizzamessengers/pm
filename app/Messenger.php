@@ -22,6 +22,22 @@ class Messenger extends Model
      * @var array
      */
     protected $hidden = [
-        //'token', 
+        //'token',
     ];
+
+    /**
+     * Get the user for the messenger.
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User')->get();
+    }
+
+    /**
+     * Get the dialogs for the messenger.
+     */
+    public function dialogs()
+    {
+        return $this->hasMany('App\Dialog');
+    }
 }

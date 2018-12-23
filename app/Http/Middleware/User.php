@@ -21,46 +21,40 @@ class User
     {
         $isAuth = Auth::guard($guard)->check();
         $user = Auth::user();
-        $isAuth ? (
+        $isAuth ? ([
+          $vk = $user->vk(),
+          $inst = $user->inst(),
+          $wapp = $user->wapp(),
           JavaScript::put([
               'isAuth' => true,
               'name' => $user->name,
               'apiToken' => $user->api_token,
               'csrf' => csrf_token(),
               'socials' => [
-                'vk' => $user->vk === null ? [
+                'vk' => $vk === null ? [
                   'connected' => false,
                   'dialogs' => [],
                 ] : [
                   'connected' => true,
-                  'dialogs' => Dialog::where(
-                    'messenger_id',
-                    $user->vk
-                  )->get(['id', 'name', 'updating']),
+                  'dialogs' => $vk->dialogs()->get(['id', 'name', 'updating']),
                 ],
-                'inst' => $user->inst === null ? [
+                'inst' => $inst === null ? [
                   'connected' => false,
                   'dialogs' => [],
                 ] : [
                   'connected' => true,
-                  'dialogs' => Dialog::where(
-                    'messenger_id',
-                    $user->inst
-                  )->get(['id', 'name', 'updating']),
+                  'dialogs' => $inst->dialogs()->get(['id', 'name', 'updating']),
                 ],
-                'wapp' => $user->wapp === null ? [
+                'wapp' => $wapp === null ? [
                   'connected' => false,
                   'dialogs' => [],
                 ] : [
                   'connected' => true,
-                  'dialogs' => Dialog::where(
-                    'messenger_id',
-                    $user->wapp
-                  )->get(['id', 'name', 'updating']),
+                  'dialogs' => $wapp->dialogs()->get(['id', 'name', 'updating']),
                 ],
               ],
           ])
-        ) : (
+        ]) : (
           JavaScript::put([
               'isAuth' => false,
               'name' => null,

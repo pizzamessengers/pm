@@ -75,19 +75,16 @@ class GetMessagesVk extends Command
       {
         for ($i=0; $i < $index; $i++)
         {
-          $authors = Author::where(
+          $authorId = Author::where(
             'author_id',
             $messages[$index-$i-1]['from_id']
-          )->get();
+          )->value('id');
 
           /*if (count($author_ids) > 1) {
             // TODO: если в разных мессенджерах будут совпадать id разных авторов, то сделать доп. проверку
           }
           else */
-          if (count($authors) === 1) {
-            $authorId = $authors[0]['id'];
-          }
-          else if (count($authors) === 0)
+          if ($authorId === null)
           {
             $profile = $vkClient->users()->get($token, array(
               'user_ids' => $messages[$index-$i-1]['from_id'],

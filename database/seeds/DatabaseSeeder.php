@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
       'name' => 'admin',
       'email' => '1@q',
       'password' => Hash::make('1'),
-      'vk' => $messId,
     ]);
     DB::table('messengers')->insert([
       'id' => $messId,

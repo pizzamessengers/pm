@@ -21,9 +21,7 @@ class UserController extends Controller
     public function csrf()
     {
       return response()->json([
-        'user' => [
-          'csrf' => csrf_token(),
-        ],
+        'csrf' => csrf_token(),
       ]);
     }
 }

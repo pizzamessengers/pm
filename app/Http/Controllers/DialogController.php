@@ -49,12 +49,11 @@ class DialogController extends Controller
         case 'vk':
 
           $name = $request['name'];
-          $messengerId = Auth::user()->$mess;
+          $messenger = Auth::user()->vk();
+          $messengerId = $messenger->id;
 
           $vk = new VKApiClient();
-          $token = Messenger::where('id', $messengerId)
-            ->first()
-            ->token;
+          $token = $messenger->token;
 
           $vkReq = $vk->messages()->searchConversations($token, array(
             'q' => $name,
@@ -116,11 +115,10 @@ class DialogController extends Controller
            * Store authors.
            *
            */
-          foreach ($profiles as $profile) {
-            $id = DB::table('authors')
-                  ->where('author_id', $profile['id'])
-                  ->where('name', $profile['first_name'] . ' ' . $profile['last_name'])
-                  ->value('id');
+          foreach ($profiles as $profile)
+          {
+            $id = Author::where('author_id', $profile['id'])->value('id');
+
             if ($id === null)
             {
               $id = str_random(32);
@@ -146,7 +144,7 @@ class DialogController extends Controller
             ]
           ], 200);
             break;
-            
+
       }
     }
 

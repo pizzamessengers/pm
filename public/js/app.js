@@ -1584,8 +1584,8 @@ var Dialogs = function (_Component) {
                 {
                   className: "nav-link d-flex col-8",
                   to: {
-                    pathname: "/socials/" + _this2.props.mess + "/" + Object(__WEBPACK_IMPORTED_MODULE_2__functions_translite__["a" /* default */])(dialog.name),
-                    state: { name: dialog.name, id: dialog.id }
+                    pathname: "/socials/" + _this2.props.mess + "/" + dialog.id,
+                    state: { name: dialog.name }
                   }
                 },
                 dialog.name
@@ -63775,7 +63775,7 @@ function translite(str) {
   return str.replace(/[ъьЬЪ]+/g, '').replace(/[А-яёЁ\s]/g, replacer);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (translite);
+/* unused harmony default export */ var _unused_webpack_default_export = (translite);
 
 /***/ }),
 /* 99 */
@@ -64007,11 +64007,11 @@ var Dialog = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Dialog.__proto__ || Object.getPrototypeOf(Dialog)).call(this, props));
 
     _this.state = {
+      name: _this.props.location.state ? _this.props.location.state.name : null,
       messages: []
     };
+
     _this.dialog = _this.props.match.params.dialog;
-    _this.id = _this.props.location.state.id;
-    _this.name = _this.props.location.state.name;
     return _this;
   }
 
@@ -64020,14 +64020,15 @@ var Dialog = function (_Component) {
     value: function componentWillMount() {
       var _this2 = this;
 
-      axios.get("./../../api/v1/messages/" + this.id + "?api_token=" + user.apiToken).then(function (response) {
-        _this2.setState({ messages: response.data });
+      axios.get("./../../api/v1/messages/" + this.dialog + "?api_token=" + user.apiToken).then(function (response) {
+        _this2.setState(response.data);
       });
     }
   }, {
     key: "render",
     value: function render() {
       var messages = this.state.messages;
+      var name = this.state.name;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         "div",
@@ -64044,7 +64045,7 @@ var Dialog = function (_Component) {
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 "div",
                 { className: "card-header" },
-                this.name
+                name
               ),
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 "div",
@@ -64071,7 +64072,12 @@ var Dialog = function (_Component) {
                     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                       "li",
                       { className: "nav-item d-flex my-1", key: message.id },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", { className: "mr-4", src: message.author.avatar, width: 50 + 'px', height: 50 + 'px' }),
+                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", {
+                        className: "mr-4",
+                        src: message.author.avatar,
+                        width: 50 + "px",
+                        height: 50 + "px"
+                      }),
                       "author: ",
                       message.author.name,
                       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("br", null),

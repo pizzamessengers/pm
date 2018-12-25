@@ -91,8 +91,8 @@ export default class Dialogs extends Component {
                       "/socials/" +
                       this.props.mess +
                       "/" +
-                      translite(dialog.name),
-                    state: { name: dialog.name, id: dialog.id }
+                      dialog.id,
+                    state: { name: dialog.name }
                   }}
                 >
                   {dialog.name}

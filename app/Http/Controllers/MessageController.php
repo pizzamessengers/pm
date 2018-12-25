@@ -55,7 +55,10 @@ class MessageController extends Controller
      */
     public function show(Dialog $dialog)
     {
-      return $dialog->messages();
+      return response()->json([
+        'name' => $dialog->name,
+        'messages' => $dialog->messages(),
+      ]);
     }
 
     /**

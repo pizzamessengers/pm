@@ -14,13 +14,14 @@ class CreateAuthorsTable extends Migration
     public function up()
     {
         Schema::create('authors', function (Blueprint $table) {
-            $table->string('id', 32)
-                  ->primary();
+            $table->increments('id');
             $table->string('author_id');
             $table->string('name');
             $table->string('avatar');
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE authors AUTO_INCREMENT = 10000000");
     }
 
     /**

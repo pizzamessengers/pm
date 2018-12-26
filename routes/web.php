@@ -19,7 +19,7 @@ Route::fallback([
   }
 ]);
 
-Route::get('csrf', 'UserController@csrf')->name('csrf');
+Route::get('csrf', 'Controller@csrf')->name('csrf');
 
 Route::get('register', 'Auth\RegisterController@index');
 Route::post('register', 'Auth\RegisterController@register')->name('register');

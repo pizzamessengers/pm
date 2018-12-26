@@ -29,6 +29,8 @@ import Index from "./components/Index.jsx";
 import ApiToken from "./contexts/ApiToken";
 import Auth from "./contexts/Auth";
 
+axios.defaults.baseURL = 'http://localhost:8000';
+
 class App extends Component {
   constructor(props) {
     super(props);

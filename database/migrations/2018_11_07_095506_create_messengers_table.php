@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Auth;
 
 class CreateMessengersTable extends Migration
 {
@@ -14,9 +15,8 @@ class CreateMessengersTable extends Migration
     public function up()
     {
         Schema::create('messengers', function (Blueprint $table) {
-            $table->string('id', 32)
-                  ->primary();
-            $table->string('user_id', 32);
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
             $table->foreign('user_id')
                   ->references('id')
                   ->on('users')
@@ -32,6 +32,8 @@ class CreateMessengersTable extends Migration
                   ->nullable();
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE messengers AUTO_INCREMENT = 10000000");
     }
 
     /**

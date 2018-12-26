@@ -3,10 +3,10 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Messenger extends Model
 {
-    public $incrementing = false;
     /**
      * The attributes that are mass assignable.
      *
@@ -22,7 +22,7 @@ class Messenger extends Model
      * @var array
      */
     protected $hidden = [
-        //'token',
+        //
     ];
 
     /**

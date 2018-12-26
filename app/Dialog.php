@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\DB;
 
 class Dialog extends Model
 {
-    public $incrementing = false;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'id', 'dialog_id', 'messenger_id', 'last_message_id',
+        'name', 'dialog_id', 'messenger_id', 'last_message_id',
     ];
 
     /**

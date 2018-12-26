@@ -31,7 +31,7 @@ export default class Socials extends Component {
       token: token
     };
     axios
-      .post("./../api/v1/messengers?api_token=" + user.apiToken, data)
+      .post("api/v1/messengers?api_token=" + user.apiToken, data)
       .then(response => {
         if (response.data.success) {
           this.setState({ [mess]: true });
@@ -45,7 +45,7 @@ export default class Socials extends Component {
       name: mess
     };
     axios
-      .delete("./../api/v1/messengers?api_token=" + user.apiToken, { data })
+      .delete("api/v1/messengers?api_token=" + user.apiToken, { data })
       .then(response => {
         if (response.status === 200) {
           this.setState({ [mess]: false });
@@ -89,7 +89,7 @@ export default class Socials extends Component {
           />
           <Route
             exact
-            path="/socials/wapp/"
+            path="/socials/wapp"
             render={() => (
               <Wapp
                 connected={this.state.wapp}

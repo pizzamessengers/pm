@@ -47,10 +47,9 @@ class DialogController extends Controller
       switch ($mess)
       {
         case 'vk':
-
           $name = $request['name'];
           $messenger = Auth::user()->vk();
-          $messengerId = $messenger->id;
+          $dialogData['messenger_id'] = $messenger->id;
 
           $vk = new VKApiClient();
           $token = $messenger->token;
@@ -76,8 +75,8 @@ class DialogController extends Controller
             ], 200);
           }
 
-          $dialogId = $vkReq['items'][0]['peer']['id'];
-          if (Dialog::where('dialog_id', $dialogId)->count() !== 0)
+          $dialogData['dialog_id'] = $vkReq['items'][0]['peer']['id'];
+          if (Dialog::where('dialog_id', $dialogData['dialog_id'])->count() !== 0)
           {
             return response()->json([
               'success' => false,
@@ -87,29 +86,23 @@ class DialogController extends Controller
 
           ($vkReq['items'][0]['peer']['type'] === 'chat')
             ? ([
-            $name = $vkReq['items'][0]['chat_settings']['title'],
+            $dialogData['name'] = $vkReq['items'][0]['chat_settings']['title'],
             $profiles = $vk->messages()->getChat($token, array(
-              'chat_id' => $dialogId-2000000000,
+              'chat_id' => $dialogData['dialog_id']-2000000000,
               'fields' => 'photo_100',
             ))['users']
           ]) : ([
             $profiles = $vkReq['profiles'],
-            $name = $profiles[0]['first_name'] . ' ' . $profiles[0]['last_name']
+            $dialogData['name'] = $profiles[0]['first_name'] . ' ' . $profiles[0]['last_name']
           ]);
 
           $vkReq = $vk->messages()->getHistory($token, array(
-            'peer_id' => $dialogId,
+            'peer_id' => $dialogData['dialog_id'],
             'count' => 1,
           ));
-          $lastMessageId = $vkReq['items'][0]['id'];
+          $dialogData['last_message_id'] = $vkReq['items'][0]['id'];
 
-          $dialog = new Dialog;
-          $dialog->id = str_random(32);
-          $dialog->name = $name;
-          $dialog->dialog_id = $dialogId;
-          $dialog->last_message_id = $lastMessageId;
-          $dialog->messenger_id = $messengerId;
-          $dialog->save();
+          $dialog = Dialog::create($dialogData);
 
           /**
            * Store authors.
@@ -117,22 +110,22 @@ class DialogController extends Controller
            */
           foreach ($profiles as $profile)
           {
-            $id = Author::where('author_id', $profile['id'])->value('id');
+            $authorId = Author::where('author_id', $profile['id'])->value('id');
 
-            if ($id === null)
+            if ($authorId === null)
             {
-              $id = str_random(32);
               $author = new Author;
-              $author->id = $id;
               $author->author_id = $profile['id'];
               $author->name = $profile['first_name'] . ' ' . $profile['last_name'];
               $author->avatar = $profile['photo_100'];
               $author->save();
+
+              $authorId = $author->id;
             }
 
             DB::table('author_dialog')->insert([
               'dialog_id' => $dialog->id,
-              'author_id' => $id,
+              'author_id' => $authorId,
             ]);
           }
 

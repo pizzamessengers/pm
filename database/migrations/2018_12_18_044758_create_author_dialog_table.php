@@ -14,8 +14,8 @@ class CreateAuthorDialogTable extends Migration
     public function up()
     {
       Schema::create('author_dialog', function (Blueprint $table) {
-          $table->string('dialog_id');
-          $table->string('author_id');
+          $table->unsignedInteger('dialog_id');
+          $table->unsignedInteger('author_id');
           $table->foreign('dialog_id')
                 ->references('id')
                 ->on('dialogs')

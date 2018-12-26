@@ -36,20 +36,13 @@ class MessengerController extends Controller
      */
       public function addMessenger(Request $request)
       {
-        $messenger = new Messenger;
-        $messenger->id = str_random(32);
-        $messenger->name = $request['name'];
-        $messenger->user_id = Auth::id();
-        $messenger->token = $request['token'] ?: $request['token'];
-        $messenger->login = $request['login'] ?: $request['login'];
-        $messenger->password = $request['password'] ?: $request['password'];
-        $messenger->save();
+        $messengerData = $request->all();
+        $messengerData['user_id'] = Auth::id();
+        $messenger = Messenger::create($messengerData);
 
         return response()->json([
           'success' => true,
-          $request['name'] => [
-            'connected' => true,
-          ]
+          'messenger' => $messenger
         ], 200);
       }
 
@@ -95,10 +88,7 @@ class MessengerController extends Controller
      */
     public function deleteMessenger(Request $request)
     {
-        $id = Auth::user()->{$request['name']};
-        Messenger::find($id)->delete();
-        Auth::user()->{$request['name']} = null;
-        Auth::user()->save();
+        $messenger = Auth::user()->{$request['name']}()->delete();
 
         return response()->json([
           'success' => true,

@@ -36,15 +36,7 @@ class MessageController extends Controller
      */
     public function addMessage(Request $request)
     {
-      $message = new Message;
-      $message->id = str_random(32);
-      $message->message_id = $request->message_id;
-      $message->dialog_id = $request->dialog_id;
-      $message->author_id = $request->author_id;
-      $message->text = $request->text;
-      //$message->attachments = $request->attachments;
-
-      $message->save();
+      $message = Message::create($request->all());
     }
 
     /**

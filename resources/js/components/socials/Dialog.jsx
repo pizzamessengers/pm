@@ -14,7 +14,7 @@ export default class Dialog extends Component {
   componentWillMount() {
     axios
       .get(
-        "./../../api/v1/messages/" + this.dialog + "?api_token=" + user.apiToken
+        "api/v1/messages/" + this.dialog + "?api_token=" + user.apiToken
       )
       .then(response => {
         this.setState(response.data);

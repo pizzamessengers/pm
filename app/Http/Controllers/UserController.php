@@ -15,13 +15,6 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth:api');
-    }
-
-    public function csrf()
-    {
-      return response()->json([
-        'csrf' => csrf_token(),
-      ]);
+        //
     }
 }

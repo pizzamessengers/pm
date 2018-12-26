@@ -15,7 +15,7 @@ export default class Dialogs extends Component {
       name: this.dialog.current.value
     };
     axios
-      .post("/../../api/v1/dialogs?api_token=" + user.apiToken, data)
+      .post("api/v1/dialogs?api_token=" + user.apiToken, data)
       .then(response => {
         if (!response.data.success) {
           alert(response.data.message);
@@ -34,7 +34,7 @@ export default class Dialogs extends Component {
     let data = {
       id: dialog.id
     };
-    axios.delete("/../../api/v1/dialogs?api_token=" + user.apiToken, { data });
+    axios.delete("api/v1/dialogs?api_token=" + user.apiToken, { data });
     user.socials[this.props.mess].dialogs.splice(
       user.socials[this.props.mess].dialogs.map(x => x.id).indexOf(dialog.id),
       1
@@ -49,7 +49,7 @@ export default class Dialogs extends Component {
       updating: e.target.checked
     };
     axios.put(
-      "/../../api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken,
+      "api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken,
       data
     );
   };

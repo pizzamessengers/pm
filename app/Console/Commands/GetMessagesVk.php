@@ -48,7 +48,6 @@ class GetMessagesVk extends Command
 
       foreach ($dialogs as $dialog)
       {
-        info($dialog->name);
         $index = 0;
 
         $token = Messenger::find($dialog->messenger_id)->token;
@@ -92,7 +91,6 @@ class GetMessagesVk extends Command
             ));
 
             $author = new Author;
-            $author->id = str_random(32);
             $author->author_id = $profile['id'];
             $author->name = $profile['first_name'] . ' ' . $profile['last_name'];
             $author->avatar = $profile['photo_100'];
@@ -106,17 +104,10 @@ class GetMessagesVk extends Command
             'dialog_id' => $dialog->id,
             'author_id' => $authorId,
             'text' => $messages[$index-$i-1]['text'],
-            'attachments' => $messages[$index-$i-1]['attachments'],
+            //'attachments' => $messages[$index-$i-1]['attachments'],
           );
 
-          $message = new Message;
-          $message->id = str_random(32);
-          $message->message_id = $messageData['message_id'];
-          $message->dialog_id = $messageData['dialog_id'];
-          $message->author_id = $messageData['author_id'];
-          $message->text = $messageData['text'];
-          //$message->attachments = $messageData['attachments'];
-          $message->save();
+          $message = Message::create($messageData);
         }
 
         $dialog->last_message_id = $messages[0]['id'];

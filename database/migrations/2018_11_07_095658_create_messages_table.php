@@ -14,10 +14,9 @@ class CreateMessagesTable extends Migration
     public function up()
     {
         Schema::create('messages', function (Blueprint $table) {
-          $table->string('id', 32)
-                ->primary();
+          $table->increments('id');
           $table->string('message_id');
-          $table->string('dialog_id', 32);
+          $table->unsignedInteger('dialog_id');
           $table->foreign('dialog_id')
                 ->references('id')
                 ->on('dialogs')
@@ -25,13 +24,15 @@ class CreateMessagesTable extends Migration
           $table->string('text');
           $table->string('attachments')
                 ->nullable();
-          $table->string('author_id');
+          $table->unsignedInteger('author_id');
           $table->foreign('author_id')
                 ->references('id')
                 ->on('authors')
                 ->onDelete('cascade');
           $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE messages AUTO_INCREMENT = 10000000");
     }
 
     /**

@@ -14,9 +14,8 @@ class CreateDialogsTable extends Migration
     public function up()
     {
         Schema::create('dialogs', function (Blueprint $table) {
-          $table->string('id', 32)
-                ->primary();
-          $table->string('messenger_id', 32);
+          $table->increments('id');
+          $table->unsignedInteger('messenger_id');
           $table->foreign('messenger_id')
                 ->references('id')
                 ->on('messengers')
@@ -24,9 +23,12 @@ class CreateDialogsTable extends Migration
           $table->string('name');
           $table->string('last_message_id');
           $table->string('dialog_id');
-          $table->boolean('updating')->default(true);
+          $table->boolean('updating')
+                ->default(true);
           $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE dialogs AUTO_INCREMENT = 10000000");
     }
 
     /**

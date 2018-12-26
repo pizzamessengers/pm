@@ -1491,7 +1491,7 @@ var Dialogs = function (_Component) {
         mess: _this.props.mess,
         name: _this.dialog.current.value
       };
-      axios.post("/../../api/v1/dialogs?api_token=" + user.apiToken, data).then(function (response) {
+      axios.post("api/v1/dialogs?api_token=" + user.apiToken, data).then(function (response) {
         if (!response.data.success) {
           alert(response.data.message);
         } else {
@@ -1509,7 +1509,7 @@ var Dialogs = function (_Component) {
       var data = {
         id: dialog.id
       };
-      axios.delete("/../../api/v1/dialogs?api_token=" + user.apiToken, { data: data });
+      axios.delete("api/v1/dialogs?api_token=" + user.apiToken, { data: data });
       user.socials[_this.props.mess].dialogs.splice(user.socials[_this.props.mess].dialogs.map(function (x) {
         return x.id;
       }).indexOf(dialog.id), 1);
@@ -1522,7 +1522,7 @@ var Dialogs = function (_Component) {
       var data = {
         updating: e.target.checked
       };
-      axios.put("/../../api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken, data);
+      axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken, data);
     };
 
     _this.dialog = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createRef();
@@ -15739,6 +15739,8 @@ __webpack_require__(37);
 
 
 
+
+axios.defaults.baseURL = 'http://localhost:8000';
 
 var App = function (_Component) {
   _inherits(App, _Component);
@@ -63479,7 +63481,7 @@ var Socials = function (_Component) {
         name: mess,
         token: token
       };
-      axios.post("./../api/v1/messengers?api_token=" + user.apiToken, data).then(function (response) {
+      axios.post("api/v1/messengers?api_token=" + user.apiToken, data).then(function (response) {
         if (response.data.success) {
           _this.setState(_defineProperty({}, mess, true));
         }
@@ -63491,7 +63493,7 @@ var Socials = function (_Component) {
       var data = {
         name: mess
       };
-      axios.delete("./../api/v1/messengers?api_token=" + user.apiToken, { data: data }).then(function (response) {
+      axios.delete("api/v1/messengers?api_token=" + user.apiToken, { data: data }).then(function (response) {
         if (response.status === 200) {
           _this.setState(_defineProperty({}, mess, false));
         }
@@ -63571,7 +63573,7 @@ var Socials = function (_Component) {
           }),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
             exact: true,
-            path: "/socials/wapp/",
+            path: "/socials/wapp",
             render: function render() {
               return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__socials_Wapp__["a" /* default */], {
                 connected: _this2.state.wapp,
@@ -64020,7 +64022,7 @@ var Dialog = function (_Component) {
     value: function componentWillMount() {
       var _this2 = this;
 
-      axios.get("./../../api/v1/messages/" + this.dialog + "?api_token=" + user.apiToken).then(function (response) {
+      axios.get("api/v1/messages/" + this.dialog + "?api_token=" + user.apiToken).then(function (response) {
         _this2.setState(response.data);
       });
     }

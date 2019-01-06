@@ -24,11 +24,12 @@ export default class Socials extends Component {
     });
   }
 
-  connect = (mess, token, e) => {
+  connect = (mess, token, watching, e) => {
     e.preventDefault();
     let data = {
       name: mess,
-      token: token
+      token: token,
+      watching: watching
     };
     axios
       .post("api/v1/messengers?api_token=" + user.apiToken, data)
@@ -41,16 +42,11 @@ export default class Socials extends Component {
 
   remove = (mess, e) => {
     e.preventDefault();
+    this.setState({ [mess]: false });
     let data = {
       name: mess
     };
-    axios
-      .delete("api/v1/messengers?api_token=" + user.apiToken, { data })
-      .then(response => {
-        if (response.status === 200) {
-          this.setState({ [mess]: false });
-        }
-      });
+    axios.delete("api/v1/messengers?api_token=" + user.apiToken, { data });
   };
 
   render() {

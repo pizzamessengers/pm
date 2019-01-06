@@ -17,6 +17,7 @@ Route::group(['middleware' => 'auth:api'], function()
 {
   Route::post('v1/messengers', 'MessengerController@addMessenger');
   Route::delete('v1/messengers', 'MessengerController@deleteMessenger');
+  Route::put('v1/messengers/{messenger}', 'MessengerController@toggleWatching');
 
   Route::post('v1/dialogs', 'DialogController@addDialog');
   Route::delete('v1/dialogs', 'DialogController@deleteDialog');

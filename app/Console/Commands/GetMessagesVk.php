@@ -42,9 +42,16 @@ class GetMessagesVk extends Command
      */
     public function handle()
     {
-      $dialogs = Dialog::where('updating', true)->get();
-
       $vkClient = new VKApiClient();
+
+      $this->updateDialogs($vkClient);
+
+      $this->updateMessengers($vkClient);
+    }
+
+    protected function updateDialogs(VKApiClient $vkClient)
+    {
+      $dialogs = Dialog::where('updating', true)->get();
 
       foreach ($dialogs as $dialog)
       {
@@ -62,6 +69,11 @@ class GetMessagesVk extends Command
 
         $this->update($index, $messages, $dialog);
       }
+    }
+
+    protected function updateMessengers(VKApiClient $vkClient)
+    {
+      //
     }
 
     protected function update(Int $index, Array $messages, Dialog $dialog)

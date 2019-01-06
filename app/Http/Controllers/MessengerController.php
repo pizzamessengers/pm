@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Messenger;
+use App\Dialog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use VK\Client\VKApiClient;
 
 class MessengerController extends Controller
 {
@@ -37,7 +39,17 @@ class MessengerController extends Controller
       public function addMessenger(Request $request)
       {
         $messengerData = $request->all();
+
+        $vk = new VKApiClient();
+        $lpServer = $vk->messages()->getLongPollServer($messengerData['token'], array(
+          'need_pts' => 1,
+          'lp_version' => 3,
+        ));
+
         $messengerData['user_id'] = Auth::id();
+        $messengerData['lp_ts'] = $lpServer['ts'];
+        $messengerData['lp_pts'] =  $lpServer['pts'];
+
         $messenger = Messenger::create($messengerData);
 
         return response()->json([
@@ -69,15 +81,27 @@ class MessengerController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * toggling watching the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Messenger  $messenger
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Messenger $messenger)
+    public function toggleWatching(Request $request, Messenger $messenger)
     {
-        //
+      if ($request->watching === 'all')
+      {
+        $messenger->dialogs()->get()->each(
+          function(Dialog $dialog)
+          {
+            $dialog->updating = false;
+            $dialog->save();
+          }
+        );
+      }
+
+      $messenger->watching = $request->watching;
+      $messenger->save();
     }
 
     /**

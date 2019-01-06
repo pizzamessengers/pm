@@ -79,23 +79,35 @@ class LoginController extends Controller
                     'socials' => [
                       'vk' => $vk === null ? [
                         'connected' => false,
+                        'id' => null,
+                        'watching' => null,
                         'dialogs' => [],
                       ] : [
                         'connected' => true,
+                        'id' => $vk->id,
+                        'watching' => $vk->watching,
                         'dialogs' => $vk->dialogs()->get(['id', 'name', 'updating']),
                       ],
                       'inst' => $inst === null ? [
                         'connected' => false,
+                        'id' => null,
+                        'watching' => null,
                         'dialogs' => [],
                       ] : [
                         'connected' => true,
+                        'id' => $inst->id,
+                        'watching' => $inst->watching,
                         'dialogs' => $inst->dialogs()->get(['id', 'name', 'updating']),
                       ],
                       'wapp' => $wapp === null ? [
                         'connected' => false,
+                        'id' => null,
+                        'watching' => null,
                         'dialogs' => [],
                       ] : [
                         'connected' => true,
+                        'id' => $wapp->id,
+                        'watching' => $wapp->watching,
                         'dialogs' => $wapp->dialogs()->get(['id', 'name', 'updating']),
                       ],
                     ],

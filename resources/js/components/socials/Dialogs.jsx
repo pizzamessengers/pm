@@ -20,7 +20,7 @@ export default class Dialogs extends Component {
         if (!response.data.success) {
           alert(response.data.message);
         } else {
-          user.socials[this.props.mess].dialogs.push({
+          user.socials[this.props.mess].dialogsList.push({
             id: response.data.dialog.id,
             name: response.data.dialog.name,
             updating: true
@@ -35,23 +35,21 @@ export default class Dialogs extends Component {
       id: dialog.id
     };
     axios.delete("api/v1/dialogs?api_token=" + user.apiToken, { data });
-    user.socials[this.props.mess].dialogs.splice(
-      user.socials[this.props.mess].dialogs.map(x => x.id).indexOf(dialog.id),
+    user.socials[this.props.mess].dialogsList.splice(
+      user.socials[this.props.mess].dialogsList
+        .map(x => x.id)
+        .indexOf(dialog.id),
       1
     );
     this.forceUpdate();
   };
 
-  handleUpdating = (e, dialog) => {
+  toggleUpdating = (e, dialog) => {
     dialog.updating = e.target.checked;
     this.forceUpdate();
-    let data = {
+    axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken, {
       updating: e.target.checked
-    };
-    axios.put(
-      "api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken,
-      data
-    );
+    });
   };
 
   render() {
@@ -78,7 +76,7 @@ export default class Dialogs extends Component {
           </form>
         </div>
         <ul className="navbar-nav">
-          {user.socials[this.props.mess].dialogs.map(dialog => {
+          {user.socials[this.props.mess].dialogsList.map(dialog => {
             return (
               <li
                 className="nav-item d-flex align-items-center my-1"
@@ -87,11 +85,7 @@ export default class Dialogs extends Component {
                 <Link
                   className="nav-link d-flex col-8"
                   to={{
-                    pathname:
-                      "/socials/" +
-                      this.props.mess +
-                      "/" +
-                      dialog.id,
+                    pathname: "/socials/" + this.props.mess + "/" + dialog.id,
                     state: { name: dialog.name }
                   }}
                 >
@@ -101,7 +95,7 @@ export default class Dialogs extends Component {
                   checked={dialog.updating}
                   className="col-1"
                   type="checkbox"
-                  onChange={e => this.handleUpdating(e, dialog)}
+                  onChange={e => this.toggleUpdating(e, dialog)}
                 />
                 <button
                   className="btn btn-primary d-flex col-3"

@@ -13,7 +13,14 @@ class Messenger extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'login', 'password', 'token', 'user_id'
+        'name',
+        'login',
+        'password',
+        'token',
+        'user_id',
+        'watching',
+        'lp_ts',
+        'lp_pts'
     ];
 
     /**

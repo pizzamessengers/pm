@@ -33,24 +33,36 @@ class User
               'socials' => [
                 'vk' => $vk === null ? [
                   'connected' => false,
-                  'dialogs' => [],
+                  'id' => null,
+                  'watching' => null,
+                  'dialogsList' => [],
                 ] : [
                   'connected' => true,
-                  'dialogs' => $vk->dialogs()->get(['id', 'name', 'updating']),
+                  'id' => $vk->id,
+                  'watching' => $vk->watching,
+                  'dialogsList' => $vk->dialogs()->get(['id', 'name', 'updating']),
                 ],
                 'inst' => $inst === null ? [
                   'connected' => false,
-                  'dialogs' => [],
+                  'id' => null,
+                  'watching' => null,
+                  'dialogsList' => [],
                 ] : [
                   'connected' => true,
-                  'dialogs' => $inst->dialogs()->get(['id', 'name', 'updating']),
+                  'id' => $inst->id,
+                  'watching' => $inst->watching,
+                  'dialogsList' => $inst->dialogs()->get(['id', 'name', 'updating']),
                 ],
                 'wapp' => $wapp === null ? [
                   'connected' => false,
-                  'dialogs' => [],
+                  'id' => null,
+                  'watching' => null,
+                  'dialogsList' => [],
                 ] : [
                   'connected' => true,
-                  'dialogs' => $wapp->dialogs()->get(['id', 'name', 'updating']),
+                  'id' => $wapp->id,
+                  'watching' => $wapp->watching,
+                  'dialogsList' => $wapp->dialogs()->get(['id', 'name', 'updating']),
                 ],
               ],
           ])

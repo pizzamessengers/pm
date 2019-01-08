@@ -5,7 +5,7 @@ export default class Vk extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      watching: user.socials.vk.watching
+      watching: socials.vk ? socials.vk.watching : null
     };
     this.token = React.createRef();
   }
@@ -14,13 +14,13 @@ export default class Vk extends Component {
     let watching = this.state.watching === "all" ? "dialogs" : "all";
     this.setState({ watching });
     axios.put(
-      "api/v1/messengers/" + user.socials.vk.id + "?api_token=" + user.apiToken,
+      "api/v1/messengers/" + socials.vk.id + "?api_token=" + apiToken,
       { watching }
     );
   };
 
   render() {
-    let { connect, remove, connected } = this.props;
+    let { connect, remove } = this.props;
     let { watching } = this.state;
     return (
       <div className="container">
@@ -30,7 +30,7 @@ export default class Vk extends Component {
               <div className="card-header">Вконтакте</div>
 
               <div className="card-body">
-                {connected ? (
+                {socials.vk ? (
                   <Fragment>
                     <div className="text-center mb-3">Подключено</div>
                     <div className="d-flex flex-row">

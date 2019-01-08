@@ -850,19 +850,7 @@ var locationsAreEqual = function locationsAreEqual(a, b) {
 };
 
 /***/ }),
-/* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-
-
-var Auth = Object(__WEBPACK_IMPORTED_MODULE_0_react__["createContext"])();
-
-/* harmony default export */ __webpack_exports__["a"] = (Auth);
-
-/***/ }),
+/* 10 */,
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1491,11 +1479,11 @@ var Dialogs = function (_Component) {
         mess: _this.props.mess,
         name: _this.dialog.current.value
       };
-      axios.post("api/v1/dialogs?api_token=" + user.apiToken, data).then(function (response) {
+      axios.post("api/v1/dialogs?api_token=" + apiToken, data).then(function (response) {
         if (!response.data.success) {
           alert(response.data.message);
         } else {
-          user.socials[_this.props.mess].dialogsList.push({
+          socials[_this.props.mess].dialogList.push({
             id: response.data.dialog.id,
             name: response.data.dialog.name,
             updating: true
@@ -1509,8 +1497,8 @@ var Dialogs = function (_Component) {
       var data = {
         id: dialog.id
       };
-      axios.delete("api/v1/dialogs?api_token=" + user.apiToken, { data: data });
-      user.socials[_this.props.mess].dialogsList.splice(user.socials[_this.props.mess].dialogsList.map(function (x) {
+      axios.delete("api/v1/dialogs?api_token=" + apiToken, { data: data });
+      socials[_this.props.mess].dialogList.splice(socials[_this.props.mess].dialogList.map(function (x) {
         return x.id;
       }).indexOf(dialog.id), 1);
       _this.forceUpdate();
@@ -1519,7 +1507,7 @@ var Dialogs = function (_Component) {
     _this.toggleUpdating = function (e, dialog) {
       dialog.updating = e.target.checked;
       _this.forceUpdate();
-      axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken, {
+      axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken, {
         updating: e.target.checked
       });
     };
@@ -1571,7 +1559,7 @@ var Dialogs = function (_Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           "ul",
           { className: "navbar-nav" },
-          user.socials[this.props.mess].dialogsList.map(function (dialog) {
+          socials[this.props.mess].dialogList.map(function (dialog) {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               "li",
               {
@@ -15697,17 +15685,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_dom__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Index_jsx__ = __webpack_require__(92);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__contexts_ApiToken__ = __webpack_require__(104);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__contexts_Auth__ = __webpack_require__(10);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_socials_Socials_jsx__ = __webpack_require__(110);
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes React and other helpers. It's a great starting point while
@@ -15736,66 +15714,26 @@ __webpack_require__(37);
  * Importing contexts
  */
 
+//
 
+axios.defaults.baseURL = "http://localhost:8000";
 
+var App = function App() {
+  /**
+   * CSRF
+   */
+  //axios.defaults.headers.common["X-XSRF-TOKEN"] = this.xsrf();
 
-axios.defaults.baseURL = 'http://localhost:8000';
-
-var App = function (_Component) {
-  _inherits(App, _Component);
-
-  function App(props) {
-    _classCallCheck(this, App);
-
-    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
-
-    _this.apiToken = function () {
-      if (_this.state.isAuth) {
-        axios.get("api_token").then(function (response) {
-          _this.setState({ api_token: response });
-        });
-      }
-    };
-
-    _this.checkAuth = function () {
-      if (user.isAuth !== _this.state.isAuth) {
-        _this.setState({ isAuth: user.isAuth });
-      }
-    };
-
-    _this.state = {
-      isAuth: user.isAuth,
-      checkAuth: _this.checkAuth
-    };
-    return _this;
-  }
-
-  _createClass(App, [{
-    key: "render",
-    value: function render() {
-      /**
-       * CSRF
-       */
-      axios.defaults.headers.common["X-CSRF-TOKEN"] = user.csrf;
-
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        __WEBPACK_IMPORTED_MODULE_5__contexts_Auth__["a" /* default */].Provider,
-        { value: this.state },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          __WEBPACK_IMPORTED_MODULE_2_react_router_dom__["a" /* BrowserRouter */],
-          null,
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            "div",
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__components_Index_jsx__["a" /* default */], null)
-          )
-        )
-      );
-    }
-  }]);
-
-  return App;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    __WEBPACK_IMPORTED_MODULE_2_react_router_dom__["a" /* BrowserRouter */],
+    null,
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      __WEBPACK_IMPORTED_MODULE_2_react_router_dom__["d" /* Switch */],
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_react_router_dom__["c" /* Route */], { path: "/socials", component: __WEBPACK_IMPORTED_MODULE_3__components_socials_Socials_jsx__["a" /* default */] })
+    )
+  );
+};
 
 if (document.getElementById("root")) {
   Object(__WEBPACK_IMPORTED_MODULE_1_react_dom__["render"])(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(App, null), document.getElementById("root"));
@@ -63180,418 +63118,11 @@ module.exports = hoistNonReactStatics;
 
 
 /***/ }),
-/* 92 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_dom__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Header_jsx__ = __webpack_require__(93);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Main_jsx__ = __webpack_require__(94);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_react__);
-
-
-
-
-
-
-var Index = function Index() {
-  return __WEBPACK_IMPORTED_MODULE_3_react___default.a.createElement(
-    "div",
-    null,
-    __WEBPACK_IMPORTED_MODULE_3_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_0_react_router_dom__["c" /* Route */], { component: __WEBPACK_IMPORTED_MODULE_1__Header_jsx__["a" /* default */] }),
-    __WEBPACK_IMPORTED_MODULE_3_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Main_jsx__["a" /* default */], null)
-  );
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (Index);
-
-/***/ }),
-/* 93 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_dom__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__contexts_Auth__ = __webpack_require__(10);
-
-
-
-
-var Header = function Header(_ref) {
-  var history = _ref.history;
-
-  var navbarSupportedContent = __WEBPACK_IMPORTED_MODULE_1_react___default.a.createRef();
-
-  var menu = user.isAuth === false ? __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-    "ul",
-    { className: "navbar-nav ml-auto" },
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-      "li",
-      { className: "nav-item" },
-      __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-        __WEBPACK_IMPORTED_MODULE_0_react_router_dom__["b" /* Link */],
-        {
-          className: "nav-link",
-          to: "/login",
-          onClick: function onClick() {
-            $(navbarSupportedContent.current).collapse("hide");
-          }
-        },
-        "Login"
-      )
-    ),
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-      "li",
-      { className: "nav-item" },
-      __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-        __WEBPACK_IMPORTED_MODULE_0_react_router_dom__["b" /* Link */],
-        {
-          className: "nav-link",
-          to: "/register",
-          onClick: function onClick() {
-            $(navbarSupportedContent.current).collapse("hide");
-          }
-        },
-        "Register"
-      )
-    )
-  ) : __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-    "ul",
-    { className: "navbar-nav ml-auto" },
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-      "li",
-      { className: "nav-item dropdown" },
-      __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-        "a",
-        {
-          id: "navbarDropdown",
-          className: "nav-link dropdown-toggle",
-          href: "#",
-          role: "button",
-          "data-toggle": "dropdown",
-          "aria-haspopup": "true",
-          "aria-expanded": "false",
-          "v-pre": "true"
-        },
-        user.name,
-        " ",
-        __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("span", { className: "caret" })
-      ),
-      __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-        __WEBPACK_IMPORTED_MODULE_2__contexts_Auth__["a" /* default */].Consumer,
-        null,
-        function (auth) {
-          return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-            "div",
-            {
-              className: "dropdown-menu dropdown-menu-right",
-              "aria-labelledby": "navbarDropdown"
-            },
-            __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-              "a",
-              {
-                className: "dropdown-item",
-                onClick: function onClick() {
-                  event.preventDefault();
-                  axios.post("logout").then(function (response) {
-                    user = {};
-                    user.isAuth = false;
-                    user.csrf = response.data.csrf;
-                    auth.checkAuth();
-                    history.push("/");
-                  });
-                }
-              },
-              "Logout"
-            )
-          );
-        }
-      )
-    )
-  );
-
-  return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-    "header",
-    null,
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-      "nav",
-      { className: "navbar navbar-expand-md navbar-light navbar-laravel" },
-      __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-        "div",
-        { className: "container" },
-        __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-          __WEBPACK_IMPORTED_MODULE_0_react_router_dom__["b" /* Link */],
-          { className: "navbar-brand", to: "/" },
-          "PizzaMessengers"
-        ),
-        __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-          "button",
-          {
-            className: "navbar-toggler",
-            type: "button",
-            "data-toggle": "collapse",
-            "data-target": "#navbarSupportedContent",
-            "aria-controls": "navbarSupportedContent",
-            "aria-expanded": "false",
-            "aria-label": "Toggle navigation"
-          },
-          __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("span", { className: "navbar-toggler-icon" })
-        ),
-        __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-          "div",
-          {
-            className: "collapse navbar-collapse",
-            id: "navbarSupportedContent",
-            ref: navbarSupportedContent
-          },
-          menu
-        )
-      )
-    )
-  );
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (Header);
-
-/***/ }),
-/* 94 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_router_dom__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Welcome_jsx__ = __webpack_require__(95);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Socials_jsx__ = __webpack_require__(96);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__auth_Login_jsx__ = __webpack_require__(102);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__auth_Register_jsx__ = __webpack_require__(103);
-
-
-
-
-
-
-
-
-var Main = function Main() {
-  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-    'main',
-    null,
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["d" /* Switch */],
-      null,
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { exact: true, path: '/', component: __WEBPACK_IMPORTED_MODULE_2__Welcome_jsx__["a" /* default */] }),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { path: '/socials', component: __WEBPACK_IMPORTED_MODULE_3__Socials_jsx__["a" /* default */] }),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { path: '/login', component: __WEBPACK_IMPORTED_MODULE_4__auth_Login_jsx__["a" /* default */] }),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { path: '/register', component: __WEBPACK_IMPORTED_MODULE_5__auth_Register_jsx__["a" /* default */] })
-    )
-  );
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (Main);
-
-/***/ }),
-/* 95 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contexts_Auth__ = __webpack_require__(10);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-var Welcome = function (_Component) {
-  _inherits(Welcome, _Component);
-
-  function Welcome(props) {
-    _classCallCheck(this, Welcome);
-
-    return _possibleConstructorReturn(this, (Welcome.__proto__ || Object.getPrototypeOf(Welcome)).call(this, props));
-  }
-
-  _createClass(Welcome, [{
-    key: "render",
-    value: function render() {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "h1",
-        null,
-        "Hello!"
-      );
-    }
-  }]);
-
-  return Welcome;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["a"] = (Welcome);
-
-/***/ }),
-/* 96 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_router_dom__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__socials_Vk__ = __webpack_require__(97);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__socials_Inst__ = __webpack_require__(99);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__socials_Wapp__ = __webpack_require__(100);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__socials_Dialog__ = __webpack_require__(101);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-
-
-
-
-
-var Socials = function (_Component) {
-  _inherits(Socials, _Component);
-
-  function Socials(props) {
-    _classCallCheck(this, Socials);
-
-    var _this = _possibleConstructorReturn(this, (Socials.__proto__ || Object.getPrototypeOf(Socials)).call(this, props));
-
-    _this.connect = function (mess, token, watching, e) {
-      e.preventDefault();
-      var data = {
-        name: mess,
-        token: token,
-        watching: watching
-      };
-      axios.post("api/v1/messengers?api_token=" + user.apiToken, data).then(function (response) {
-        if (response.data.success) {
-          _this.setState(_defineProperty({}, mess, true));
-        }
-      });
-    };
-
-    _this.remove = function (mess, e) {
-      e.preventDefault();
-      _this.setState(_defineProperty({}, mess, false));
-      var data = {
-        name: mess
-      };
-      axios.delete("api/v1/messengers?api_token=" + user.apiToken, { data: data });
-    };
-
-    _this.state = {
-      vk: false,
-      inst: false,
-      wapp: false
-    };
-    return _this;
-  }
-
-  _createClass(Socials, [{
-    key: "componentWillMount",
-    value: function componentWillMount() {
-      this.setState({
-        vk: user.socials.vk.connected,
-        inst: user.socials.inst.connected,
-        wapp: user.socials.wapp.connected
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
-        null,
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          { className: "d-flex col-12 justify-content-around my-3" },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["b" /* Link */],
-            { to: "/socials/vk" },
-            "vk"
-          ),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["b" /* Link */],
-            { to: "/socials/inst" },
-            "inst"
-          ),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["b" /* Link */],
-            { to: "/socials/wapp" },
-            "wapp"
-          )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["d" /* Switch */],
-          null,
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
-            exact: true,
-            path: "/socials/vk",
-            render: function render() {
-              return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__socials_Vk__["a" /* default */], {
-                connected: _this2.state.vk,
-                isDialog: false,
-                connect: _this2.connect,
-                remove: _this2.remove
-              });
-            }
-          }),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
-            exact: true,
-            path: "/socials/inst",
-            render: function render() {
-              return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__socials_Inst__["a" /* default */], {
-                connected: _this2.state.inst,
-                isDialog: false,
-                connect: _this2.connect,
-                remove: _this2.remove
-              });
-            }
-          }),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
-            exact: true,
-            path: "/socials/wapp",
-            render: function render() {
-              return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__socials_Wapp__["a" /* default */], {
-                connected: _this2.state.wapp,
-                isDialog: false,
-                connect: _this2.connect,
-                remove: _this2.remove
-              });
-            }
-          }),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { path: "/socials/:mess/:dialog/", component: __WEBPACK_IMPORTED_MODULE_5__socials_Dialog__["a" /* default */] })
-        )
-      );
-    }
-  }]);
-
-  return Socials;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["a"] = (Socials);
-
-/***/ }),
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
 /* 97 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -63621,11 +63152,11 @@ var Vk = function (_Component) {
     _this.toggleWatching = function (e) {
       var watching = _this.state.watching === "all" ? "dialogs" : "all";
       _this.setState({ watching: watching });
-      axios.put("api/v1/messengers/" + user.socials.vk.id + "?api_token=" + user.apiToken, { watching: watching });
+      axios.put("api/v1/messengers/" + socials.vk.id + "?api_token=" + apiToken, { watching: watching });
     };
 
     _this.state = {
-      watching: user.socials.vk.watching
+      watching: socials.vk ? socials.vk.watching : null
     };
     _this.token = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createRef();
     return _this;
@@ -63638,8 +63169,7 @@ var Vk = function (_Component) {
 
       var _props = this.props,
           connect = _props.connect,
-          remove = _props.remove,
-          connected = _props.connected;
+          remove = _props.remove;
       var watching = this.state.watching;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -63662,7 +63192,7 @@ var Vk = function (_Component) {
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 "div",
                 { className: "card-body" },
-                connected ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                socials.vk ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                   __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
                   null,
                   __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -64102,15 +63632,17 @@ var Dialog = function (_Component) {
     value: function componentWillMount() {
       var _this2 = this;
 
-      axios.get("api/v1/messages/" + this.dialog + "?api_token=" + user.apiToken).then(function (response) {
+      axios.get("api/v1/messages/" + this.dialog + "?api_token=" + apiToken).then(function (response) {
         _this2.setState(response.data);
       });
     }
   }, {
     key: "render",
     value: function render() {
-      var messages = this.state.messages;
-      var name = this.state.name;
+      console.log(this.props);
+      var _state = this.state,
+          name = _state.name,
+          messages = _state.messages;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         "div",
@@ -64182,431 +63714,146 @@ var Dialog = function (_Component) {
 /* harmony default export */ __webpack_exports__["a"] = (Dialog);
 
 /***/ }),
-/* 102 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contexts_Auth__ = __webpack_require__(10);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-var Login = function (_Component) {
-  _inherits(Login, _Component);
-
-  function Login(props) {
-    _classCallCheck(this, Login);
-
-    var _this = _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this, props));
-
-    _this.handleSubmit = function (e) {
-      e.preventDefault();
-      var data = {
-        email: _this.state.email,
-        password: _this.state.password
-      };
-      axios.post("login", data).then(function (response) {
-        response.data.success ? (user = response.data.user, _this.props.history.push(response.data.redirect), _this.context.checkAuth()) : alert(response.data.message);
-      });
-    };
-
-    _this.handleInput = function (field, e) {
-      _this.setState(_defineProperty({}, field, $(e.target).val()));
-    };
-
-    _this.state = {
-      email: "",
-      password: ""
-    };
-    return _this;
-  }
-
-  _createClass(Login, [{
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "div",
-        { className: "container" },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          { className: "row justify-content-center" },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            "div",
-            { className: "col-md-8" },
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              "div",
-              { className: "card" },
-              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                "div",
-                { className: "card-header" },
-                "Login"
-              ),
-              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                "div",
-                { className: "card-body" },
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                  "form",
-                  { onSubmit: function onSubmit(e) {
-                      return _this2.handleSubmit(e);
-                    } },
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "label",
-                      {
-                        htmlFor: "email",
-                        className: "col-sm-4 col-form-label text-md-right"
-                      },
-                      "E-Mail Address"
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-                        id: "email",
-                        type: "email",
-                        className: "form-control",
-                        name: "email",
-                        required: true,
-                        autoFocus: true,
-                        onChange: function onChange(e) {
-                          return _this2.handleInput("email", e);
-                        }
-                      })
-                    )
-                  ),
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "label",
-                      {
-                        htmlFor: "password",
-                        className: "col-md-4 col-form-label text-md-right"
-                      },
-                      "Password"
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-                        id: "password",
-                        type: "password",
-                        className: "form-control",
-                        name: "password",
-                        required: true,
-                        onChange: function onChange(e) {
-                          return _this2.handleInput("password", e);
-                        }
-                      })
-                    )
-                  ),
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6 offset-md-4" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        "div",
-                        { className: "form-check" },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-                          className: "form-check-input",
-                          type: "checkbox",
-                          name: "remember",
-                          id: "remember"
-                        }),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                          "label",
-                          { className: "form-check-label", htmlFor: "remember" },
-                          "Remember Me"
-                        )
-                      )
-                    )
-                  ),
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row mb-0" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-8 offset-md-4" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        "button",
-                        { type: "submit", className: "btn btn-primary" },
-                        "Login"
-                      ),
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        "a",
-                        { className: "btn btn-link", href: "http://localhost:8000/" },
-                        "Forgot Your Password?"
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return Login;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["a"] = (Login);
-
-
-Login.contextType = __WEBPACK_IMPORTED_MODULE_1__contexts_Auth__["a" /* default */];
-
-/***/ }),
-/* 103 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-var Register = function (_Component) {
-  _inherits(Register, _Component);
-
-  function Register(props) {
-    _classCallCheck(this, Register);
-
-    var _this = _possibleConstructorReturn(this, (Register.__proto__ || Object.getPrototypeOf(Register)).call(this, props));
-
-    _this.handleSubmit = function (e) {
-      e.preventDefault();
-      var data = {
-        name: _this.state.name,
-        email: _this.state.email,
-        password: _this.state.password,
-        password_confirmation: _this.state.password_confirmation
-      };
-      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post("register", data);
-    };
-
-    _this.handleInput = function (e) {
-      _this.setState(_defineProperty({}, $(e.target).attr("name"), $(e.target).val()));
-    };
-
-    _this.state = {
-      name: "",
-      email: "",
-      password: "",
-      password_confirmation: ""
-    };
-    return _this;
-  }
-
-  _createClass(Register, [{
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "div",
-        { className: "container" },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          { className: "row justify-content-center" },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            "div",
-            { className: "col-md-8" },
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              "div",
-              { className: "card" },
-              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                "div",
-                { className: "card-header" },
-                "Register"
-              ),
-              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                "div",
-                { className: "card-body" },
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                  "form",
-                  { onSubmit: function onSubmit(e) {
-                      return _this2.handleSubmit(e);
-                    } },
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "label",
-                      {
-                        htmlFor: "name",
-                        className: "col-md-4 col-form-label text-md-right"
-                      },
-                      "Name"
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-                        id: "name",
-                        type: "text",
-                        className: "form-control",
-                        name: "name",
-                        required: true,
-                        autoFocus: true,
-                        onChange: function onChange(e) {
-                          return _this2.handleInput(e);
-                        }
-                      })
-                    )
-                  ),
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "label",
-                      {
-                        htmlFor: "email",
-                        className: "col-md-4 col-form-label text-md-right"
-                      },
-                      "E-Mail Address"
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-                        id: "email",
-                        type: "email",
-                        className: "form-control",
-                        name: "email",
-                        required: true,
-                        onChange: function onChange(e) {
-                          return _this2.handleInput(e);
-                        }
-                      })
-                    )
-                  ),
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "label",
-                      {
-                        htmlFor: "password",
-                        className: "col-md-4 col-form-label text-md-right"
-                      },
-                      "Password"
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-                        id: "password",
-                        type: "password",
-                        className: "form-control",
-                        name: "password",
-                        required: true,
-                        onChange: function onChange(e) {
-                          return _this2.handleInput(e);
-                        }
-                      })
-                    )
-                  ),
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "label",
-                      {
-                        htmlFor: "password-confirm",
-                        className: "col-md-4 col-form-label text-md-right"
-                      },
-                      "Confirm Password"
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-                        id: "password-confirm",
-                        type: "password",
-                        className: "form-control",
-                        name: "password_confirmation",
-                        required: true,
-                        onChange: function onChange(e) {
-                          return _this2.handleInput(e);
-                        }
-                      })
-                    )
-                  ),
-                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    "div",
-                    { className: "form-group row mb-0" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "div",
-                      { className: "col-md-6 offset-md-4" },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        "button",
-                        { type: "submit", className: "btn btn-primary" },
-                        "Register"
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return Register;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["a"] = (Register);
-
-/***/ }),
-/* 104 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-
-
-var ApiToken = Object(__WEBPACK_IMPORTED_MODULE_0_react__["createContext"])();
-
-/* unused harmony default export */ var _unused_webpack_default_export = (ApiToken);
-
-/***/ }),
+/* 102 */,
+/* 103 */,
+/* 104 */,
 /* 105 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_router_dom__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Vk__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Inst__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Wapp__ = __webpack_require__(100);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Dialog__ = __webpack_require__(101);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+
+
+var Socials = function (_Component) {
+  _inherits(Socials, _Component);
+
+  function Socials(props) {
+    _classCallCheck(this, Socials);
+
+    var _this = _possibleConstructorReturn(this, (Socials.__proto__ || Object.getPrototypeOf(Socials)).call(this, props));
+
+    _this.connect = function (mess, token, watching, e) {
+      e.preventDefault();
+      var data = {
+        name: mess,
+        token: token,
+        watching: watching
+      };
+      axios.post("api/v1/messengers?api_token=" + apiToken, data).then(function (response) {
+        if (response.data.success) {
+          socials[mess] = [];
+          socials[mess].id = response.data.messenger.id;
+          socials[mess].watching = response.data.messenger.watching;
+          socials[mess].dialogList = [];
+          _this.forceUpdate();
+        }
+      });
+    };
+
+    _this.remove = function (mess, e) {
+      e.preventDefault();
+      socials[mess] = null;
+      _this.forceUpdate();
+      var data = {
+        name: mess
+      };
+      axios.delete("api/v1/messengers?api_token=" + apiToken, { data: data });
+    };
+
+    return _this;
+  }
+
+  _createClass(Socials, [{
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          { className: "d-flex col-12 justify-content-around my-3" },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["b" /* Link */],
+            { to: "/socials/vk" },
+            "vk"
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["b" /* Link */],
+            { to: "/socials/inst" },
+            "inst"
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["b" /* Link */],
+            { to: "/socials/wapp" },
+            "wapp"
+          )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["d" /* Switch */],
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
+            exact: true,
+            path: "/socials/vk",
+            render: function render() {
+              return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Vk__["a" /* default */], { connect: _this2.connect, remove: _this2.remove });
+            }
+          }),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
+            exact: true,
+            path: "/socials/inst",
+            render: function render() {
+              return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Inst__["a" /* default */], { connect: _this2.connect, remove: _this2.remove });
+            }
+          }),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
+            exact: true,
+            path: "/socials/wapp",
+            render: function render() {
+              return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Wapp__["a" /* default */], { connect: _this2.connect, remove: _this2.remove });
+            }
+          }),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { path: "/socials/:mess/:dialog/", component: __WEBPACK_IMPORTED_MODULE_5__Dialog__["a" /* default */] })
+        )
+      );
+    }
+  }]);
+
+  return Socials;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+/* harmony default export */ __webpack_exports__["a"] = (Socials);
 
 /***/ })
 /******/ ]);

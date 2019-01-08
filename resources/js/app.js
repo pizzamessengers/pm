@@ -12,66 +12,38 @@ require("./bootstrap");
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-import React, { Component } from "react";
+import React from "react";
 import { render } from "react-dom";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 /**
  * Importing components
  */
 
-import Index from "./components/Index.jsx";
+import Socials from "./components/socials/Socials.jsx";
 
 /**
  * Importing contexts
  */
 
-import ApiToken from "./contexts/ApiToken";
-import Auth from "./contexts/Auth";
+//
 
-axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.baseURL = "http://localhost:8000";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = () => {
+  /**
+   * CSRF
+   */
+  //axios.defaults.headers.common["X-XSRF-TOKEN"] = this.xsrf();
 
-    this.checkAuth = () => {
-      if (user.isAuth !== this.state.isAuth) {
-        this.setState({ isAuth: user.isAuth });
-      }
-    };
-
-    this.state = {
-      isAuth: user.isAuth,
-      checkAuth: this.checkAuth
-    };
-  }
-
-  apiToken = () => {
-    if (this.state.isAuth) {
-      axios.get("api_token").then(response => {
-        this.setState({ api_token: response });
-      });
-    }
-  };
-
-  render() {
-    /**
-     * CSRF
-     */
-    axios.defaults.headers.common["X-CSRF-TOKEN"] = user.csrf;
-
-    return (
-      <Auth.Provider value={this.state}>
-        <BrowserRouter>
-          <div>
-            <Index />
-          </div>
-        </BrowserRouter>
-      </Auth.Provider>
-    );
-  }
-}
+  return (
+    <BrowserRouter>
+      <Switch>
+        <Route path="/socials" component={Socials} />
+      </Switch>
+    </BrowserRouter>
+  );
+};
 
 if (document.getElementById("root")) {
   render(<App />, document.getElementById("root"));

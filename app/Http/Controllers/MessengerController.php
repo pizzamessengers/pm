@@ -54,7 +54,10 @@ class MessengerController extends Controller
 
         return response()->json([
           'success' => true,
-          'messenger' => $messenger
+          'messenger' => [
+            'id' => $messenger->id,
+            'watching' => $messenger->watching
+          ]
         ], 200);
       }
 
@@ -95,6 +98,16 @@ class MessengerController extends Controller
           function(Dialog $dialog)
           {
             $dialog->updating = false;
+            $dialog->save();
+          }
+        );
+      }
+      else
+      {
+        $messenger->dialogs()->get()->each(
+          function(Dialog $dialog)
+          {
+            $dialog->updating = true;
             $dialog->save();
           }
         );

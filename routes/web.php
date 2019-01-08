@@ -11,22 +11,12 @@
 |
 */
 
-Route::fallback([
-  'middleware' => 'auth',
-  'uses' => function()
-  {
-    return view('welcome');
-  }
-]);
+Route::view('/', 'welcome');
 
-Route::get('csrf', 'Controller@csrf')->name('csrf');
+Auth::routes();
 
-Route::get('register', 'Auth\RegisterController@index');
-Route::post('register', 'Auth\RegisterController@register')->name('register');
-
-Route::get('login', 'Auth\LoginController@index');
-Route::post('login', 'Auth\LoginController@login')->name('login');
-Route::post('logout', 'Auth\LoginController@logout')->name('logout');
-Route::get('logout', 'Auth\LoginController@index');
+Route::group(['middleware' => 'auth'], function() {
+  Route::get('socials/{mess?}/{dialog?}', 'Controller@createSocials');
+});
 
 Route::get('home', 'HomeController@index')->name('home');

@@ -15,12 +15,12 @@ export default class Dialogs extends Component {
       name: this.dialog.current.value
     };
     axios
-      .post("api/v1/dialogs?api_token=" + user.apiToken, data)
+      .post("api/v1/dialogs?api_token=" + apiToken, data)
       .then(response => {
         if (!response.data.success) {
           alert(response.data.message);
         } else {
-          user.socials[this.props.mess].dialogsList.push({
+          socials[this.props.mess].dialogList.push({
             id: response.data.dialog.id,
             name: response.data.dialog.name,
             updating: true
@@ -34,9 +34,9 @@ export default class Dialogs extends Component {
     let data = {
       id: dialog.id
     };
-    axios.delete("api/v1/dialogs?api_token=" + user.apiToken, { data });
-    user.socials[this.props.mess].dialogsList.splice(
-      user.socials[this.props.mess].dialogsList
+    axios.delete("api/v1/dialogs?api_token=" + apiToken, { data });
+    socials[this.props.mess].dialogList.splice(
+      socials[this.props.mess].dialogList
         .map(x => x.id)
         .indexOf(dialog.id),
       1
@@ -47,7 +47,7 @@ export default class Dialogs extends Component {
   toggleUpdating = (e, dialog) => {
     dialog.updating = e.target.checked;
     this.forceUpdate();
-    axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + user.apiToken, {
+    axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken, {
       updating: e.target.checked
     });
   };
@@ -76,7 +76,7 @@ export default class Dialogs extends Component {
           </form>
         </div>
         <ul className="navbar-nav">
-          {user.socials[this.props.mess].dialogsList.map(dialog => {
+          {socials[this.props.mess].dialogList.map(dialog => {
             return (
               <li
                 className="nav-item d-flex align-items-center my-1"

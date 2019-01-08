@@ -14,7 +14,7 @@ export default class Dialog extends Component {
   componentWillMount() {
     axios
       .get(
-        "api/v1/messages/" + this.dialog + "?api_token=" + user.apiToken
+        "api/v1/messages/" + this.dialog + "?api_token=" + apiToken
       )
       .then(response => {
         this.setState(response.data);
@@ -22,8 +22,8 @@ export default class Dialog extends Component {
   }
 
   render() {
-    let { messages } = this.state;
-    let { name } = this.state;
+    console.log(this.props);
+    let { name, messages } = this.state;
     return (
       <div className="container">
         <div className="row justify-content-center">

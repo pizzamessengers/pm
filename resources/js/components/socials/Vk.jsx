@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import Dialogs from "./Dialogs.jsx";
+import Messages from "./Messages.jsx";
 
 export default class Vk extends Component {
   constructor(props) {
@@ -11,8 +12,18 @@ export default class Vk extends Component {
   }
 
   toggleWatching = e => {
-    let watching = this.state.watching === "all" ? "dialogs" : "all";
+    let watching;
+    if (this.state.watching === "all") {
+      watching = "dialogs";
+      socials.vk.dialogList = [];
+    } else {
+      watching = "all";
+      socials.vk.dialogList.forEach(function(item) {
+        item.updating = false;
+      });
+    }
     this.setState({ watching });
+    socials.vk.watching = watching;
     axios.put(
       "api/v1/messengers/" + socials.vk.id + "?api_token=" + apiToken,
       { watching }
@@ -52,7 +63,7 @@ export default class Vk extends Component {
                     <label htmlFor="toggleWatching">
                       {watching === "dialogs" ? "dialogs" : "all"}
                     </label>
-                    {watching === "dialogs" ? <Dialogs mess={"vk"} /> : null}
+                    {watching === "dialogs" ? <Dialogs mess={"vk"} /> : <Messages mess={"vk"} />}
                   </Fragment>
                 ) : (
                   <div className="d-flex flex-row">

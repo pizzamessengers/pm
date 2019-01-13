@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Message;
 
 class Dialog extends Model
 {
@@ -35,10 +36,11 @@ class Dialog extends Model
                     ->get(['id', 'message_id', 'author_id', 'text'])
                     ->sortByDesc('message_id')
                     ->values()
-                    ->each(function($message) {
-                      $author = Author::find($message->author_id);
+                    ->each(function(Message $message) {
+                      $author = $message->author();
                       $message->author = [
-                        'name' => $author->name,
+                        'first_name' => $author->first_name,
+                        'last_name' => $author->last_name,
                         'avatar' => $author->avatar,
                       ];
                     });

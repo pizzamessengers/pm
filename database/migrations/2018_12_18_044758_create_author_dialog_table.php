@@ -24,7 +24,6 @@ class CreateAuthorDialogTable extends Migration
                 ->references('id')
                 ->on('authors')
                 ->onDelete('cascade');
-          $table->timestamps();
       });
     }
 

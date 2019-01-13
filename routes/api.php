@@ -13,16 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['middleware' => 'auth:api'], function()
-{
-  Route::post('v1/messengers', 'MessengerController@addMessenger');
-  Route::delete('v1/messengers', 'MessengerController@deleteMessenger');
-  Route::put('v1/messengers/{messenger}', 'MessengerController@toggleWatching');
+Route::get('v1/messengers/{messenger}', 'MessengerController@showMessages');
+Route::post('v1/messengers', 'MessengerController@addMessenger');
+Route::delete('v1/messengers', 'MessengerController@deleteMessenger');
+Route::put('v1/messengers/{messenger}', 'MessengerController@toggleWatching');
 
-  Route::post('v1/dialogs', 'DialogController@addDialog');
-  Route::delete('v1/dialogs', 'DialogController@deleteDialog');
-  Route::put('v1/dialogs/{dialog}', 'DialogController@toggleUpdating');
+Route::get('v1/messengers/updater/{messenger}', 'MessengerController@startUpdating')->name('startUpdating');
 
-  Route::post('v1/messages', 'MessageController@addMessage');
-  Route::get('v1/messages/{dialog}', 'MessageController@show');
-});
+Route::post('v1/dialogs', 'DialogController@addDialog');
+Route::delete('v1/dialogs', 'DialogController@deleteDialogs');
+Route::delete('v1/dialogs/{dialog}', 'DialogController@deleteDialog');
+Route::put('v1/dialogs/{dialog}', 'DialogController@toggleUpdating');
+
+Route::post('v1/messages', 'MessageController@addMessage')->name('addMessage');
+Route::get('v1/messages/{dialog}', 'MessageController@show');

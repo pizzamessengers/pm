@@ -30,10 +30,10 @@ class CreateMessengersTable extends Migration
             $table->string('token')
                   ->unique()
                   ->nullable();
-            $table->string('lp_ts')
+            $table->string('lp')
                   ->nullable();
-            $table->string('lp_pts')
-                  ->nullable();
+            $table->boolean('updating')
+                  ->default(true);
             $table->string('watching');
             $table->timestamps();
         });

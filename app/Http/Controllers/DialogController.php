@@ -8,9 +8,6 @@ use App\Dialog;
 use App\Messenger;
 use Illuminate\Http\Request;
 use VK\Client\VKApiClient;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Queue;
-use App\Jobs\GetMessages;
 
 class DialogController extends Controller
 {
@@ -42,102 +39,101 @@ class DialogController extends Controller
      */
     public function addDialog(Request $request)
     {
-      $mess = $request['mess'];
+        $messenger = $request->user()->vk();
 
-      switch ($mess)
-      {
-        case 'vk':
-          $name = $request['name'];
-          $messenger = Auth::user()->vk();
-          $dialogData['messenger_id'] = $messenger->id;
+        $vk = new VKApiClient();
+        $token = $messenger->token;
 
-          $vk = new VKApiClient();
-          $token = $messenger->token;
+        $vkReq = $vk->messages()->searchConversations($token, array(
+          'q' => $request['name'],
+        ));
 
-          $vkReq = $vk->messages()->searchConversations($token, array(
-            'q' => $name,
-            'extended' => true,
-          ));
+        if (($count = $vkReq['count']) !== 1)
+        {
+          return $this->notTheOnly($count);
+        }
 
-          $count = $vkReq['count'];
-          if ($count === 0)
-          {
-            return response()->json([
-              'success' => false,
-              'message' => 'нет диалога с похожим названием',
-            ], 200);
-          }
-          else if ($count > 1)
-          {
-            return response()->json([
-              'success' => false,
-              'message' => 'у вас несколько диалогов с таким или похожим названием',
-            ], 200);
-          }
+        $dialog = $vkReq['items'][0];
 
-          $dialogData['dialog_id'] = $vkReq['items'][0]['peer']['id'];
-          if (Dialog::where('dialog_id', $dialogData['dialog_id'])->count() !== 0)
-          {
-            return response()->json([
-              'success' => false,
-              'message' => 'Диалог уже добавлен',
-            ], 200);
-          }
-
-          ($vkReq['items'][0]['peer']['type'] === 'chat')
-            ? ([
-            $dialogData['name'] = $vkReq['items'][0]['chat_settings']['title'],
-            $profiles = $vk->messages()->getChat($token, array(
-              'chat_id' => $dialogData['dialog_id']-2000000000,
-              'fields' => 'photo_100',
-            ))['users']
-          ]) : ([
-            $profiles = $vkReq['profiles'],
-            $dialogData['name'] = $profiles[0]['first_name'] . ' ' . $profiles[0]['last_name']
-          ]);
-
-          $vkReq = $vk->messages()->getHistory($token, array(
-            'peer_id' => $dialogData['dialog_id'],
-            'count' => 1,
-          ));
-          $dialogData['last_message_id'] = $vkReq['items'][0]['id'];
-
-          $dialog = Dialog::create($dialogData);
-
-          /**
-           * Store authors.
-           *
-           */
-          foreach ($profiles as $profile)
-          {
-            $authorId = Author::where('author_id', $profile['id'])->value('id');
-
-            if ($authorId === null)
-            {
-              $author = new Author;
-              $author->author_id = $profile['id'];
-              $author->name = $profile['first_name'] . ' ' . $profile['last_name'];
-              $author->avatar = $profile['photo_100'];
-              $author->save();
-
-              $authorId = $author->id;
-            }
-
-            DB::table('author_dialog')->insert([
-              'dialog_id' => $dialog->id,
-              'author_id' => $authorId,
-            ]);
-          }
-
+        if (Dialog::where('dialog_id', $dialog['peer']['id'])
+          ->where('messenger_id', $request->user()->vk()->id)->count() !== 0)
+        {
           return response()->json([
-            'success' => true,
-            'dialog' => [
-              'name' => $name,
-              'id' => $dialog->id,
-            ]
+            'success' => false,
+            'message' => 'Диалог уже добавлен',
           ], 200);
-            break;
+        }
 
+        $profiles = $vk->messages()->getConversationMembers($token, array(
+          'peer_id' => $dialog['peer']['id'],
+          'fields' => 'photo_100',
+        ))['profiles'];
+
+        $name = ($dialog['peer']['type'] === 'chat') ?
+          $dialog['chat_settings']['title'] :
+          ($profiles[0]['id'] === $dialog['peer']['id'] ?
+            $profiles[0]['first_name'].' '.$profiles[0]['last_name'] :
+            $profiles[1]['first_name'].' '.$profiles[1]['last_name']);
+
+        $dialogData = array(
+          'name' => $name,
+          'messenger_id' => $messenger->id,
+          'dialog_id' => $dialog['peer']['id']
+        );
+
+        $dialog = Dialog::create($dialogData);
+
+        $this->storeAuthors($profiles, $dialog->id);
+
+        return response()->json([
+          'success' => true,
+          'dialog' => [
+            'name' => $name,
+            'id' => $dialog->id,
+          ]
+        ], 200);
+    }
+
+    protected function notTheOnly(Int $count)
+    {
+      if ($count === 0)
+      {
+        return response()->json([
+          'success' => false,
+          'message' => 'нет диалога с похожим названием',
+        ], 200);
+      }
+      else if ($count > 1)
+      {
+        return response()->json([
+          'success' => false,
+          'message' => 'у вас несколько диалогов с таким или похожим названием',
+        ], 200);
+      }
+    }
+
+    protected function storeAuthors(Array $profiles, Int $dialogId)
+    {
+      foreach ($profiles as $profile)
+      {
+        $authorId = Author::where('author_id', $profile['id'])->value('id');
+
+        if ($authorId === null)
+        {
+          $author = new Author;
+          $author->author_id = $profile['id'];
+          $author->first_name = $profile['first_name'];
+          $author->last_name = $profile['last_name'];
+          $author->avatar = $profile['photo_100'];
+          $author->save();
+
+          $authorId = $author->id;
+        }
+
+        DB::table('author_dialog')->insert([
+          'dialog_id' => $dialogId,
+          'author_id' => $authorId,
+        ]);
       }
     }
 
@@ -182,11 +178,8 @@ class DialogController extends Controller
      * @param  \App\Dialog  $dialog
      * @return \Illuminate\Http\Response
      */
-    public function deleteDialog(Request $request)
+    public function deleteDialog(Dialog $dialog)
     {
-      $id = $request['id'];
-      $dialog = Dialog::find($id);
-
       $dialog->authors()->each(function($author) {
                           if (count($author->dialogs()) === 1)
                           {

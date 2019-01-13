@@ -31,10 +31,7 @@ export default class Dialogs extends Component {
   };
 
   deleteDialog = dialog => {
-    let data = {
-      id: dialog.id
-    };
-    axios.delete("api/v1/dialogs?api_token=" + apiToken, { data });
+    axios.delete("api/v1/dialogs/"+dialog.id+"?api_token=" + apiToken);
     socials[this.props.mess].dialogList.splice(
       socials[this.props.mess].dialogList
         .map(x => x.id)

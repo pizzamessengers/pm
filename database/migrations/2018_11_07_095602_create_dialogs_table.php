@@ -20,8 +20,8 @@ class CreateDialogsTable extends Migration
                 ->references('id')
                 ->on('messengers')
                 ->onDelete('cascade');
-          $table->string('name');
-          $table->string('last_message_id');
+          $table->string('name')
+                ->nullable();
           $table->string('dialog_id');
           $table->boolean('updating')
                 ->default(true);

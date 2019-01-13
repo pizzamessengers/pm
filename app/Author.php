@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Author extends Model
 {
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'author_id', 'first_name', 'last_name', 'avatar',
+    ];
+
+    /**
      * Get the dialogs for the author.
      */
     public function dialogs()

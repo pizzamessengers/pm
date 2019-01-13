@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Messenger;
 use App\Dialog;
+use App\Message;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use VK\Client\VKApiClient;
 
 class MessengerController extends Controller
@@ -46,9 +46,11 @@ class MessengerController extends Controller
           'lp_version' => 3,
         ));
 
-        $messengerData['user_id'] = Auth::id();
-        $messengerData['lp_ts'] = $lpServer['ts'];
-        $messengerData['lp_pts'] =  $lpServer['pts'];
+        $messengerData['user_id'] = $request->user()->id;
+        $messengerData['lp'] = json_encode([
+          'ts' => $lpServer['ts'],
+          'pts' => $lpServer['pts'],
+        ]);
 
         $messenger = Messenger::create($messengerData);
 
@@ -62,14 +64,17 @@ class MessengerController extends Controller
       }
 
     /**
-     * Display the specified resource.
+     * Display the messages for the specified messenger.
      *
      * @param  \App\Messenger  $messenger
      * @return \Illuminate\Http\Response
      */
-    public function show(Messenger $messenger)
+    public function showMessages(Messenger $messenger)
     {
-        //
+        return response()->json([
+          'success' => true,
+          'messages' => $messenger->messages()
+        ], 200);;
     }
 
     /**
@@ -107,8 +112,10 @@ class MessengerController extends Controller
         $messenger->dialogs()->get()->each(
           function(Dialog $dialog)
           {
-            $dialog->updating = true;
-            $dialog->save();
+            /*$dialog-messages()->each(function(Message $message) {
+              $message->delete();
+            });*/
+            $dialog->delete();
           }
         );
       }
@@ -125,7 +132,7 @@ class MessengerController extends Controller
      */
     public function deleteMessenger(Request $request)
     {
-        $messenger = Auth::user()->{$request['name']}()->delete();
+        $messenger = $request->user()->{$request['name']}()->delete();
 
         return response()->json([
           'success' => true,

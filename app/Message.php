@@ -20,6 +20,6 @@ class Message extends Model
      */
     public function author()
     {
-        return $this->belongsTo('App\Author')->get();
+        return $this->belongsTo('App\Author')->first();
     }
 }

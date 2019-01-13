@@ -19,8 +19,7 @@ class Messenger extends Model
         'token',
         'user_id',
         'watching',
-        'lp_ts',
-        'lp_pts'
+        'lp',
     ];
 
     /**
@@ -33,11 +32,18 @@ class Messenger extends Model
     ];
 
     /**
+     * messages.
+     *
+     * @var array
+     */
+    protected $messages = [];
+
+    /**
      * Get the user for the messenger.
      */
     public function user()
     {
-        return $this->belongsTo('App\User')->get();
+        return $this->belongsTo('App\User')->first();
     }
 
     /**
@@ -46,5 +52,24 @@ class Messenger extends Model
     public function dialogs()
     {
         return $this->hasMany('App\Dialog');
+    }
+
+    /**
+     * Get the messages for the messenger.
+     */
+    public function messages()
+    {
+        $this->hasMany('App\Dialog')->get()->each(function(Dialog $dialog) {
+           $dialog->messages()->each(function(Message $message) {
+             array_push($this->messages, $message);
+           });
+        });
+
+        usort($this->messages, function($a, $b)
+        {
+            return strcmp($b->message_id, $a->message_id);
+        });
+
+        return $this->messages;
     }
 }

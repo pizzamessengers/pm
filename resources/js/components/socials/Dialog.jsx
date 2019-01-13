@@ -48,7 +48,7 @@ export default class Dialog extends Component {
                           width={50 + "px"}
                           height={50 + "px"}
                         />
-                        author: {message.author.name}
+                        author: {message.author.first_name + ' ' + message.author.last_name}
                         <br />
                         text: {message.text}
                       </li>

@@ -16,7 +16,8 @@ use Illuminate\Http\Request;
 Route::get('v1/messengers/{messenger}', 'MessengerController@showMessages');
 Route::post('v1/messengers', 'MessengerController@addMessenger');
 Route::delete('v1/messengers', 'MessengerController@deleteMessenger');
-Route::put('v1/messengers/{messenger}', 'MessengerController@toggleWatching');
+Route::put('v1/messengers/watching/{messenger}', 'MessengerController@toggleWatching');
+Route::put('v1/messengers/updating/{messenger}', 'MessengerController@toggleUpdating');
 
 Route::get('v1/messengers/updater/{messenger}', 'MessengerController@startUpdating')->name('startUpdating');
 

@@ -6,12 +6,13 @@ export default class Vk extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      updating: socials.vk ? socials.vk.updating : null,
       watching: socials.vk ? socials.vk.watching : null
     };
     this.token = React.createRef();
   }
 
-  toggleWatching = e => {
+  toggleWatching = () => {
     let watching;
     if (this.state.watching === "all") {
       watching = "dialogs";
@@ -25,14 +26,21 @@ export default class Vk extends Component {
     this.setState({ watching });
     socials.vk.watching = watching;
     axios.put(
-      "api/v1/messengers/" + socials.vk.id + "?api_token=" + apiToken,
+      "api/v1/messengers/watching/" + socials.vk.id + "?api_token=" + apiToken,
       { watching }
     );
   };
 
+  toggleUpdating = e => {
+    let updating = e.target.checked;
+    this.setState({ updating });
+    socials.vk.updating = updating;
+    axios.put("api/v1/messengers/updating/" + socials.vk.id + "?api_token=" + apiToken);
+  };
+
   render() {
     let { connect, remove } = this.props;
-    let { watching } = this.state;
+    let { updating, watching } = this.state;
     return (
       <div className="container">
         <div className="row justify-content-center">
@@ -44,20 +52,24 @@ export default class Vk extends Component {
                 {socials.vk ? (
                   <Fragment>
                     <div className="text-center mb-3">Подключено</div>
-                    <div className="d-flex flex-row">
-                      <form
-                        onSubmit={e => remove("vk", e)}
-                        className="d-flex flex-column justify-content-center align-items-center col-12"
-                      >
-                        <div className="f-flex justify-content-center align-items-center mt-2">
-                          <button type="submit">Удалить</button>
-                        </div>
-                      </form>
+                    <div className="d-flex justify-content-center align-items-center">
+                      <input
+                        type="checkbox"
+                        checked={updating}
+                        onChange={e => this.toggleUpdating(e)}
+                        id="toggleUpdating"
+                      />
+                      <label htmlFor="toggleUpdating">
+                        {updating ? "обновления включены" : "обновления выключены"}
+                      </label>
+                    </div>
+                    <div className="d-flex justify-content-center mt-2">
+                      <button onClick={e => remove("vk", e)} type="submit">Удалить</button>
                     </div>
                     <input
                       type="checkbox"
                       checked={watching}
-                      onChange={e => this.toggleWatching(e)}
+                      onChange={() => this.toggleWatching()}
                       id="toggleWatching"
                     />
                     <label htmlFor="toggleWatching">

@@ -28,16 +28,19 @@ class Controller extends BaseController
         'socials' => [
           'vk' => $vk !== null ? [
             'id' => $vk->id,
+            'updating' => $vk->updating,
             'watching' => $vk->watching,
             'dialogList' => $vk->dialogs()->get(['id', 'name', 'updating']),
           ] : null,
           'inst' => $inst !== null ? [
             'id' => $inst->id,
+            'updating' => $inst->updating,
             'watching' => $inst->watching,
             'dialogList' => $inst->dialogs()->get(['id', 'name', 'updating']),
           ] : null,
           'wapp' => $wapp !== null ? [
             'id' => $wapp->id,
+            'updating' => $wapp->updating,
             'watching' => $wapp->watching,
             'dialogList' => $wapp->dialogs()->get(['id', 'name', 'updating']),
           ] : null,

@@ -8,6 +8,7 @@ use App\Dialog;
 use App\Messenger;
 use Illuminate\Http\Request;
 use VK\Client\VKApiClient;
+use App\Jobs\StoreAuthors;
 
 class DialogController extends Controller
 {
@@ -83,7 +84,7 @@ class DialogController extends Controller
 
         $dialog = Dialog::create($dialogData);
 
-        $this->storeAuthors($profiles, $dialog->id);
+        StoreAuthors::dispatch($profiles, $dialog->id);
 
         return response()->json([
           'success' => true,
@@ -109,31 +110,6 @@ class DialogController extends Controller
           'success' => false,
           'message' => 'у вас несколько диалогов с таким или похожим названием',
         ], 200);
-      }
-    }
-
-    protected function storeAuthors(Array $profiles, Int $dialogId)
-    {
-      foreach ($profiles as $profile)
-      {
-        $authorId = Author::where('author_id', $profile['id'])->value('id');
-
-        if ($authorId === null)
-        {
-          $author = new Author;
-          $author->author_id = $profile['id'];
-          $author->first_name = $profile['first_name'];
-          $author->last_name = $profile['last_name'];
-          $author->avatar = $profile['photo_100'];
-          $author->save();
-
-          $authorId = $author->id;
-        }
-
-        DB::table('author_dialog')->insert([
-          'dialog_id' => $dialogId,
-          'author_id' => $authorId,
-        ]);
       }
     }
 

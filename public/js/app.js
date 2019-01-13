@@ -1503,9 +1503,7 @@ var Dialogs = function (_Component) {
     _this.toggleUpdating = function (e, dialog) {
       dialog.updating = e.target.checked;
       _this.forceUpdate();
-      axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken, {
-        updating: e.target.checked
-      });
+      axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
     };
 
     _this.dialog = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createRef();
@@ -63167,8 +63165,7 @@ var Socials = function (_Component) {
       });
     };
 
-    _this.remove = function (mess, e) {
-      e.preventDefault();
+    _this.remove = function (mess) {
       socials[mess] = null;
       _this.forceUpdate();
       var data = {
@@ -63271,7 +63268,7 @@ var Vk = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Vk.__proto__ || Object.getPrototypeOf(Vk)).call(this, props));
 
-    _this.toggleWatching = function (e) {
+    _this.toggleWatching = function () {
       var watching = void 0;
       if (_this.state.watching === "all") {
         watching = "dialogs";
@@ -63284,10 +63281,18 @@ var Vk = function (_Component) {
       }
       _this.setState({ watching: watching });
       socials.vk.watching = watching;
-      axios.put("api/v1/messengers/" + socials.vk.id + "?api_token=" + apiToken, { watching: watching });
+      axios.put("api/v1/messengers/watching/" + socials.vk.id + "?api_token=" + apiToken, { watching: watching });
+    };
+
+    _this.toggleUpdating = function (e) {
+      var updating = e.target.checked;
+      _this.setState({ updating: updating });
+      socials.vk.updating = updating;
+      axios.put("api/v1/messengers/updating/" + socials.vk.id + "?api_token=" + apiToken);
     };
 
     _this.state = {
+      updating: socials.vk ? socials.vk.updating : null,
       watching: socials.vk ? socials.vk.watching : null
     };
     _this.token = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createRef();
@@ -63302,7 +63307,9 @@ var Vk = function (_Component) {
       var _props = this.props,
           connect = _props.connect,
           remove = _props.remove;
-      var watching = this.state.watching;
+      var _state = this.state,
+          updating = _state.updating,
+          watching = _state.watching;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         "div",
@@ -63334,31 +63341,37 @@ var Vk = function (_Component) {
                   ),
                   __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     "div",
-                    { className: "d-flex flex-row" },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "form",
-                      {
-                        onSubmit: function onSubmit(e) {
-                          return remove("vk", e);
-                        },
-                        className: "d-flex flex-column justify-content-center align-items-center col-12"
+                    { className: "d-flex justify-content-center align-items-center" },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
+                      type: "checkbox",
+                      checked: updating,
+                      onChange: function onChange(e) {
+                        return _this2.toggleUpdating(e);
                       },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        "div",
-                        { className: "f-flex justify-content-center align-items-center mt-2" },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                          "button",
-                          { type: "submit" },
-                          "\u0423\u0434\u0430\u043B\u0438\u0442\u044C"
-                        )
-                      )
+                      id: "toggleUpdating"
+                    }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                      "label",
+                      { htmlFor: "toggleUpdating" },
+                      updating ? "обновления включены" : "обновления выключены"
+                    )
+                  ),
+                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    "div",
+                    { className: "d-flex justify-content-center mt-2" },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                      "button",
+                      { onClick: function onClick(e) {
+                          return remove("vk", e);
+                        }, type: "submit" },
+                      "\u0423\u0434\u0430\u043B\u0438\u0442\u044C"
                     )
                   ),
                   __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
                     type: "checkbox",
                     checked: watching,
-                    onChange: function onChange(e) {
-                      return _this2.toggleWatching(e);
+                    onChange: function onChange() {
+                      return _this2.toggleWatching();
                     },
                     id: "toggleWatching"
                   }),

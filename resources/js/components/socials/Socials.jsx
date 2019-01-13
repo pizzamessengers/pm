@@ -31,8 +31,7 @@ export default class Socials extends Component {
       });
   };
 
-  remove = (mess, e) => {
-    e.preventDefault();
+  remove = (mess) => {
     socials[mess] = null;
     this.forceUpdate();
     let data = {

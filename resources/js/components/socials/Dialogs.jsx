@@ -44,9 +44,7 @@ export default class Dialogs extends Component {
   toggleUpdating = (e, dialog) => {
     dialog.updating = e.target.checked;
     this.forceUpdate();
-    axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken, {
-      updating: e.target.checked
-    });
+    axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
   };
 
   render() {

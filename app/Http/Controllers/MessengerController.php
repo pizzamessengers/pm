@@ -89,15 +89,14 @@ class MessengerController extends Controller
     }
 
     /**
-     * toggling watching the specified resource in storage.
+     * Toggle watching the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Messenger  $messenger
      * @return \Illuminate\Http\Response
      */
-    public function toggleWatching(Request $request, Messenger $messenger)
+    public function toggleWatching(Messenger $messenger)
     {
-      if ($request->watching === 'all')
+      if ($messenger->watching === 'dialogs')
       {
         $messenger->dialogs()->get()->each(
           function(Dialog $dialog)
@@ -106,6 +105,9 @@ class MessengerController extends Controller
             $dialog->save();
           }
         );
+
+        $messenger->watching = 'all';
+        $messenger->save();
       }
       else
       {
@@ -118,10 +120,30 @@ class MessengerController extends Controller
             $dialog->delete();
           }
         );
+
+        $messenger->watching = 'dialogs';
+        $messenger->save();
       }
 
-      $messenger->watching = $request->watching;
+      return response()->json([
+        'success' => true,
+      ], 200);;
+    }
+
+    /**
+     * Toggle updating the specified resource in storage.
+     *
+     * @param  \App\Messenger  $messenger
+     * @return \Illuminate\Http\Response
+     */
+    public function toggleUpdating(Messenger $messenger)
+    {
+      $messenger->updating = !$messenger->updating;
       $messenger->save();
+
+      return response()->json([
+        'success' => true,
+      ], 200);;
     }
 
     /**

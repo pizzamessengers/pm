@@ -7,6 +7,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Author;
+use DB;
 
 class StoreAuthors implements ShouldQueue
 {
@@ -46,19 +48,12 @@ class StoreAuthors implements ShouldQueue
     {
       foreach ($this->profiles as $profile)
       {
-        $authorId = Author::where('author_id', $profile['id'])->value('id');
-
-        if ($authorId === null)
-        {
-          $author = new Author;
-          $author->author_id = $profile['id'];
-          $author->first_name = $profile['first_name'];
-          $author->last_name = $profile['last_name'];
-          $author->avatar = $profile['photo_100'];
-          $author->save();
-
-          $authorId = $author->id;
-        }
+        $authorId = Author::firstOrCreate([
+          'author_id' => $profile['id'],
+          'first_name' => $profile['first_name'],
+          'last_name' => $profile['last_name'],
+          'avatar' => $profile['photo_100'],
+        ])->id;
 
         DB::table('author_dialog')->insert([
           'dialog_id' => $this->dialogId,

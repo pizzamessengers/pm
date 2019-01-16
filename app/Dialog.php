@@ -30,13 +30,14 @@ class Dialog extends Model
     /**
      * Get the messages for the dialog.
      */
-    public function messages()
+    public function messages($that = null)
     {
         return $this->hasMany('App\Message')
                     ->get(['id', 'message_id', 'author_id', 'text'])
                     ->sortByDesc('message_id')
                     ->values()
                     ->each(function(Message $message) {
+                      $message->attachments = $message->attachments();
                       $author = $message->author();
                       $message->author = [
                         'first_name' => $author->first_name,

@@ -40,17 +40,14 @@ class MessageController extends Controller
     }
 
     /**
-     * Display messages for the specified dialog.
+     * Display messages.
      *
-     * @param  \App\Dialog  $dialog
+     * @param  \App\Message  $message
      * @return \Illuminate\Http\Response
      */
-    public function show(Dialog $dialog)
+    public function show(Message $message)
     {
-      return response()->json([
-        'name' => $dialog->name,
-        'messages' => $dialog->messages(),
-      ]);
+      //
     }
 
     /**

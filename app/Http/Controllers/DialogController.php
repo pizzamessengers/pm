@@ -114,14 +114,17 @@ class DialogController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display messages for the specified dialog.
      *
-     * @param  \App\Dialog  $dialog
+     * @param  \App\Dialog $dialog
      * @return \Illuminate\Http\Response
      */
     public function show(Dialog $dialog)
     {
-        //
+      return response()->json([
+        'success' => true,
+        'messages' => $dialog->messages(),
+      ]);
     }
 
     /**

@@ -65,14 +65,16 @@ class Messenger extends Model
            });
         });
 
-        if (count($this->messages) !== 0)
+        if (count($this->messages) === 0)
         {
-          usort($this->messages, function($a, $b)
-          {
-              return strcmp($b->message_id, $a->message_id);
-          });
-
-          return $this->messages;
+            return [];
         }
+
+        usort($this->messages, function($a, $b)
+        {
+            return strcmp($b->message_id, $a->message_id);
+        });
+
+        return $this->messages;
     }
 }

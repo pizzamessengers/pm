@@ -74,7 +74,7 @@ class MessengerController extends Controller
         return response()->json([
           'success' => true,
           'messages' => $messenger->messages()
-        ], 200);;
+        ], 200);
     }
 
     /**

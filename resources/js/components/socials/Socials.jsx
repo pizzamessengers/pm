@@ -24,6 +24,7 @@ export default class Socials extends Component {
         if (response.data.success) {
           socials[mess] = [];
           socials[mess].id = response.data.messenger.id;
+          socials[mess].updating = true;
           socials[mess].watching = response.data.messenger.watching;
           socials[mess].dialogList = [];
           this.forceUpdate();
@@ -65,7 +66,7 @@ export default class Socials extends Component {
             path="/socials/wapp"
             render={() => <Wapp connect={this.connect} remove={this.remove} />}
           />
-          <Route path="/socials/:mess/:dialog/" component={Dialog} />
+        <Route path="/socials/:messenger/:dialogId/" component={Dialog} />
         </Switch>
       </Fragment>
     );

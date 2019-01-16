@@ -63158,6 +63158,7 @@ var Socials = function (_Component) {
         if (response.data.success) {
           socials[mess] = [];
           socials[mess].id = response.data.messenger.id;
+          socials[mess].updating = true;
           socials[mess].watching = response.data.messenger.watching;
           socials[mess].dialogList = [];
           _this.forceUpdate();
@@ -63228,7 +63229,7 @@ var Socials = function (_Component) {
               return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Wapp__["a" /* default */], { connect: _this2.connect, remove: _this2.remove });
             }
           }),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { path: "/socials/:mess/:dialog/", component: __WEBPACK_IMPORTED_MODULE_5__Dialog__["a" /* default */] })
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], { path: "/socials/:messenger/:dialogId/", component: __WEBPACK_IMPORTED_MODULE_5__Dialog__["a" /* default */] })
         )
       );
     }
@@ -63344,7 +63345,7 @@ var Vk = function (_Component) {
                     { className: "d-flex justify-content-center align-items-center" },
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
                       type: "checkbox",
-                      checked: updating,
+                      checked: socials.vk.updating,
                       onChange: function onChange(e) {
                         return _this2.toggleUpdating(e);
                       },
@@ -63395,7 +63396,8 @@ var Vk = function (_Component) {
                       onSubmit: function onSubmit(e) {
                         connect("vk", _this2.token.current.value, $("input[name='watching']:checked").val(), e);
                         _this2.setState({
-                          watching: $("input[name='watching']:checked").val()
+                          watching: $("input[name='watching']:checked").val(),
+                          updating: true
                         });
                       },
                       className: "d-flex flex-column justify-content-center align-items-center col-7"
@@ -63551,66 +63553,173 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
-var Dialog = function (_Component) {
-  _inherits(Dialog, _Component);
+var Messages = function (_Component) {
+  _inherits(Messages, _Component);
 
-  function Dialog(props) {
-    _classCallCheck(this, Dialog);
+  function Messages(props) {
+    _classCallCheck(this, Messages);
 
-    var _this = _possibleConstructorReturn(this, (Dialog.__proto__ || Object.getPrototypeOf(Dialog)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).call(this, props));
+
+    _this.listing = function () {
+      var list = [];
+      for (var i = 1; i <= Math.ceil(_this.state.messages.length / 10); i++) {
+        list.push(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "li",
+          { className: "mx-1", key: i },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "a",
+            {
+              role: "button",
+              className: "btn btn-success px-2",
+              list: i,
+              onClick: function onClick(e) {
+                _this.setState({ list: $(e.target).attr("list") });
+              }
+            },
+            i
+          )
+        ));
+      }
+      return list;
+    };
 
     _this.state = {
-      messages: []
+      messages: [],
+      list: 1
     };
+
+    _this.interval;
     return _this;
   }
 
-  _createClass(Dialog, [{
+  _createClass(Messages, [{
     key: "componentWillMount",
     value: function componentWillMount() {
       var _this2 = this;
 
-      setInterval(function () {
+      axios.get("api/v1/messengers/" + socials[this.props.mess].id + "?api_token=" + apiToken).then(function (response) {
+        if (_this2.state.messages.length !== response.data.messages.length) {
+          _this2.setState({ messages: response.data.messages });
+        }
+      });
+      this.interval = setInterval(function () {
         axios.get("api/v1/messengers/" + socials[_this2.props.mess].id + "?api_token=" + apiToken).then(function (response) {
-          if (_this2.state.messages != response.data.messages) {
-            _this2.setState(response.data);
+          if (_this2.state.messages.length !== response.data.messages.length) {
+            _this2.setState({ messages: response.data.messages });
           }
         });
       }, 5000);
     }
   }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      clearInterval(this.interval);
+    }
+  }, {
     key: "render",
     value: function render() {
-      var messages = this.state.messages;
+      var _state = this.state,
+          messages = _state.messages,
+          list = _state.list;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "ul",
-        { className: "navbar-nav" },
-        messages.map(function (message) {
-          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            "li",
-            { className: "nav-item d-flex my-1", key: message.id },
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", {
-              className: "mr-4",
-              src: message.author.avatar,
-              width: 50 + "px",
-              height: 50 + "px"
-            }),
-            "author: ",
-            message.author.first_name + ' ' + message.author.last_name,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("br", null),
-            "text: ",
-            message.text
-          );
-        })
+        __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "ul",
+          { className: "navbar-nav" },
+          messages.map(function (message, index) {
+            if (index >= list * 10 - 10 && index < list * 10) {
+              return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                "li",
+                {
+                  className: "nav-item d-flex my-1 align-items-center",
+                  key: message.id
+                },
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", {
+                  className: "mr-4",
+                  src: message.author.avatar,
+                  width: 50 + "px",
+                  height: 50 + "px"
+                }),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                  "div",
+                  null,
+                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    "div",
+                    { className: "mb-2" },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                      "b",
+                      null,
+                      "author:"
+                    ),
+                    " ",
+                    message.author.first_name + " " + message.author.last_name
+                  ),
+                  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    "div",
+                    null,
+                    message.text,
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("br", null),
+                    message.attachments.map(function (attachment) {
+                      switch (attachment.type) {
+                        case "photo":
+                          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", { src: attachment.url, key: attachment.url });
+                          break;
+                        case "audio":
+                          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
+                            { key: attachment.url },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                              "div",
+                              null,
+                              attachment.name
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("audio", { controls: true, src: attachment.url })
+                          );
+                          break;
+                        case "video":
+                          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
+                            { key: attachment.url },
+                            attachment.url === "https://vk.com/images/camera_100.png" ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                              "div",
+                              null,
+                              "\u0443\u0434\u0430\u043B\u0435\u043D\u043D\u043E\u0435 \u0432\u0438\u0434\u0435\u043E"
+                            ) : null,
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("iframe", {
+                              src: attachment.url,
+                              width: "100%",
+                              frameBorder: "0",
+                              allowFullScreen: true
+                            })
+                          );
+                          break;
+                      }
+                    })
+                  )
+                )
+              );
+            }
+          })
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "ul",
+          {
+            className: "d-flex justify-content-center align-items-center p-0 mb-0 mt-3",
+            style: { listStyle: "none" }
+          },
+          this.listing()
+        )
       );
     }
   }]);
 
-  return Dialog;
+  return Messages;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
-/* harmony default export */ __webpack_exports__["a"] = (Dialog);
+/* harmony default export */ __webpack_exports__["a"] = (Messages);
 
 /***/ }),
 /* 95 */
@@ -63841,12 +63950,43 @@ var Dialog = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Dialog.__proto__ || Object.getPrototypeOf(Dialog)).call(this, props));
 
+    _this.name = function () {
+      return socials[_this.props.match.params.messenger].dialogList.map(function (dialog) {
+        if (dialog.id == _this.dialogId) {
+          return dialog.name;
+        }
+      });
+    };
+
+    _this.listing = function () {
+      var list = [];
+      for (var i = 1; i <= Math.ceil(_this.state.messages.length / 10); i++) {
+        list.push(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "li",
+          { className: "mx-1", key: i },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            "a",
+            {
+              role: "button",
+              className: "btn btn-success px-2",
+              list: i,
+              onClick: function onClick(e) {
+                _this.setState({ list: $(e.target).attr("list") });
+              }
+            },
+            i
+          )
+        ));
+      }
+      return list;
+    };
+
     _this.state = {
-      name: _this.props.location.state ? _this.props.location.state.name : null,
       messages: []
     };
 
-    _this.dialog = _this.props.match.params.dialog;
+    _this.dialogId = _this.props.match.params.dialogId;
+    _this.interval;
     return _this;
   }
 
@@ -63855,17 +63995,28 @@ var Dialog = function (_Component) {
     value: function componentWillMount() {
       var _this2 = this;
 
-      axios.get("api/v1/messages/" + this.dialog + "?api_token=" + apiToken).then(function (response) {
-        _this2.setState(response.data);
+      axios.get("api/v1/dialogs/" + this.dialogId + "?api_token=" + apiToken).then(function (response) {
+        if (_this2.state.messages.length !== response.data.messages.length) {
+          _this2.setState({ messages: response.data.messages });
+        }
       });
+      this.interval = setInterval(function () {
+        axios.get("api/v1/dialogs/" + _this2.dialogId + "?api_token=" + apiToken).then(function (response) {
+          if (_this2.state.messages.length !== response.data.messages.length) {
+            _this2.setState({ messages: response.data.messages });
+          }
+        });
+      }, 5000);
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      clearInterval(this.interval);
     }
   }, {
     key: "render",
     value: function render() {
-      console.log(this.props);
-      var _state = this.state,
-          name = _state.name,
-          messages = _state.messages;
+      var messages = this.state.messages;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         "div",
@@ -63882,7 +64033,7 @@ var Dialog = function (_Component) {
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 "div",
                 { className: "card-header" },
-                name
+                this.name()
               ),
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 "div",
@@ -63906,22 +64057,78 @@ var Dialog = function (_Component) {
                   "ul",
                   { className: "navbar-nav" },
                   messages.map(function (message) {
-                    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                      "li",
-                      { className: "nav-item d-flex my-1", key: message.id },
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", {
-                        className: "mr-4",
-                        src: message.author.avatar,
-                        width: 50 + "px",
-                        height: 50 + "px"
-                      }),
-                      "author: ",
-                      message.author.first_name + ' ' + message.author.last_name,
-                      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("br", null),
-                      "text: ",
-                      message.text
-                    );
+                    if (index >= list * 10 - 10 && index < list * 10) {
+                      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        "li",
+                        { className: "nav-item d-flex my-1", key: message.id },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", {
+                          className: "mr-4",
+                          src: message.author.avatar,
+                          width: 50 + "px",
+                          height: 50 + "px"
+                        }),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                          "div",
+                          null,
+                          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            "div",
+                            { className: "mb-2" },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                              "b",
+                              null,
+                              "author:"
+                            ),
+                            message.author.first_name + " " + message.author.last_name
+                          ),
+                          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            "div",
+                            null,
+                            message.text,
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("br", null),
+                            message.attachments.map(function (attachment) {
+                              switch (attachment.type) {
+                                case "photo":
+                                  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", {
+                                    src: attachment.url,
+                                    key: attachment.url
+                                  });
+                                  break;
+                                case "audio":
+                                  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    Fragment,
+                                    { key: attachment.url },
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                      "div",
+                                      null,
+                                      attachment.name
+                                    ),
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("audio", { controls: true, src: attachment.url })
+                                  );
+                                  break;
+                                case "video":
+                                  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("iframe", {
+                                    key: attachment.url,
+                                    src: attachment.url,
+                                    width: "100%",
+                                    frameBorder: "0",
+                                    allowFullScreen: true
+                                  });
+                                  break;
+                              }
+                            })
+                          )
+                        )
+                      );
+                    }
                   })
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                  "ul",
+                  {
+                    className: "d-flex justify-content-center align-items-center p-0 mb-0 mt-3",
+                    style: { listStyle: "none" }
+                  },
+                  this.listing()
                 )
               )
             )

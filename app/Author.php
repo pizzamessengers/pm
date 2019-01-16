@@ -22,4 +22,12 @@ class Author extends Model
     {
         return $this->belongsToMany('App\Dialog')->get();
     }
+
+    /**
+     * Get the messages for the author.
+     */
+    public function messages()
+    {
+        return $this->hasMany('App\Message')->get();
+    }
 }

@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
     /*DB::table('messengers')->insert([
       'user_id' => 10000000,
       'name' => 'vk',
-      'token' => '9d681fd899e777b9248d22b32414aea5b65c13f354afdcda93457edfdd9e0e3d44eea89d77e85742451c7',
+      'token' => 'a9b9c1c2b31602cdfb753543525a0f28a05cfbb22c35d57853594b2189287b0ec85ca9b71b099346b93df',
       'watching' => 'all',
     ]);*/
   }

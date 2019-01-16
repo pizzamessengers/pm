@@ -16,10 +16,26 @@ class Message extends Model
     ];
 
     /**
-     * Get the author's name for the message.
+     * Get the author for the message.
      */
     public function author()
     {
         return $this->belongsTo('App\Author')->first();
+    }
+
+    /**
+     * Get the dialog for the message.
+     */
+    public function dialog()
+    {
+        return $this->belongsTo('App\Dialog')->first();
+    }
+
+    /**
+     * Get the attachments for the message.
+     */
+    public function attachments()
+    {
+        return $this->hasMany('App\Attachment')->get(['type', 'url', 'name']);
     }
 }

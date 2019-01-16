@@ -15,15 +15,13 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('message_id');
+          $table->integer('message_id');
           $table->unsignedInteger('dialog_id');
           $table->foreign('dialog_id')
                 ->references('id')
                 ->on('dialogs')
                 ->onDelete('cascade');
-          $table->string('text');
-          $table->string('attachments')
-                ->nullable();
+          $table->text('text');
           $table->unsignedInteger('author_id');
           $table->foreign('author_id')
                 ->references('id')

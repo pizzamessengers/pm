@@ -35,7 +35,9 @@ export default class Vk extends Component {
     let updating = e.target.checked;
     this.setState({ updating });
     socials.vk.updating = updating;
-    axios.put("api/v1/messengers/updating/" + socials.vk.id + "?api_token=" + apiToken);
+    axios.put(
+      "api/v1/messengers/updating/" + socials.vk.id + "?api_token=" + apiToken
+    );
   };
 
   render() {
@@ -55,16 +57,20 @@ export default class Vk extends Component {
                     <div className="d-flex justify-content-center align-items-center">
                       <input
                         type="checkbox"
-                        checked={updating}
+                        checked={socials.vk.updating}
                         onChange={e => this.toggleUpdating(e)}
                         id="toggleUpdating"
                       />
                       <label htmlFor="toggleUpdating">
-                        {updating ? "обновления включены" : "обновления выключены"}
+                        {updating
+                          ? "обновления включены"
+                          : "обновления выключены"}
                       </label>
                     </div>
                     <div className="d-flex justify-content-center mt-2">
-                      <button onClick={e => remove("vk", e)} type="submit">Удалить</button>
+                      <button onClick={e => remove("vk", e)} type="submit">
+                        Удалить
+                      </button>
                     </div>
                     <input
                       type="checkbox"
@@ -75,13 +81,26 @@ export default class Vk extends Component {
                     <label htmlFor="toggleWatching">
                       {watching === "dialogs" ? "dialogs" : "all"}
                     </label>
-                    {watching === "dialogs" ? <Dialogs mess={"vk"} /> : <Messages mess={"vk"} />}
+                    {watching === "dialogs" ? (
+                      <Dialogs mess={"vk"} />
+                    ) : (
+                      <Messages mess={"vk"} />
+                    )}
                   </Fragment>
                 ) : (
                   <div className="d-flex flex-row">
                     <div className="d-flex flex-column justify-content-center align-items-center col-5">
                       Подключение вк
                     </div>
+                    {/*<button
+                      onClick={() =>
+                        axios
+                          .get("api/v1/access_token?api_token=" + apiToken)
+                          .then(response => console.log(response.data))
+                      }
+                    >
+                      зарегать
+                    </button>*/}
                     <form
                       onSubmit={e => {
                         connect(
@@ -91,7 +110,8 @@ export default class Vk extends Component {
                           e
                         );
                         this.setState({
-                          watching: $("input[name='watching']:checked").val()
+                          watching: $("input[name='watching']:checked").val(),
+                          updating: true
                         });
                       }}
                       className="d-flex flex-column justify-content-center align-items-center col-7"

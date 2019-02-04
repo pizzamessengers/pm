@@ -22,7 +22,9 @@ class CreateDialogsTable extends Migration
                 ->onDelete('cascade');
           $table->string('name')
                 ->nullable();
-          $table->integer('dialog_id');
+          $table->string('dialog_id');
+          $table->string('last_message_id')
+                ->nullable();
           $table->boolean('updating')
                 ->default(true);
           $table->timestamps();

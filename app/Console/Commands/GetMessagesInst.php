@@ -3,7 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use VK\Client\VKApiClient;
+use InstagramAPI\Instagram;
+use InstagramAPI\Request\Direct;
+use InstagramAPI\Response\Model\DirectThread;
+use InstagramAPI\Response\Model\DirectThreadItem;
+use InstagramAPI\Response\Model\User;
 use App\Attachment;
 use App\Messenger;
 use App\Dialog;
@@ -11,14 +15,14 @@ use App\Message;
 use App\Author;
 use DB;
 
-class GetMessagesVk extends Command
+class GetMessagesInst extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'getMessages:vk';
+    protected $signature = 'getMessages:inst';
 
     /**
      * The console command description.
@@ -53,68 +57,125 @@ class GetMessagesVk extends Command
      */
     private function update()
     {
-      Messenger::where('name', 'vk')
+      Messenger::where('name', 'inst')
         ->where('updating', true)
         ->get()->each(function(Messenger $messenger) {
-          $vk = new VKApiClient();
-          $lp = json_decode($messenger->lp);
+          $inst = new Instagram(true, false);
+          try {
+              $inst->login($messenger->login, $messenger->password);
+          } catch (\Exception $e) {
+              info('Something went wrong: '.$e->getMessage());
+              exit(0);
+          }
           $watching = $messenger->watching;
 
-          $response = $vk->messages()->getLongPollHistory($messenger->token, array(
-            'ts' => $lp->ts,
-            'pts' => $lp->pts,
-            'fields' => 'photo_100',
-            'lp_version' => 3,
-          ));
-
-          $messages = $response['messages'];
-
-          if ($messages['count'] > 0)
-          {
-            $profiles = $response['profiles'];
-
-            foreach ($messages['items'] as $message)
-            {
-              if ($watching !== Messenger::find($messenger->id)->watching) break;
-              if ($watching === 'all')
-              {
-                $this->addMessage($message, $profiles, $messenger);
-              }
-              else
-              {
-                if (($dialog = Dialog::where('dialog_id', $message['peer_id'])->first()) !== null)
-                // TODO: if dialogs have same id in vk and other mess
-                {
-                  if ($dialog->updating == true)
-                  {
-                    $this->addMessage($message, $profiles, $messenger, $vk);
-                  }
-                }
-              }
-            }
-
-            $lp->pts = $response['new_pts'];
-            $messenger->lp = json_encode($lp);
-            $messenger->save();
-          }
+          $threads = $inst->direct->getInbox()->getInbox()->getThreads();
+          $this->updateThreads($threads, $messenger, $inst);
         });
     }
 
     /**
+     * Update dialog and create if doesn't exist.
+     *
+     * @param DirectThread[] $threads
+     * @param Messenger $messenger
+     * @param Instagram $inst
+     */
+    private function updateThreads(array $threads, Messenger $messenger, Instagram $inst)
+    {
+      foreach ($threads as $i=>$thread)
+      {
+        $threadId = $thread->getThreadId();
+        if (($dialog = Dialog::where('dialog_id', $threadId)->first()) === null)
+        {
+          if ($messenger->watching === 'all')
+          {
+            $dialog = Dialog::create([
+              'messenger_id' => $messenger->id,
+              'dialog_id' => $threadId,
+              'name' => $thread->getThreadTitle(),
+            ]);
+          }
+          else continue;
+        }
+
+        if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message_id) break;
+
+        $thread = $inst->direct->getThread($threadId)->getThread();
+        $this->addMessages($thread, $dialog, $inst);
+        $dialog->last_message_id = $thread->getLastPermanentItem()->getItemId();
+        $dialog->save();
+
+        if ($i === 19)
+        {
+          $threads = $inst->direct->getInbox($threadId)->getInbox()->getThreads();
+          $this->updateThreads($threads, $messenger, $inst);
+        }
+      }
+    }
+
+    /**
+     * Create new messages.
+     *
+     * @param DirectThread $messages
+     * @param Dialog $dialog
+     * @param Instagram $inst
+     */
+    private function addMessages(DirectThread $thread, Dialog $dialog, Instagram $inst)
+    {
+      $dialogId = $dialog->id;
+      $lastMessageId = $dialog->last_message_id;
+      foreach ($thread->getItems() as $i=>$message)
+      {
+        if ($message->getItemId() !== $lastMessageId)
+        {
+          $this->addMessage($message, $dialogId, $inst);
+
+          if ($i === 19)
+          {
+            $thread = $inst->direct->getThread($thread->getThreadId(), $message->getItemId())->getThread();
+            $this->addMessages($thread, $dialog, $inst);
+          }
+        }
+        else break;
+      }
+    }
+
+    /**
+     * Create new message and author if doesn't exist.
+     *
+     * @param DirectThreadItem $message
+     * @param int $dialogId
+     * @param Instagram $inst
+     */
+    private function addMessage(DirectThreadItem $message, int $dialogId, Instagram $inst)
+    {
+      $authorId = $this->authorId($message->getUserId(), $dialogId, $inst);
+
+      $newMessage = Message::create([
+        'message_id' => $message->getItemId(),
+        'dialog_id' => $dialogId,
+        'author_id' => $authorId,
+        'text' => $message->getText(),
+      ]);
+
+    }
+
+    /*
      * Create new message and author if doesn't exist.
      *
      * @param array data about message $message
      * @param array array of profiles from response $profiles
      * @param Messenger $messenger
      * @param VKApiClient $vk
-     */
+     *
     private function addMessage(Array $message, Array $profiles, Messenger $messenger, VKApiClient $vk)
     {
       $dialogId = $this->dialogId($message['peer_id'], $messenger);
       $authorId = $this->authorId($message['from_id'], $dialogId, $profiles);
 
       $newMessage = Message::create([
-        'message_id' => (string) $message['id'],
+        'message_id' => $message['id'],
         'dialog_id' => $dialogId,
         'author_id' => $authorId,
         'text' => $message['text'],
@@ -124,7 +185,7 @@ class GetMessagesVk extends Command
       {
         $this->attachments($message['attachments'], $newMessage->id, $messenger, $vk);
       }
-    }
+    }*/
 
     /**
      * Create attachment instance.
@@ -137,7 +198,6 @@ class GetMessagesVk extends Command
     private function attachments(Array $attachments, Int $messageId, Messenger $messenger, VKApiClient $vk)
     {
       foreach ($attachments as $attachment) {
-        info($attachment);
         switch ($attachment['type']) {
           case 'doc':
             $preview = $attachment['doc']['preview'];
@@ -203,43 +263,18 @@ class GetMessagesVk extends Command
     }
 
     /**
-     * Get dialog id if exist or create new dialog.
-     *
-     * @param int id of dialog from response $dialogId
-     * @param Messenger $messenger
-     * @return int dialog id $dialogId
-     */
-    private function dialogId(Int $dialogId, Messenger $messenger)
-    {
-      $dialog = Dialog::firstOrCreate([
-        'messenger_id' => $messenger->id,
-        'dialog_id' => (string) $dialogId,
-      ]);
-
-      if ($messenger->watching === 'all')
-      {
-        $dialog->updating = false;
-        $dialog->save();
-      }
-
-      // TODO: если в разных мессенджерах будут совпадать id разных диалогов, то сделать доп. проверку
-
-      return $dialog->id;
-    }
-
-    /**
      * Get author id if exist or create new author.
      *
-     * @param int id of message author from response $fromId
-     * @param int $dialog
-     * @param array profiles from lp response $profiles
-     * @return int author id
+     * @param int $userId
+     * @param int $dialogId
+     * @param Instagram $inst
+     * @return int authorId
      */
-    private function authorId(Int $fromId, Int $dialogId, Array $profiles)
+    private function authorId(int $userId, int $dialogId, Instagram $inst)
     {
       $authorId = Author::where(
         'author_id',
-        $fromId
+        $userId
       )->value('id');
 
       /*if (count($author_ids) > 1) {
@@ -248,16 +283,16 @@ class GetMessagesVk extends Command
       else */
       if ($authorId === null)
       {
-        foreach ($profiles as $profile)
-        {
-          if ($profile['id'] === $fromId) break;
-        }
+        $profile = $inst->people->getInfoById($userId)->getUser();
+        $name = explode(' ', $profile->getFullName());
+        $firstName = $name[0];
+        $lastName = $name[1];
 
         $authorId = Author::create([
-          'author_id' => $profile['id'],
-          'first_name' => $profile['first_name'],
-          'last_name' => $profile['last_name'],
-          'avatar' => $profile['photo_100'],
+          'author_id' => $userId,
+          'first_name' => $firstName,
+          'last_name' => $lastName,
+          'avatar' => $profile->getProfilePicUrl(),
         ])->id;
       }
 

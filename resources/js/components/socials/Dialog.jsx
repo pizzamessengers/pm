@@ -4,9 +4,11 @@ export default class Dialog extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: []
+      messages: [],
+      list: 1
     };
 
+    this.text = React.createRef();
     this.dialogId = this.props.match.params.dialogId;
     this.interval;
   }
@@ -38,6 +40,18 @@ export default class Dialog extends Component {
     });
   };
 
+  sendMessage = e => {
+    e.preventDefault();
+    let data = {
+      text: this.text.current.value,
+      dialogId: this.dialogId
+    };
+    axios.post("api/v1/messages/send?api_token=" + apiToken, data)
+    .then(function(response) {
+      //console.log(response.data);
+    });
+  };
+
   listing = () => {
     let list = [];
     for (var i = 1; i <= Math.ceil(this.state.messages.length / 10); i++) {
@@ -64,7 +78,7 @@ export default class Dialog extends Component {
   }
 
   render() {
-    let { messages } = this.state;
+    let { messages, list } = this.state;
     return (
       <div className="container">
         <div className="row justify-content-center">
@@ -73,14 +87,19 @@ export default class Dialog extends Component {
               <div className="card-header">{this.name()}</div>
 
               <div className="w-50 mx-auto my-4">
-                <div>Тут потом можно будет написать сообщение</div>
-                <input placeholder="типа вот так..." className="my-3" />
-                <button>И отправить</button>
+                <form onSubmit={e => this.sendMessage(e)}>
+                  <input
+                    type="text"
+                    ref={this.text}
+                    placeholder="текст сообщения"
+                  />
+                  <input type="submit" value="Отправить" />
+                </form>
               </div>
 
               <div className="card-body">
                 <ul className="navbar-nav">
-                  {messages.map(message => {
+                  {messages.map((message, index) => {
                     if (index >= list * 10 - 10 && index < list * 10) {
                       return (
                         <li className="nav-item d-flex my-1" key={message.id}>

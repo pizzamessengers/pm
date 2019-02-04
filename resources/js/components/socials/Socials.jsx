@@ -11,11 +11,11 @@ export default class Socials extends Component {
     super(props);
   }
 
-  connect = (mess, token, watching, e) => {
+  connect = (mess, props, watching, e) => {
     e.preventDefault();
     let data = {
       name: mess,
-      token: token,
+      props: props,
       watching: watching
     };
     axios
@@ -25,7 +25,7 @@ export default class Socials extends Component {
           socials[mess] = [];
           socials[mess].id = response.data.messenger.id;
           socials[mess].updating = true;
-          socials[mess].watching = response.data.messenger.watching;
+          socials[mess].watching = watching;
           socials[mess].dialogList = [];
           this.forceUpdate();
         }

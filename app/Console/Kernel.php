@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\GetMessagesVk::class,
+        Commands\GetMessagesInst::class,
     ];
 
     /**
@@ -24,7 +25,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('getMessages:vk')->everyMinute();
+        //$schedule->command('getMessages:vk')->everyMinute();
+        $schedule->command('getMessages:inst')->everyMinute();
     }
 
     /**

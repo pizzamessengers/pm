@@ -84,11 +84,16 @@ export default class Messages extends Component {
                     height={50 + "px"}
                   />
                   <div>
-                    <div className="mb-2">
-                      <b>author:</b>{" "}
-                      {message.author.first_name +
-                        " " +
-                        message.author.last_name}
+                    <div className="d-flex mb-2">
+                      <div className="mr-2">
+                        <b>author:</b>{" "}
+                        {message.author.first_name +
+                          " " +
+                          message.author.last_name}
+                      </div>
+                      <div>
+                        <b>dialog:</b> {message.dialog}
+                      </div>
                     </div>
                     <div>
                       {message.text}

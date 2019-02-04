@@ -38,27 +38,40 @@ class MessengerController extends Controller
      */
       public function addMessenger(Request $request)
       {
-        $messengerData = $request->all();
+        $messengerData = [
+          'name' => $request->name,
+          'watching' => $request->watching,
+          'user_id' => $request->user()->id,
+        ];
 
-        $vk = new VKApiClient();
-        $lpServer = $vk->messages()->getLongPollServer($messengerData['token'], array(
-          'need_pts' => 1,
-          'lp_version' => 3,
-        ));
-
-        $messengerData['user_id'] = $request->user()->id;
-        $messengerData['lp'] = json_encode([
-          'ts' => $lpServer['ts'],
-          'pts' => $lpServer['pts'],
-        ]);
+        switch ($request->name) {
+          case 'vk':
+            $messengerData['token'] = $request->props['token'];
+            $vk = new VKApiClient();
+            $lpServer = $vk->messages()->getLongPollServer($messengerData['token'], array(
+              'need_pts' => 1,
+              'lp_version' => 3,
+            ));
+            $messengerData['lp'] = json_encode([
+              'ts' => $lpServer['ts'],
+              'pts' => $lpServer['pts'],
+            ]);
+            break;
+          case 'inst':
+            $messengerData['login'] = $request->props['login'];
+            $messengerData['password'] = $request->props['password'];
+            break;
+          case 'wapp':
+            // code...
+            break;
+        }
 
         $messenger = Messenger::create($messengerData);
 
         return response()->json([
           'success' => true,
           'messenger' => [
-            'id' => $messenger->id,
-            'watching' => $messenger->watching
+            'id' => $messenger->id
           ]
         ], 200);
       }

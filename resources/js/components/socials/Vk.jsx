@@ -105,7 +105,7 @@ export default class Vk extends Component {
                       onSubmit={e => {
                         connect(
                           "vk",
-                          this.token.current.value,
+                          { token: this.token.current.value },
                           $("input[name='watching']:checked").val(),
                           e
                         );

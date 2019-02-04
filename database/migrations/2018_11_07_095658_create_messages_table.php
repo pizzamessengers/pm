@@ -15,7 +15,7 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
           $table->increments('id');
-          $table->integer('message_id');
+          $table->string('message_id');
           $table->unsignedInteger('dialog_id');
           $table->foreign('dialog_id')
                 ->references('id')

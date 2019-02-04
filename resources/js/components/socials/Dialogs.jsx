@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import { Link, Switch, Route } from "react-router-dom";
-import translite from "./../../functions/translite";
 
 export default class Dialogs extends Component {
   constructor(props) {
@@ -65,9 +64,7 @@ export default class Dialogs extends Component {
                 ref={this.dialog}
               />
             </div>
-            <div className="f-flex justify-content-center align-items-center mt-2">
-              <input type="submit" value="Подключить" />
-            </div>
+            <input type="submit" value="Подключить" />
           </form>
         </div>
         <ul className="navbar-nav">

@@ -79,7 +79,7 @@ class DialogController extends Controller
         $dialogData = array(
           'name' => $name,
           'messenger_id' => $messenger->id,
-          'dialog_id' => $dialog['peer']['id']
+          'dialog_id' => (string) $dialog['peer']['id']
         );
 
         $dialog = Dialog::create($dialogData);

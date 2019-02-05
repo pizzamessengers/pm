@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use InstagramAPI\Instagram;
-use InstagramAPI\Request\Direct;
 use InstagramAPI\Response\Model\DirectThread;
 use InstagramAPI\Response\Model\DirectThreadItem;
 use InstagramAPI\Response\Model\User;
@@ -60,7 +59,7 @@ class GetMessagesInst extends Command
       Messenger::where('name', 'inst')
         ->where('updating', true)
         ->get()->each(function(Messenger $messenger) {
-          $inst = new Instagram(true, false);
+          $inst = new Instagram(false, false);
           try {
               $inst->login($messenger->login, $messenger->password);
           } catch (\Exception $e) {
@@ -99,6 +98,7 @@ class GetMessagesInst extends Command
           else continue;
         }
 
+        if ($dialog->updating === false) continue;
         if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message_id) break;
 
         $thread = $inst->direct->getThread($threadId)->getThread();

@@ -50,7 +50,7 @@ class MessageController extends Controller
      */
     public function sendMessage(Request $request)
     {
-      $ig = new Instagram(true, false);
+      $ig = new Instagram(false, false);
 
       try {
           $ig->login('ilya_dmitriev1234', '1qazxsw23edc');

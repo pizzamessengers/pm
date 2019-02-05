@@ -4,14 +4,14 @@ import { Link, Switch, Route } from "react-router-dom";
 export default class Dialogs extends Component {
   constructor(props) {
     super(props);
-    this.dialog = React.createRef();
+    this.req = React.createRef();
   }
 
   createDialog = e => {
     e.preventDefault();
     let data = {
       mess: this.props.mess,
-      name: this.dialog.current.value
+      req: this.req.current.value
     };
     axios
       .post("api/v1/dialogs?api_token=" + apiToken, data)
@@ -60,8 +60,8 @@ export default class Dialogs extends Component {
             <div className="f-flex justify-content-center align-items-center mb-2">
               <input
                 type="text"
-                placeholder="Название диалога"
-                ref={this.dialog}
+                placeholder="Запрос"
+                ref={this.req}
               />
             </div>
             <input type="submit" value="Подключить" />

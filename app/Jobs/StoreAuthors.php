@@ -15,6 +15,13 @@ class StoreAuthors implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * Messenger.
+     *
+     * @var string
+     */
+    protected $messenger;
+
+    /**
      * Profiles of authors.
      *
      * @var array
@@ -33,10 +40,11 @@ class StoreAuthors implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Array $profiles, Int $dialogId)
+    public function __construct(string $messenger, array $profiles, Int $dialogId)
     {
-        $this->profiles = $profiles;
-        $this->dialogId = $dialogId;
+      $this->messenger = $messenger;
+      $this->profiles = $profiles;
+      $this->dialogId = $dialogId;
     }
 
     /**
@@ -46,6 +54,20 @@ class StoreAuthors implements ShouldQueue
      */
     public function handle()
     {
+      switch ($this->messenger) {
+        case 'vk':
+          $this->storeAuthorsVk();
+          break;
+        case 'inst':
+          $this->storeAuthorsInst();
+          break;
+        case 'wapp':
+          $this->storeAuthorsWapp();
+          break;
+      }
+    }
+
+    private function storeAuthorsVk() {
       foreach ($this->profiles as $profile)
       {
         $authorId = Author::firstOrCreate([
@@ -61,4 +83,41 @@ class StoreAuthors implements ShouldQueue
         ]);
       }
     }
+
+    private function storeAuthorsInst() {
+      foreach ($this->profiles as $profile)
+      {
+        $name = explode(' ', $profile->getFullName());
+        $firstName = $name[0];
+        $lastName = $name[1];
+        $authorId = Author::firstOrCreate([
+          'author_id' => $profile->getPk(),
+          'first_name' => $firstName,
+          'last_name' => $lastName,
+          'avatar' => $profile->getProfilePicUrl(),
+        ])->id;
+
+        DB::table('author_dialog')->insert([
+          'dialog_id' => $this->dialogId,
+          'author_id' => $authorId,
+        ]);
+      }
+    }
+    // TODO:
+    /*private function storeAuthorsVk() {
+      foreach ($this->profiles as $profile)
+      {
+        $authorId = Author::firstOrCreate([
+          'author_id' => $profile['id'],
+          'first_name' => $profile['first_name'],
+          'last_name' => $profile['last_name'],
+          'avatar' => $profile['photo_100'],
+        ])->id;
+
+        DB::table('author_dialog')->insert([
+          'dialog_id' => $this->dialogId,
+          'author_id' => $authorId,
+        ]);
+      }
+    }*/
 }

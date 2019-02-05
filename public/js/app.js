@@ -1474,7 +1474,7 @@ var Dialogs = function (_Component) {
       e.preventDefault();
       var data = {
         mess: _this.props.mess,
-        name: _this.dialog.current.value
+        req: _this.req.current.value
       };
       axios.post("api/v1/dialogs?api_token=" + apiToken, data).then(function (response) {
         if (!response.data.success) {
@@ -1504,7 +1504,7 @@ var Dialogs = function (_Component) {
       axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
     };
 
-    _this.dialog = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createRef();
+    _this.req = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createRef();
     return _this;
   }
 
@@ -1537,8 +1537,8 @@ var Dialogs = function (_Component) {
               { className: "f-flex justify-content-center align-items-center mb-2" },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
                 type: "text",
-                placeholder: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0434\u0438\u0430\u043B\u043E\u0433\u0430",
-                ref: this.dialog
+                placeholder: "\u0417\u0430\u043F\u0440\u043E\u0441",
+                ref: this.req
               })
             ),
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { type: "submit", value: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C" })

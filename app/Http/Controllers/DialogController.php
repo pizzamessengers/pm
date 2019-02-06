@@ -47,16 +47,33 @@ class DialogController extends Controller
       $vk = new VKApiClient();
       $token = $messenger->token;
 
-      $vkReq = $vk->messages()->searchConversations($token, array(
-        'q' => $request->req,
-      ));
-
-      if (($count = $vkReq['count']) !== 1)
+      if ($request->req !== null)
       {
-        return $this->notTheOnly($count);
-      }
+        $vkRes = $vk->messages()->searchConversations($token, array(
+          'q' => $request->req,
+          'extended' => 1,
+          'fields' => 'photo_100',
+          'count' => 50,
+        ));
 
-      $dialog = $vkReq['items'][0];
+        if (($count = $vkRes['count']) !== 1)
+        {
+          return $this->notTheOnly($count, $vkRes, $vk, $token);
+        }
+
+        $dialog = $vkRes['items'][0];
+
+        $name = $dialog['peer']['type'] === 'chat' ?
+          $dialog['chat_settings']['title'] :
+          ($profiles[0]['id'] === $dialog['peer']['id'] ?
+            $profiles[0]['first_name'].' '.$profiles[0]['last_name'] :
+            $profiles[1]['first_name'].' '.$profiles[1]['last_name']);
+      }
+      else
+      {
+        $dialog = $request->dialog;
+        $name = $dialog['title'];
+      }
 
       if (Dialog::where('dialog_id', $dialog['peer']['id'])
         ->where('messenger_id', $request->user()->vk()->id)->count() !== 0)
@@ -72,20 +89,11 @@ class DialogController extends Controller
         'fields' => 'photo_100',
       ))['profiles'];
 
-      $name = ($dialog['peer']['type'] === 'chat') ?
-        $dialog['chat_settings']['title'] :
-        ($profiles[0]['id'] === $dialog['peer']['id'] ?
-          $profiles[0]['first_name'].' '.$profiles[0]['last_name'] :
-          $profiles[1]['first_name'].' '.$profiles[1]['last_name']);
-
-      $dialogData = array(
+      $dialog = Dialog::create([
         'name' => $name,
         'messenger_id' => $messenger->id,
-        'dialog_id' => (string) $dialog['peer']['id']
-      );
-
-      $dialog = Dialog::create($dialogData);
-
+        'dialog_id' => (string) $dialog['peer']['id'],
+      ]);
       StoreAuthors::dispatch('vk', $profiles, $dialog->id);
 
       return array(
@@ -194,8 +202,9 @@ class DialogController extends Controller
       return response()->json($result, 200);
     }
 
-    private function notTheOnly(Int $count)
+    private function notTheOnly(int $count, array $dialogs, VKApiClient $vk, string $token)
     {
+      $messageIds = '';
       if ($count === 0)
       {
         return array(
@@ -204,10 +213,44 @@ class DialogController extends Controller
         );
       }
       else if ($count > 1)
-      {
+      { //DIALOG TITLE
+        foreach ($dialogs['items'] as $i=>$dialog)
+        {
+          if ($dialog['peer']['type'] === 'user')
+          {
+            foreach ($dialogs['profiles'] as $profile)
+            {
+              if ($profile['id'] === $dialog['peer']['id']) break;
+            }
+
+            $title = $profile['first_name'].' '.$profile['last_name'];
+            $dialogs['items'][$i]['photo'] = $profile['photo_100'];
+          }
+          else
+          {
+            $title = $dialog['chat_settings']['title'];
+          }
+          $messageIds .= $dialog['last_message_id'].',';
+          $dialogs['items'][$i]['title'] = $title;
+        }
+
+        $messages = $vk->messages()->getById($token, array(
+          'message_ids' => $messageIds,
+        ))['items'];
+
+        foreach ($messages as $i=>$message)
+        {
+          if (strlen($message['text']) > 40)
+          {
+            $message['text'] = mb_substr($message['text'], 0, 40, 'UTF-8').'...';
+          }
+          $dialogs['items'][$i]['last_message'] = $message['text'];
+        }
+
         return array(
-          'success' => false,
-          'message' => 'у вас несколько диалогов с таким или похожим названием',
+          'success' => true,
+          'needChoose' => true,
+          'dialogs' => $dialogs['items'],
         );
       }
     }

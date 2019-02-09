@@ -12,6 +12,7 @@ use App\Messenger;
 use App\Dialog;
 use App\Message;
 use App\Author;
+use Illuminate\Support\Carbon;
 use DB;
 
 class GetMessagesInst extends Command
@@ -87,6 +88,11 @@ class GetMessagesInst extends Command
         $threadId = $thread->getThreadId();
         if (($dialog = Dialog::where('dialog_id', $threadId)->first()) === null)
         {
+          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp;
+          $lastMessageTimestamp = $thread->getLastPermanentItem()->getTimestamp();
+
+          if ((int) $lastMessageTimestamp <= (int) $messengerCreatedAt) break;
+
           if ($messenger->watching === 'all')
           {
             $dialog = Dialog::create([
@@ -96,13 +102,18 @@ class GetMessagesInst extends Command
             ]);
           }
           else continue;
+
+          $thread = $inst->direct->getThread($threadId)->getThread();
+          $this->addMessagesNewDialog($thread, $dialog, $inst, (int) $lastMessageTimestamp);
+        }
+        else
+        {
+          if ($dialog->updating === false) continue;
+          if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message_id) break;
+          $thread = $inst->direct->getThread($threadId)->getThread();
+          $this->addMessages($thread, $dialog, $inst);
         }
 
-        if ($dialog->updating === false) continue;
-        if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message_id) break;
-
-        $thread = $inst->direct->getThread($threadId)->getThread();
-        $this->addMessages($thread, $dialog, $inst);
         $dialog->last_message_id = $thread->getLastPermanentItem()->getItemId();
         $dialog->save();
 
@@ -115,18 +126,60 @@ class GetMessagesInst extends Command
     }
 
     /**
-     * Create new messages.
+     * Create new messages for new dialog.
+     *
+     * @param DirectThread $messages
+     * @param Dialog $dialog
+     * @param Instagram $inst
+     * @param int $lastMessageTimestamp
+     */
+    private function addMessagesNewDialog(
+      DirectThread $thread,
+      Dialog $dialog,
+      Instagram $inst,
+      int $lastMessageTimestamp
+    )
+    {
+      $dialogId = $dialog->id;
+
+      foreach ($thread->getItems() as $i=>$message)
+      {
+        if ($message->getItemType() !== 'text') continue;
+
+        if ($message->getTimestamp() > $lastMessageTimestamp)
+        {
+          $this->addMessage($message, $dialogId, $inst);
+
+          if ($i === 19)
+          {
+            $thread = $inst->direct->getThread($thread->getThreadId(), $message->getItemId())->getThread();
+            $this->addMessagesNewDialog($thread, $dialog, $inst, $lastMessageTimestamp);
+          }
+        }
+        else break;
+      }
+    }
+
+    /**
+     * Create new messages for not new dialog.
      *
      * @param DirectThread $messages
      * @param Dialog $dialog
      * @param Instagram $inst
      */
-    private function addMessages(DirectThread $thread, Dialog $dialog, Instagram $inst)
+    private function addMessages(
+      DirectThread $thread,
+      Dialog $dialog,
+      Instagram $inst
+    )
     {
       $dialogId = $dialog->id;
       $lastMessageId = $dialog->last_message_id;
+
       foreach ($thread->getItems() as $i=>$message)
       {
+        if ($message->getItemType() !== 'text') continue;
+
         if ($message->getItemId() !== $lastMessageId)
         {
           $this->addMessage($message, $dialogId, $inst);

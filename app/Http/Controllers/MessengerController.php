@@ -7,6 +7,7 @@ use App\Dialog;
 use App\Message;
 use Illuminate\Http\Request;
 use VK\Client\VKApiClient;
+use InstagramAPI\Instagram;
 
 class MessengerController extends Controller
 {
@@ -67,6 +68,25 @@ class MessengerController extends Controller
         }
 
         $messenger = Messenger::create($messengerData);
+
+/*        if ($request->name === 'inst' && $messengerData['watching'] === 'all')
+        {
+          $inst = new Instagram(false, false);
+          try {
+              $inst->login($messengerData['login'], $messengerData['password']);
+          } catch (\Exception $e) {
+              info('Something went wrong: '.$e->getMessage());
+              exit(0);
+          }
+
+          $lastThread = $inst->direct->getInbox()->getInbox()->getThreads()[0];
+          Dialog::create([
+            'messenger_id' => $messenger->id,
+            'dialog_id' => $lastThread->getThreadId(),
+            'name' => $lastThread->getThreadTitle(),
+            'last_message_id' => $lastThread->getLastPermanentItem()->getItemId(),
+          ]);
+        }*/
 
         return response()->json([
           'success' => true,

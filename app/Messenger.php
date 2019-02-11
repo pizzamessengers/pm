@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class Messenger extends Model
 {
@@ -20,6 +19,8 @@ class Messenger extends Model
         'user_id',
         'watching',
         'lp',
+        'instance',
+        'url'
     ];
 
     /**

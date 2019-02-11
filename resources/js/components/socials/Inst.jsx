@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import Dialogs from "./Dialogs.jsx";
 import Messages from "./Messages.jsx";
 
-export default class Vk extends Component {
+export default class Inst extends Component {
   constructor(props) {
     super(props);
     this.state = {

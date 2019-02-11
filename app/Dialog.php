@@ -38,7 +38,11 @@ class Dialog extends Model
                     ->values()
                     ->each(function(Message $message) {
                       $message->attachments = $message->attachments();
-                      $message->dialog = $message->dialog()->name;
+                      $dialog = $message->dialog();
+                      $message->dialog = [
+                        'id' => $dialog->id,
+                        'name' => $dialog->name,
+                      ];
                       $author = $message->author();
                       $message->author = [
                         'first_name' => $author->first_name,

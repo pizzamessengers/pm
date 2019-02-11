@@ -78,14 +78,14 @@ class GetMessagesVk extends Command
               if ($watching !== Messenger::find($messenger->id)->watching) break;
               if ($watching === 'all')
               {
-                $this->addMessage($message, $profiles, $messenger);
+                $this->addMessage($message, $profiles, $messenger, $vk);
               }
               else
               {
                 if (($dialog = Dialog::where('dialog_id', $message['peer_id'])->first()) !== null)
                 // TODO: if dialogs have same id in vk and other mess
                 {
-                  if ($dialog->updating == true)
+                  if ($dialog->updating === true)
                   {
                     $this->addMessage($message, $profiles, $messenger, $vk);
                   }
@@ -108,9 +108,9 @@ class GetMessagesVk extends Command
      * @param Messenger $messenger
      * @param VKApiClient $vk
      */
-    private function addMessage(Array $message, Array $profiles, Messenger $messenger, VKApiClient $vk)
+    private function addMessage(array $message, array $profiles, Messenger $messenger, VKApiClient $vk)
     {
-      $dialogId = $this->dialogId($message['peer_id'], $messenger);
+      $dialogId = $this->dialogId($message['peer_id'], $messenger, $vk);
       $authorId = $this->authorId($message['from_id'], $dialogId, $profiles);
 
       $newMessage = Message::create([
@@ -118,6 +118,7 @@ class GetMessagesVk extends Command
         'dialog_id' => $dialogId,
         'author_id' => $authorId,
         'text' => $message['text'],
+        'from_me' => $message['out'],
       ]);
 
       if (count($message['attachments']) > 0)
@@ -137,7 +138,6 @@ class GetMessagesVk extends Command
     private function attachments(Array $attachments, Int $messageId, Messenger $messenger, VKApiClient $vk)
     {
       foreach ($attachments as $attachment) {
-        info($attachment);
         switch ($attachment['type']) {
           case 'doc':
             $preview = $attachment['doc']['preview'];
@@ -207,20 +207,42 @@ class GetMessagesVk extends Command
      *
      * @param int id of dialog from response $dialogId
      * @param Messenger $messenger
+     * @param VKApiClient $vk
      * @return int dialog id $dialogId
      */
-    private function dialogId(Int $dialogId, Messenger $messenger)
+    private function dialogId(Int $dialogId, Messenger $messenger, VKApiClient $vk)
     {
-      $dialog = Dialog::firstOrCreate([
-        'messenger_id' => $messenger->id,
-        'dialog_id' => (string) $dialogId,
-      ]);
-
-      if ($messenger->watching === 'all')
+      if (($dialog = Dialog::where([
+        ['messenger_id', $messenger->id],
+        ['dialog_id', (string) $dialogId],
+      ])->first()) === null)
       {
-        $dialog->updating = false;
-        $dialog->save();
+        $chat = $vk->messages()->getConversationsById($messenger->token, array(
+          'peer_ids' => $dialogId,
+          'extended' => 1,
+        ));
+        if ($chat['items'][0]['peer']['type'] === 'user')
+        {
+          foreach ($chat['profiles'] as $profile) {
+            if ($profile['id'] === $chat['items'][0]['peer']['id'])
+            {
+              $name = $profile['first_name'].' '.$profile['last_name'];
+              break;
+            }
+          }
+        }
+        else
+        {
+          $name = $chat['items'][0]['chat_settings']['title'];
+        }
+
+        $dialog = Dialog::create([
+          'messenger_id' => $messenger->id,
+          'dialog_id' => (string) $dialogId,
+          'name' => $name,
+        ]);
       }
+
 
       // TODO: если в разных мессенджерах будут совпадать id разных диалогов, то сделать доп. проверку
 

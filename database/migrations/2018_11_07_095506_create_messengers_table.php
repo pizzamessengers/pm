@@ -23,12 +23,14 @@ class CreateMessengersTable extends Migration
                   ->onDelete('cascade');
             $table->string('name');
             $table->string('login')
-                  ->unique()
                   ->nullable();
             $table->string('password')
                   ->nullable();
             $table->string('token')
-                  ->unique()
+                  ->nullable();
+            $table->string('url')
+                  ->nullable();
+            $table->string('instance')
                   ->nullable();
             $table->string('lp')
                   ->nullable();

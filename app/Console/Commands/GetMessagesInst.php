@@ -210,35 +210,10 @@ class GetMessagesInst extends Command
         'dialog_id' => $dialogId,
         'author_id' => $authorId,
         'text' => $message->getText(),
+        'from_me' => false,
       ]);
 
     }
-
-    /*
-     * Create new message and author if doesn't exist.
-     *
-     * @param array data about message $message
-     * @param array array of profiles from response $profiles
-     * @param Messenger $messenger
-     * @param VKApiClient $vk
-     *
-    private function addMessage(Array $message, Array $profiles, Messenger $messenger, VKApiClient $vk)
-    {
-      $dialogId = $this->dialogId($message['peer_id'], $messenger);
-      $authorId = $this->authorId($message['from_id'], $dialogId, $profiles);
-
-      $newMessage = Message::create([
-        'message_id' => $message['id'],
-        'dialog_id' => $dialogId,
-        'author_id' => $authorId,
-        'text' => $message['text'],
-      ]);
-
-      if (count($message['attachments']) > 0)
-      {
-        $this->attachments($message['attachments'], $newMessage->id, $messenger, $vk);
-      }
-    }*/
 
     /**
      * Create attachment instance.

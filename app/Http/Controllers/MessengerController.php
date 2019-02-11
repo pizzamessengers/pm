@@ -63,30 +63,24 @@ class MessengerController extends Controller
             $messengerData['password'] = $request->props['password'];
             break;
           case 'wapp':
-            // code...
+            $messengerData['token'] = $request->props['token'];
+            $messengerData['url'] = $request->props['url'];
+            $messengerData['instance'] = substr($messengerData['url'], -6, 5);
+
+            $url = $messengerData['url'].'webhook?token='.$messengerData['token'];
+            $data = json_encode([
+              'webhookUrl' => 'http://localhost:8000/messages/wapp',
+            ]);
+            $options = stream_context_create(['http' => [
+              'method'  => 'POST',
+              'header'  => 'Content-type: application/json',
+              'content' => $data
+            ]]);
+            file_get_contents($url, false, $options);
             break;
         }
 
         $messenger = Messenger::create($messengerData);
-
-/*        if ($request->name === 'inst' && $messengerData['watching'] === 'all')
-        {
-          $inst = new Instagram(false, false);
-          try {
-              $inst->login($messengerData['login'], $messengerData['password']);
-          } catch (\Exception $e) {
-              info('Something went wrong: '.$e->getMessage());
-              exit(0);
-          }
-
-          $lastThread = $inst->direct->getInbox()->getInbox()->getThreads()[0];
-          Dialog::create([
-            'messenger_id' => $messenger->id,
-            'dialog_id' => $lastThread->getThreadId(),
-            'name' => $lastThread->getThreadTitle(),
-            'last_message_id' => $lastThread->getLastPermanentItem()->getItemId(),
-          ]);
-        }*/
 
         return response()->json([
           'success' => true,

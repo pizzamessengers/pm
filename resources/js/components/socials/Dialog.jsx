@@ -10,6 +10,7 @@ export default class Dialog extends Component {
 
     this.text = React.createRef();
     this.dialogId = this.props.match.params.dialogId;
+    this.messenger = this.props.match.params.messenger;
     this.interval;
   }
 
@@ -33,23 +34,27 @@ export default class Dialog extends Component {
   }
 
   name = () => {
-    return socials[this.props.match.params.messenger].dialogList.map(dialog => {
-      if (dialog.id == this.dialogId) {
-        return dialog.name;
-      }
-    });
+    return this.props.location.state
+      ? this.props.location.state.name
+      : socials[this.messenger].dialogList.map(dialog => {
+          if (dialog.id == this.dialogId) {
+            return dialog.name;
+          }
+        });
   };
 
   sendMessage = e => {
     e.preventDefault();
     let data = {
+      messenger: messenger,
       text: this.text.current.value,
       dialogId: this.dialogId
     };
-    axios.post("api/v1/messages/send?api_token=" + apiToken, data)
-    .then(function(response) {
-      //console.log(response.data);
-    });
+    axios
+      .post("api/v1/messages/send?api_token=" + apiToken, data)
+      .then(function(response) {
+        //console.log(response.data);
+      });
   };
 
   listing = () => {
@@ -78,7 +83,9 @@ export default class Dialog extends Component {
   }
 
   render() {
+    console.log(this.props);
     let { messages, list } = this.state;
+    messages = messages.slice(list * 10 - 10, list * 10);
     return (
       <div className="container">
         <div className="row justify-content-center">
@@ -99,63 +106,59 @@ export default class Dialog extends Component {
 
               <div className="card-body">
                 <ul className="navbar-nav">
-                  {messages.map((message, index) => {
-                    if (index >= list * 10 - 10 && index < list * 10) {
-                      return (
-                        <li className="nav-item d-flex my-1" key={message.id}>
-                          <img
-                            className="mr-4"
-                            src={message.author.avatar}
-                            width={50 + "px"}
-                            height={50 + "px"}
-                          />
-                          <div>
-                            <div className="mb-2">
-                              <b>author:</b>
-                              {message.author.first_name +
-                                " " +
-                                message.author.last_name}
-                            </div>
-                            <div>
-                              {message.text}
-                              <br />
-                              {message.attachments.map(attachment => {
-                                switch (attachment.type) {
-                                  case "photo":
-                                    return (
-                                      <img
-                                        src={attachment.url}
-                                        key={attachment.url}
-                                      />
-                                    );
-                                    break;
-                                  case "audio":
-                                    return (
-                                      <Fragment key={attachment.url}>
-                                        <div>{attachment.name}</div>
-                                        <audio controls src={attachment.url} />
-                                      </Fragment>
-                                    );
-                                    break;
-                                  case "video":
-                                    return (
-                                      <iframe
-                                        key={attachment.url}
-                                        src={attachment.url}
-                                        width="100%"
-                                        frameBorder="0"
-                                        allowFullScreen
-                                      />
-                                    );
-                                    break;
-                                }
-                              })}
-                            </div>
-                          </div>
-                        </li>
-                      );
-                    }
-                  })}
+                  {messages.map(message => (
+                    <li className="nav-item d-flex my-1" key={message.id}>
+                      <img
+                        className="mr-4"
+                        src={message.author.avatar}
+                        width={50 + "px"}
+                        height={50 + "px"}
+                      />
+                      <div>
+                        <div className="mb-2">
+                          <b>author:</b>
+                          {message.author.first_name +
+                            " " +
+                            message.author.last_name}
+                        </div>
+                        <div>
+                          {message.text}
+                          <br />
+                          {message.attachments.map(attachment => {
+                            switch (attachment.type) {
+                              case "photo":
+                                return (
+                                  <img
+                                    src={attachment.url}
+                                    key={attachment.url}
+                                  />
+                                );
+                                break;
+                              case "audio":
+                                return (
+                                  <Fragment key={attachment.url}>
+                                    <div>{attachment.name}</div>
+                                    <audio controls src={attachment.url} />
+                                  </Fragment>
+                                );
+                                break;
+                              case "video":
+                                return (
+                                  <iframe
+                                    key={attachment.url}
+                                    src={attachment.url}
+                                    width="100%"
+                                    frameBorder="0"
+                                    allowFullScreen
+                                  />
+                                );
+                                break;
+                            }
+                          })}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
                 </ul>
                 <ul
                   className="d-flex justify-content-center align-items-center p-0 mb-0 mt-3"

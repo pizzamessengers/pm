@@ -51,25 +51,23 @@ class MessageController extends Controller
     {
       $data = json_decode(file_get_contents('php://input'), true);
       $messenger = Messenger::where('instance', $data['instanceId'])->first();
+      if ($messenger->updating === false) break;
       $watching = $messenger->watching;
 
-      foreach($data['messages'] as $message){
+      foreach($data['messages'] as $message)
+      {
         if ($watching !== Messenger::where('instance', $data['instanceId'])->first()->watching) break;
-        if ($watching === 'all')
+
+        if (($dialog = Dialog::where([
+          ['dialog_id', $message['chatId']],
+          ['messenger_id', $messenger->id]
+        ])->first()) === null)
         {
-          $this->addMessage($message, $messenger);
+          if ($watching === 'dialogs') continue;
         }
-        else
-        {
-          if (($dialog = Dialog::where('dialog_id', $message['chatId'])->first()) !== null)
-          // TODO: if dialogs have same id in vk and other mess
-          {
-            if ($dialog->updating === true)
-            {
-              $this->addMessage($message, $messenger);
-            }
-          }
-        }
+        else if ($dialog->updating === false) continue;
+
+        $this->addMessage($message, $messenger);
       }
     }
 
@@ -202,13 +200,37 @@ class MessageController extends Controller
      */
     public function sendMessage(Request $request)
     {
-      $ig = new Instagram(false, false);
+      switch ($request->messenger) {
+        case 'vk':
 
-      try {
-          $ig->login('ilya_dmitriev1234', '1qazxsw23edc');
-      } catch (\Exception $e) {
-          info('Something went wrong: '.$e->getMessage());
-          exit(0);
+          break;
+        case 'inst':
+          /*$ig = new Instagram(false, false);
+
+          try {
+              $ig->login('ilya_dmitriev1234', '1qazxsw23edc');
+          } catch (\Exception $e) {
+              info('Something went wrong: '.$e->getMessage());
+              exit(0);
+          }*/
+          break;
+        case 'wapp':
+          $wapp = $request->user()->wapp();
+          $dialogId = $request->dialogId;
+          $phone = substr($dialogId, 0, strlen($dialogId)-5);
+
+          $url = $wapp->url.'message?token='.$wapp->token;
+          $data = json_encode([
+            'phone' => $phone,
+            'body' => $request->text,
+          ]);
+          $options = stream_context_create(['https' => [
+            'method'  => 'POST',
+            'header'  => 'Content-type: application/json',
+            'content' => $data
+          ]]);
+          file_get_contents($url, false, $options);
+          break;
       }
 
       /*try {
@@ -242,11 +264,11 @@ class MessageController extends Controller
       ));
 
       info($response);
-
+      */
       return response()->json([
         'success' => true,
         'message' => 'kek',
-      ], 200);*/
+      ], 200);
     }
 
     /**

@@ -72,25 +72,19 @@ class GetMessagesVk extends Command
           if ($messages['count'] > 0)
           {
             $profiles = $response['profiles'];
-
             foreach ($messages['items'] as $message)
             {
               if ($watching !== Messenger::find($messenger->id)->watching) break;
-              if ($watching === 'all')
+              if (($dialog = Dialog::where([
+                ['dialog_id', $message['peer_id']],
+                ['messenger_id', $messenger->id]
+              ])->first()) === null)
               {
-                $this->addMessage($message, $profiles, $messenger, $vk);
+                if ($watching === 'dialogs') continue;
               }
-              else
-              {
-                if (($dialog = Dialog::where('dialog_id', $message['peer_id'])->first()) !== null)
-                // TODO: if dialogs have same id in vk and other mess
-                {
-                  if ($dialog->updating === true)
-                  {
-                    $this->addMessage($message, $profiles, $messenger, $vk);
-                  }
-                }
-              }
+              else if ($dialog->updating === false) continue;
+
+              $this->addMessage($message, $profiles, $messenger, $vk);
             }
 
             $lp->pts = $response['new_pts'];

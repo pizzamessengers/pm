@@ -75,8 +75,10 @@ class DialogController extends Controller
         $name = $dialog['title'];
       }
 
-      if (Dialog::where('dialog_id', $dialog['peer']['id'])
-        ->where('messenger_id', $request->user()->vk()->id)->count() !== 0)
+      if (Dialog::where([
+        ['dialog_id', $dialog['peer']['id']],
+        ['messenger_id', $request->user()->vk()->id]
+      ])->first() !== null)
       {
         return array(
           'success' => false,

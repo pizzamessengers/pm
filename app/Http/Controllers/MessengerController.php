@@ -45,6 +45,8 @@ class MessengerController extends Controller
           'user_id' => $request->user()->id,
         ];
 
+        $dialogs = array();
+
         switch ($request->name) {
           case 'vk':
             $messengerData['token'] = $request->props['token'];
@@ -57,10 +59,51 @@ class MessengerController extends Controller
               'ts' => $lpServer['ts'],
               'pts' => $lpServer['pts'],
             ]);
+
+            if ($messengerData['watching'] === 'dialogs')
+            {
+              $vkRes = $vk->messages()->getConversations($messengerData['token'], array(
+                'count' => 20,
+              ));
+
+              foreach ($vkRes['items'] as $item) {
+                $dialog = $item['conversation'];
+                $lastMessage = $item['last_message'];
+                $type = $dialog['peer']['type'];
+
+                $text = strlen($lastMessage['text']) > 40 ?
+                  mb_substr($lastMessage['text'], 0, 40, 'UTF-8').'...' :
+                  $lastMessage['text'];
+
+                array_push($dialogs, array(
+                  'id' => $dialog['peer']['id'],
+                  'type' => $type,
+                  'title' => $type === 'chat' ?
+                    $dialog['chat_settings']['title'] :
+                    'kekkek',
+                  'photo' => $type === 'chat' ?
+                    array_key_exists('photo', $dialog['chat_settings']) ?
+                      $dialog['chat_settings']['photo']['photo_100'] :
+                      'https://vk.com/images/camera_100.png?ava=1' :
+                    'https://www.google.ru/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&ved=2ahUKEwie5oWcobrgAhWQuIsKHcw2DmIQjRx6BAgBEAU&url=https%3A%2F%2Fwww.istockphoto.com%2Fae%2Fphotos%2Fpizza&psig=AOvVaw0RgFJ_8NAdfqZuHVNMqnKw&ust=1550200552098469',
+                  'last_message' => $text,
+                  'members_count' => $type === 'chat' ?
+                    $dialog['chat_settings']['members_count'] :
+                    2
+                ));
+              }
+            }
+
             break;
           case 'inst':
             $messengerData['login'] = $request->props['login'];
             $messengerData['password'] = $request->props['password'];
+
+            if ($messengerData['watching'] === 'dialogs')
+            {
+
+            }
+
             break;
           case 'wapp':
             $messengerData['token'] = $request->props['token'];
@@ -71,23 +114,39 @@ class MessengerController extends Controller
             $data = json_encode([
               'webhookUrl' => 'http://localhost:8000/messages/wapp',
             ]);
-            $options = stream_context_create(['http' => [
+            $options = stream_context_create(['https' => [
               'method'  => 'POST',
               'header'  => 'Content-type: application/json',
               'content' => $data
             ]]);
             file_get_contents($url, false, $options);
+
+            if ($messengerData['watching'] === 'dialogs')
+            {
+
+            }
+
             break;
         }
 
         $messenger = Messenger::create($messengerData);
 
-        return response()->json([
-          'success' => true,
-          'messenger' => [
-            'id' => $messenger->id
-          ]
-        ], 200);
+        info($dialogs);
+
+        return $messengerData['watching'] === 'all' ?
+          response()->json([
+            'success' => true,
+            'messenger' => [
+              'id' => $messenger->id
+            ]
+          ], 200) :
+          response()->json([
+            'success' => true,
+            'messenger' => [
+              'id' => $messenger->id
+            ],
+            'dialogs' => $dialogs,
+          ], 200);
       }
 
     /**

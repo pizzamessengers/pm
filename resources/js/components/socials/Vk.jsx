@@ -13,10 +13,9 @@ export default class Vk extends Component {
   }
 
   token = () => {
-    let url   = this.url.current.value;
-    console.log(url.substring(45, url.indexOf('&', 45)));
-    return url.substring(45, url.indexOf('&', 45));
-  }
+    let url = this.url.current.value;
+    return url.substring(45, url.indexOf("&", 45));
+  };
 
   toggleWatching = () => {
     let watching;
@@ -122,11 +121,7 @@ export default class Vk extends Component {
                         className="d-flex flex-column justify-content-center align-items-center"
                       >
                         <div>
-                          <input
-                            type="text"
-                            placeholder="url"
-                            ref={this.url}
-                          />
+                          <input type="text" placeholder="url" ref={this.url} />
                         </div>
                         <div className="my-2">
                           <input

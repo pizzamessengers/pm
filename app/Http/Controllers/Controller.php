@@ -23,26 +23,36 @@ class Controller extends BaseController
       $vk = $user->vk();
       $inst = $user->inst();
       $wapp = $user->wapp();
-      return view('socials', [
+      return view('app', [
         'apiToken' => $user->api_token,
+        'userName' => $user->name,
         'socials' => [
           'vk' => $vk !== null ? [
             'id' => $vk->id,
             'updating' => $vk->updating,
             'watching' => $vk->watching,
-            'dialogList' => $vk->dialogs()->get(['id', 'name', 'updating']),
+            'dialogList' => $vk->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count'])
+              ->each(function($dialog) {
+                $dialog->last_message = json_decode($dialog->last_message);
+              }),
           ] : null,
           'inst' => $inst !== null ? [
             'id' => $inst->id,
             'updating' => $inst->updating,
             'watching' => $inst->watching,
-            'dialogList' => $inst->dialogs()->get(['id', 'name', 'updating']),
+            'dialogList' => $inst->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count'])
+              ->each(function($dialog) {
+                $dialog->last_message = json_decode($dialog->last_message);
+              }),
           ] : null,
           'wapp' => $wapp !== null ? [
             'id' => $wapp->id,
             'updating' => $wapp->updating,
             'watching' => $wapp->watching,
-            'dialogList' => $wapp->dialogs()->get(['id', 'name', 'updating']),
+            'dialogList' => $wapp->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count'])
+              ->each(function($dialog) {
+                $dialog->last_message = json_decode($dialog->last_message);
+              }),
           ] : null,
         ],
       ]);

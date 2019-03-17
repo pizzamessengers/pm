@@ -113,6 +113,7 @@ class GetMessagesVk extends Command
         'author_id' => $authorId,
         'text' => $message['text'],
         'from_me' => $message['out'],
+        'timestamp' => $message['date'],
       ]);
 
       if (count($message['attachments']) > 0)
@@ -149,7 +150,7 @@ class GetMessagesVk extends Command
             }
             break;
           case 'photo':
-            $type = 'photo';
+            $type = 'image';
             $name = null;
             foreach ($attachment['photo']['sizes'] as $size) {
               if ($size['type'] === 'm')
@@ -176,13 +177,19 @@ class GetMessagesVk extends Command
             $url = substr($url, 0, strpos($url, "mp3")+3);
             break;
           case 'sticker':
-            $type = 'sticker';
+            $type = 'image';
             $name = null;
             $url = $attachment['sticker']['images'][1]['url'];
             break;
           case 'market':
             $type = 'market';
             $url = 'kek';
+            // TODO: market
+            break;
+          case 'link':
+            $type = 'link';
+            $url = $attachment['link']['url'];
+            $name = $attachment['link']['title'];
             // TODO: market
             break;
         }
@@ -215,25 +222,43 @@ class GetMessagesVk extends Command
           'peer_ids' => $dialogId,
           'extended' => 1,
         ));
+
         if ($chat['items'][0]['peer']['type'] === 'user')
         {
-          foreach ($chat['profiles'] as $profile) {
-            if ($profile['id'] === $chat['items'][0]['peer']['id'])
-            {
-              $name = $profile['first_name'].' '.$profile['last_name'];
-              break;
-            }
+          foreach ($chat['profiles'] as $profile)
+          {
+            if ($profile['id'] === $chat['items'][0]['peer']['id']) break;
           }
+
+          $name = $profile['first_name'].' '.$profile['last_name'];
+          $photo = $profile['photo_100'];
+          $membersCount = 2;
         }
         else
         {
           $name = $chat['items'][0]['chat_settings']['title'];
+          $photo = array_key_exists('photo', $chat['items'][0]['chat_settings']) ?
+            $chat['items'][0]['chat_settings']['photo']['photo_100'] :
+            'https://vk.com/images/camera_100.png';
+          $membersCount = $chat['items'][0]['chat_settings']['members_count'];
+        }
+
+        $lastMessage = $vk->messages()->getById($messenger->token, array(
+          'message_ids' => $chat['items'][0]['last_message_id'],
+        ))['items'][0];
+
+        if (strlen($lastMessage['text']) > 40)
+        {
+          $lastMessage['text'] = mb_substr($lastMessage['text'], 0, 40, 'UTF-8').'...';
         }
 
         $dialog = Dialog::create([
           'messenger_id' => $messenger->id,
           'dialog_id' => (string) $dialogId,
           'name' => $name,
+          'last_message' => $lastMessage['text'],
+          'members_count' => $membersCount,
+          'photo' => $photo,
         ]);
       }
 

@@ -67,7 +67,6 @@ class GetMessagesInst extends Command
               info('Something went wrong: '.$e->getMessage());
               exit(0);
           }
-          $watching = $messenger->watching;
 
           $threads = $inst->direct->getInbox()->getInbox()->getThreads();
           $this->updateThreads($threads, $messenger, $inst);
@@ -89,22 +88,53 @@ class GetMessagesInst extends Command
         if (($dialog = Dialog::where('dialog_id', $threadId)->first()) === null)
         {
           $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp;
-          $lastMessageTimestamp = $thread->getLastPermanentItem()->getTimestamp();
+          $lastMessageTimestamp = substr($thread->getLastPermanentItem()->getTimestamp(), 0, 10);
 
+          //если время последнего сообщения раньше регистрации мессенджера
           if ((int) $lastMessageTimestamp <= (int) $messengerCreatedAt) break;
 
-          if ($messenger->watching === 'all')
+          if ($messenger->watching === 'dialogs')
           {
-            $dialog = Dialog::create([
-              'messenger_id' => $messenger->id,
-              'dialog_id' => $threadId,
-              'name' => $thread->getThreadTitle(),
-            ]);
+            if ($i === 19)
+            {
+              $threads = $inst->direct->getInbox($threadId)->getInbox()->getThreads();
+              $this->updateThreads($threads, $messenger, $inst);
+            }
+            else continue;
           }
-          else continue;
+
+          $lastMessageText = $thread->getLastPermanentItem()->getText();
+          if ($lastMessageText === null)
+          {
+            $lastMessageText = '';
+          }
+          else if (strlen($lastMessageText) > 40)
+          {
+            $lastMessageText = mb_substr($lastMessageText, 0, 40, 'UTF-8').'...';
+          }
+
+          if (count($thread->getUsers()) === 1)
+          {
+            $photo = $thread->getUsers()[0]->getProfilePicUrl();
+          }
+          else $photo = 'https://vk.com/images/camera_100.png';
+
+          $dialog = Dialog::create([
+            'messenger_id' => $messenger->id,
+            'dialog_id' => $threadId,
+            'name' => $thread->getThreadTitle(),
+            'last_message' => json_encode([
+              'id' => $thread->getLastPermanentItem()->getItemId(),
+              'text' => $lastMessageText,
+              'timestamp' => $thread->getLastPermanentItem()->getTimestamp(),
+            ]),
+            'members_count' => count($thread->getUsers()) + 1,
+            'photo' => $photo,
+            'unread_count' => 0,
+          ]);
 
           $thread = $inst->direct->getThread($threadId)->getThread();
-          $this->addMessagesNewDialog($thread, $dialog, $inst, (int) $lastMessageTimestamp);
+          $this->addMessagesNewDialog($thread, $dialog, $inst, (int) $messengerCreatedAt);
         }
         else
         {
@@ -112,10 +142,24 @@ class GetMessagesInst extends Command
           if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message_id) break;
           $thread = $inst->direct->getThread($threadId)->getThread();
           $this->addMessages($thread, $dialog, $inst);
-        }
 
-        $dialog->last_message_id = $thread->getLastPermanentItem()->getItemId();
-        $dialog->save();
+          $lastMessageText = $thread->getLastPermanentItem()->getText();
+          if ($lastMessageText === null)
+          {
+            $lastMessageText = '';
+          }
+          else if (strlen($lastMessageText) > 40)
+          {
+            $lastMessageText = mb_substr($lastMessageText, 0, 40, 'UTF-8').'...';
+          }
+
+          $dialog->last_message = json_encode([
+            'id' => $thread->getLastPermanentItem()->getItemId(),
+            'text' => $lastMessageText,
+            'timestamp' => $thread->getLastPermanentItem()->getTimestamp(),
+          ]);
+          $dialog->save();
+        }
 
         if ($i === 19)
         {
@@ -131,29 +175,27 @@ class GetMessagesInst extends Command
      * @param DirectThread $messages
      * @param Dialog $dialog
      * @param Instagram $inst
-     * @param int $lastMessageTimestamp
+     * @param int $messengerCreatedAt
      */
     private function addMessagesNewDialog(
       DirectThread $thread,
       Dialog $dialog,
       Instagram $inst,
-      int $lastMessageTimestamp
+      int $messengerCreatedAt
     )
     {
       $dialogId = $dialog->id;
 
       foreach ($thread->getItems() as $i=>$message)
       {
-        if ($message->getItemType() !== 'text') continue;
-
-        if ($message->getTimestamp() > $lastMessageTimestamp)
+        if (substr($message->getTimestamp(), 0, 10) > $messengerCreatedAt)
         {
           $this->addMessage($message, $dialogId, $inst);
 
           if ($i === 19)
           {
             $thread = $inst->direct->getThread($thread->getThreadId(), $message->getItemId())->getThread();
-            $this->addMessagesNewDialog($thread, $dialog, $inst, $lastMessageTimestamp);
+            $this->addMessagesNewDialog($thread, $dialog, $inst, $messengerCreatedAt);
           }
         }
         else break;
@@ -174,12 +216,10 @@ class GetMessagesInst extends Command
     )
     {
       $dialogId = $dialog->id;
-      $lastMessageId = $dialog->last_message_id;
+      $lastMessageId = json_decode($dialog->last_message)->id;
 
       foreach ($thread->getItems() as $i=>$message)
       {
-        if ($message->getItemType() !== 'text') continue;
-
         if ($message->getItemId() !== $lastMessageId)
         {
           $this->addMessage($message, $dialogId, $inst);
@@ -209,76 +249,40 @@ class GetMessagesInst extends Command
         'message_id' => $message->getItemId(),
         'dialog_id' => $dialogId,
         'author_id' => $authorId,
-        'text' => $message->getText(),
-        'from_me' => false,
+        'text' => ($message->getItemType() === 'text') ? $message->getText() : '',
+        'from_me' => $message->getUserId() === $inst->account_id ? true : false,
+        'timestamp' => substr($message->getTimestamp(), 0, 10),
       ]);
 
+      if ($message->getItemType() !== 'text')
+      {
+        $this->attachments($message, $newMessage->id);
+      }
     }
 
     /**
      * Create attachment instance.
      *
-     * @param array $attachments
+     * @param DirectThreadItem $message
      * @param int $messageId
-     * @param Messenger $messenger
-     * @param VKApiClient $vk
      */
-    private function attachments(Array $attachments, Int $messageId, Messenger $messenger, VKApiClient $vk)
+    private function attachments(DirectThreadItem $message, int $messageId)
     {
-      foreach ($attachments as $attachment) {
-        switch ($attachment['type']) {
-          case 'doc':
-            $preview = $attachment['doc']['preview'];
-            switch (key($preview)) {
-              case 'audio_msg':
-                $type = 'audio';
+        switch ($message->getItemType()) {
+          case 'like':
+            $type = 'image';
+            $url = 'https://www.pinclipart.com/picdir/big/76-766851_jewlr-instagram-like-icon-png-clipart.png';
+            $name = null;
+            break;
+          case 'media':
+            $media = $message->getMedia();
+            switch ($media->getMediaType()) {
+              case 1:
+                $type = 'image';
+                $url = $media->getImageVersions2()->getCandidates()[0]->getUrl();
                 $name = null;
-                $url = $preview['audio_msg']['link_mp3'];
-                break;
-              case 'photo':
-                $type = 'photo';
-                $name = null;
-                $url = $preview['photo']['sizes'][0]['src'];
                 break;
             }
-            break;
-          case 'photo':
-            $type = 'photo';
-            $name = null;
-            foreach ($attachment['photo']['sizes'] as $size) {
-              if ($size['type'] === 'm')
-              {
-                $url = $size['url'];
-                break;
-              }
-            }
-            break;
-          case 'video':
-            $type = 'video';
-
-            $video = $vk->video()->get($messenger->token, array(
-              'videos' => $attachment['video']['owner_id'].'_'.$attachment['video']['id'],
-            ));
-
-            $name = null;
-            $url = ($video['count'] === 0) ? 'https://vk.com/images/camera_100.png' : $video['items'][0]['player'];
-            break;
-          case 'audio':
-            $type = 'audio';
-            $name = $attachment['audio']['title'].' - '.$attachment['audio']['artist'];
-            $url = $attachment['audio']['url'];
-            $url = substr($url, 0, strpos($url, "mp3")+3);
-            break;
-          case 'sticker':
-            $type = 'sticker';
-            $name = null;
-            $url = $attachment['sticker']['images'][1]['url'];
-            break;
-          case 'market':
-            $type = 'market';
-            $url = 'kek';
-            // TODO: market
-            break;
         }
 
         Attachment::create([
@@ -287,7 +291,6 @@ class GetMessagesInst extends Command
           'url' => $url,
           'name' => $name,
         ]);
-      }
     }
 
     /**

@@ -8,6 +8,10 @@ use App\Message;
 use Illuminate\Http\Request;
 use VK\Client\VKApiClient;
 use InstagramAPI\Instagram;
+use InstagramAPI\Exception\InvalidUserException;
+use InstagramAPI\Exception\IncorrectPasswordException;
+use InstagramAPI\Exception\InvalidArgumentException;
+use InstagramAPI\Exception\ForcedPasswordResetException;
 
 class MessengerController extends Controller
 {
@@ -47,6 +51,10 @@ class MessengerController extends Controller
 
         $dialogs = array();
 
+        $response = array(
+          'success' => true,
+        );
+
         switch ($request->name) {
           case 'vk':
             $messengerData['token'] = $request->props['token'];
@@ -64,44 +72,92 @@ class MessengerController extends Controller
             {
               $vkRes = $vk->messages()->getConversations($messengerData['token'], array(
                 'count' => 20,
+                'extended' => 1,
+                'fields' => 'photo_100',
               ));
+
+              $profiles = $vkRes['profiles'];
 
               foreach ($vkRes['items'] as $item) {
                 $dialog = $item['conversation'];
                 $lastMessage = $item['last_message'];
-                $type = $dialog['peer']['type'];
 
                 $text = strlen($lastMessage['text']) > 40 ?
                   mb_substr($lastMessage['text'], 0, 40, 'UTF-8').'...' :
                   $lastMessage['text'];
 
+                $data = array();
+                if ($dialog['peer']['type'] === 'chat')
+                {
+                  $settings = $dialog['chat_settings'];
+
+                  $data['name'] = $settings['title'];
+                  $data['photo'] = array_key_exists('photo', $settings) ?
+                    $settings['photo']['photo_100'] :
+                    'https://vk.com/images/camera_100.png';
+                  $data['members_count'] = $settings['members_count'];
+                }
+                else
+                {
+                  foreach ($profiles as $profile) {
+                    if ($profile['id'] === $dialog['peer']['id']) break;
+                  }
+
+                  $data['name'] = $profile['first_name'].' '.$profile['last_name'];
+                  $data['photo'] = $profile['photo_100'];
+                  $data['members_count'] = 2;
+                }
+
                 array_push($dialogs, array(
                   'id' => $dialog['peer']['id'],
-                  'type' => $type,
-                  'title' => $type === 'chat' ?
-                    $dialog['chat_settings']['title'] :
-                    'kekkek',
-                  'photo' => $type === 'chat' ?
-                    array_key_exists('photo', $dialog['chat_settings']) ?
-                      $dialog['chat_settings']['photo']['photo_100'] :
-                      'https://vk.com/images/camera_100.png?ava=1' :
-                    'https://www.google.ru/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&ved=2ahUKEwie5oWcobrgAhWQuIsKHcw2DmIQjRx6BAgBEAU&url=https%3A%2F%2Fwww.istockphoto.com%2Fae%2Fphotos%2Fpizza&psig=AOvVaw0RgFJ_8NAdfqZuHVNMqnKw&ust=1550200552098469',
+                  'name' => $data['name'],
+                  'photo' => $data['photo'],
                   'last_message' => $text,
-                  'members_count' => $type === 'chat' ?
-                    $dialog['chat_settings']['members_count'] :
-                    2
+                  'members_count' => $data['members_count'],
                 ));
+
+                $response += array('dialogs' => $dialogs);
               }
             }
 
             break;
           case 'inst':
-            $messengerData['login'] = $request->props['login'];
-            $messengerData['password'] = $request->props['password'];
+            $login = $request->props['login'];
+            $password = $request->props['password'];
+
+            $inst = new Instagram(false, false);
+            try {
+                $inst->login($login, $password);
+            } catch (\Exception $e) {
+                if ($e instanceof InvalidArgumentException)
+                {
+                  $message = 'Проверьте логин и пароль';
+                }
+                elseif ($e instanceof InvalidUserException)
+                {
+                  $message = 'Такого пользователя не существует :(';
+                }
+                elseif ($e instanceof IncorrectPasswordException || $e instanceof ForcedPasswordResetException)
+                {
+                  $message = 'Неправильный пароль';
+                }
+                else
+                {
+                  $message = 'Что-то пошло не так';
+                }
+
+                $response['success'] = false;
+                $response += array('message' => $message);
+
+                return response()->json($response, 200);
+            }
+
+            $messengerData['login'] = $login;
+            $messengerData['password'] = $password;
 
             if ($messengerData['watching'] === 'dialogs')
             {
-
+              // TODO:
             }
 
             break;
@@ -123,7 +179,7 @@ class MessengerController extends Controller
 
             if ($messengerData['watching'] === 'dialogs')
             {
-
+              // TODO: 
             }
 
             break;
@@ -131,22 +187,9 @@ class MessengerController extends Controller
 
         $messenger = Messenger::create($messengerData);
 
-        info($dialogs);
+        $response += array('messengerId' => $messenger->id);
 
-        return $messengerData['watching'] === 'all' ?
-          response()->json([
-            'success' => true,
-            'messenger' => [
-              'id' => $messenger->id
-            ]
-          ], 200) :
-          response()->json([
-            'success' => true,
-            'messenger' => [
-              'id' => $messenger->id
-            ],
-            'dialogs' => $dialogs,
-          ], 200);
+        return response()->json($response, 200);
       }
 
     /**
@@ -159,7 +202,7 @@ class MessengerController extends Controller
     {
         return response()->json([
           'success' => true,
-          'messages' => $messenger->messages()
+          'messages' => $messenger->messages()->sortBy('timestamp')->values(),
         ], 200);
     }
 
@@ -240,7 +283,7 @@ class MessengerController extends Controller
      */
     public function deleteMessenger(Request $request)
     {
-        $messenger = $request->user()->{$request['name']}()->delete();
+        $messenger = $request->user()->{$request->name}()->delete();
 
         return response()->json([
           'success' => true,

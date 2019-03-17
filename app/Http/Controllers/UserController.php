@@ -17,4 +17,18 @@ class UserController extends Controller
     {
         //
     }
+
+    /**
+     * Display the messages for the user.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getMessages(Request $request)
+    {
+        return response()->json([
+          'success' => true,
+          'messages' => $request->user()->messages()->sortBy('timestamp')->values(),
+        ], 200);
+    }
 }

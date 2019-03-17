@@ -20,17 +20,21 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
  * Importing components
  */
 
-import Socials from "./components/socials/Socials.jsx";
+import App from "./components/App.jsx";
 
 /**
- * Importing contexts
+ * FontAwesome
  */
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
 
-//
+library.add(fab);
+library.add(fas);
 
 axios.defaults.baseURL = "http://localhost:8000";
 
-const App = () => {
+const Index = () => {
   /**
    * CSRF
    */
@@ -39,12 +43,12 @@ const App = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/socials" component={Socials} />
+        <Route path="/app" component={App} />
       </Switch>
     </BrowserRouter>
   );
 };
 
 if (document.getElementById("root")) {
-  render(<App />, document.getElementById("root"));
+  render(<Index />, document.getElementById("root"));
 }

@@ -14,11 +14,26 @@
 Route::view('/', 'welcome');
 
 Auth::routes();
+Route::get('/logout', 'Auth\LoginController@logout')->name('logout' );
 
 Route::group(['middleware' => 'auth'], function() {
-  Route::get('socials/{mess?}/{dialog?}', 'Controller@createSocials');
+  Route::get('app', 'Controller@createSocials')
+    ->name('app');
+
+  Route::get('app/socials/{messenger?}/{dialog?}/{dialogId?}', 'Controller@createSocials')
+    ->where([
+      'messenger' => 'vk||wapp||inst',
+      'dialog' => 'dialog',
+      'dialogId' => '[0-9]{8}',
+    ])
+    ->name('app');
+
+  Route::get('app/settings/{setting?}/{module?}', 'Controller@createSocials')
+    ->where([
+      'setting' => 'messenger||profile||support',
+      'module' => 'vk||wapp||inst||user||payment',
+    ])
+    ->name('app');
 });
 
 Route::get('home', 'HomeController@index')->name('home');
-
-Route::post('messages/wapp', 'MessageController@wapp');

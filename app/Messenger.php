@@ -37,7 +37,7 @@ class Messenger extends Model
      *
      * @var array
      */
-    protected $messages = [];
+    protected $messages;
 
     /**
      * Get the user for the messenger.
@@ -60,20 +60,10 @@ class Messenger extends Model
      */
     public function messages()
     {
+        $this->messages = collect();
+
         $this->hasMany('App\Dialog')->get()->each(function(Dialog $dialog) {
-           $dialog->messages()->each(function(Message $message) {
-             array_push($this->messages, $message);
-           });
-        });
-
-        if (count($this->messages) === 0)
-        {
-            return [];
-        }
-
-        usort($this->messages, function($a, $b)
-        {
-            return strcmp($b->message_id, $a->message_id);
+            $this->messages = $this->messages->merge($dialog->messages());
         });
 
         return $this->messages;

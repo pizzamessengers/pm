@@ -37,7 +37,7 @@ class MessageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function addMessage(Request $request)
+    public function createMessage(Request $request)
     {
       $message = Message::create($request->all());
     }
@@ -51,7 +51,7 @@ class MessageController extends Controller
     {
       $data = json_decode(file_get_contents('php://input'), true);
       $messenger = Messenger::where('instance', $data['instanceId'])->first();
-      if ($messenger->updating === false) break;
+      if ($messenger->updating === false) return;
       $watching = $messenger->watching;
 
       foreach($data['messages'] as $message)
@@ -98,6 +98,7 @@ class MessageController extends Controller
         'text' => $text,
         'author_id' => $authorId,
         'from_me' => $message['fromMe'],
+        'timestamp' => $message['time'],
       ]);
 
       if ($message->type !== 'chat')
@@ -189,86 +190,102 @@ class MessageController extends Controller
           'message_id' => $messageId,
           'url' => $message->body,
         ]);
-      }
     }
 
     /**
-     * Send message to the messenger and store a newly created resource in storage.
+     * Send message to the messenger.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function sendMessage(Request $request)
     {
-      switch ($request->messenger) {
+      $dialogId = Dialog::find($request->dialogId)->dialog_id;
+      $text = $request->text;
+
+      switch ($request->mess) {
         case 'vk':
-
+          $vk = $request->user()->vk();
+          $this->sendVkMessage($vk, $dialogId, $text);
           break;
+
         case 'inst':
-          /*$ig = new Instagram(false, false);
-
-          try {
-              $ig->login('ilya_dmitriev1234', '1qazxsw23edc');
-          } catch (\Exception $e) {
-              info('Something went wrong: '.$e->getMessage());
-              exit(0);
-          }*/
+          $inst = $request->user()->inst();
+          $this->sendInstMessage($inst, $dialogId, $text);
           break;
+
         case 'wapp':
           $wapp = $request->user()->wapp();
-          $dialogId = $request->dialogId;
-          $phone = substr($dialogId, 0, strlen($dialogId)-5);
-
-          $url = $wapp->url.'message?token='.$wapp->token;
-          $data = json_encode([
-            'phone' => $phone,
-            'body' => $request->text,
-          ]);
-          $options = stream_context_create(['https' => [
-            'method'  => 'POST',
-            'header'  => 'Content-type: application/json',
-            'content' => $data
-          ]]);
-          file_get_contents($url, false, $options);
+          $this->sendWappMessage($wapp, $dialogId, $text);
           break;
       }
 
-      /*try {
-          $direct = $ig->direct;
-          $response = $direct->getThread('340282366841710300949128293298591275091');
-          //info($response->getThread()->getItems());
-            // In this example we're simply printing the IDs of this page's items.
-          foreach ($response->getThread()->getItems() as $item) {
-              info($item->getUserId() . '  ' . $item->getText());
-          }
-      } catch (\Exception $e) {
-          echo 'Something went wrong: '.$e->getMessage()."\n";
-      }*/
-
-      /*$inbox = $ig->direct->getInbox();
-
-      info($inbox);*/
-
-      //$direct->sendText(['users' => [6186894050]], 'kek');
-
-      /*info('here');
-      $vk = new VKApiClient();
-
-      return $vk->messages()->send($request->user()->vk()->token, array(
-        'random_id' => random_int(1000000000, 2000000000),
-        'peer_id' => $request->dialogId,
-        'message' => $request->text,
-        //'attachment' => ,
-        //'forward_messages' => ,
-        //'sticker_id' => ,
-      ));
-
-      info($response);
-      */
       return response()->json([
         'success' => true,
-        'message' => 'kek',
       ], 200);
+    }
+
+    /**
+     * Send message to the vk.
+     *
+     * @param Messenger $messenger
+     * @param string $dialogId
+     * @param string $text
+     * @return \Illuminate\Http\Response
+     */
+    private function sendVkMessage(Messenger $messenger, string $dialogId, string $text)
+    {
+      //
+    }
+
+    /**
+     * Send message to the inst.
+     *
+     * @param Messenger $messenger
+     * @param string $dialogId
+     * @param string $text
+     * @return \Illuminate\Http\Response
+     */
+    private function sendInstMessage(Messenger $messenger, string $dialogId, string $text)
+    {
+      $inst = new Instagram(false, false);
+
+      try {
+          $inst->login($messenger->login, $messenger->password);
+      } catch (\Exception $e) {
+          info('Something went wrong: '.$e->getMessage());
+          exit(0);
+      }
+
+      $inst->direct->sendText(
+        array('thread' => $dialogId),
+        $ext
+      );
+    }
+
+    /**
+     * Send message to the wapp.
+     *
+     * @param Messenger $messenger
+     * @param string $dialogId
+     * @param string $text
+     * @return \Illuminate\Http\Response
+     */
+    private function sendWappMessage(Messenger $messenger, string $dialogId, string $text)
+    {
+      $phone = substr($dialogId, 0, strlen($dialogId)-5);
+
+      $url = $messenger->url.'message?token='.$messenger->token;
+      $data = json_encode([
+        'phone' => $phone,
+        'body' => $text,
+      ]);
+      $options = stream_context_create(['https' => [
+        'method'  => 'POST',
+        'header'  => 'Content-type: application/json',
+        'content' => $data
+      ]]);
+      file_get_contents($url, false, $options);
     }
 
     /**

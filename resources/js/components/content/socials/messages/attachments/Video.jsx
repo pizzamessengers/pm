@@ -1,0 +1,12 @@
+import React, { Fragment } from "react";
+
+const Video = ({ attachment }) => (
+  <Fragment key={attachment.url}>
+    {attachment.url === "https://vk.com/images/camera_100.png" ? (
+      <div>удаленное видео</div>
+    ) : null}
+    <iframe src={attachment.url} width="100%" frameBorder="0" allowFullScreen />
+  </Fragment>
+);
+
+export default Video;

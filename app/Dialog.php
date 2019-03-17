@@ -15,7 +15,7 @@ class Dialog extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'dialog_id', 'messenger_id', 'last_message_id',
+        'name', 'dialog_id', 'messenger_id', 'last_message_id', 'last_message', 'photo', 'members_count', 'unread_count',
     ];
 
     /**
@@ -24,7 +24,7 @@ class Dialog extends Model
      * @var array
      */
     protected $hidden = [
-        //'last_message_id',
+        //
     ];
 
     /**
@@ -32,24 +32,34 @@ class Dialog extends Model
      */
     public function messages($that = null)
     {
-        return $this->hasMany('App\Message')
-                    ->get()
-                    ->sortByDesc('message_id')
-                    ->values()
-                    ->each(function(Message $message) {
-                      $message->attachments = $message->attachments();
-                      $dialog = $message->dialog();
-                      $message->dialog = [
-                        'id' => $dialog->id,
-                        'name' => $dialog->name,
-                      ];
-                      $author = $message->author();
-                      $message->author = [
-                        'first_name' => $author->first_name,
-                        'last_name' => $author->last_name,
-                        'avatar' => $author->avatar,
-                      ];
-                    });
+      return $this->hasMany('App\Message')
+                  ->get(['id', 'dialog_id', 'author_id', 'from_me', 'text', 'timestamp'])
+                  ->values()
+                  ->each(function(Message $message) {
+                    $message->attachments = $message->attachments();
+                    $dialog = $message->dialog();
+                    $message->dialog = [
+                      'id' => $dialog->id,
+                      'name' => $dialog->name,
+                    ];
+                    $author = $message->author();
+                    $message->author = [
+                      'name' => $author->first_name.' '.$author->last_name,
+                      'avatar' => $author->avatar,
+                    ];
+                    $message->mess = $dialog->messenger()->name;
+                    unset($message->dialog_id);
+                    unset($message->author_id);
+                    unset($message->id);
+                  });
+    }
+
+    /**
+     * Get the messenger for the dialog.
+     */
+    public function messenger()
+    {
+        return $this->belongsTo('App\Messenger')->first();
     }
 
     /**

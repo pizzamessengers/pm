@@ -1,0 +1,73 @@
+.bubble {
+   display: flex;
+   position: relative;
+   width: $waiting-width;
+   height: $waiting-height;
+   align-items: center;
+   justify-content: space-around;
+
+   border-radius: $waiting-height;
+   background-color: $waiting-color;
+   box-shadow: $waiting-box-shadow;
+
+   &::before,
+   &::after {
+      position: absolute;
+      content: '';
+
+      background: $waiting-color;
+      border-radius: 100%;
+      box-shadow: $waiting-box-shadow;
+   }
+
+   &::before {
+      bottom: 0;
+      left: -6px;
+      width: $waiting-height / 3;
+      height: $waiting-height / 3;
+   }
+
+   &::after {
+      bottom: -5px;
+      left: -18px;
+      width: $waiting-height / 6;
+      height: $waiting-height / 6;
+   }
+}
+
+.bubble-circle {
+   width: $waiting-circle_size;
+   height: $waiting-circle_size;
+
+   border-radius: 100%;
+   background-color: #bbb;
+
+   animation: fade_in_out $waiting-animation_time infinite;
+   animation-delay: $waiting-animation_delay / 2;
+
+   &:first-of-type {
+      margin-left: $waiting-circle_size;
+
+      animation-delay: 0s;
+   }
+
+   &:last-of-type {
+      margin-right: $waiting-circle_size;
+
+      animation-delay: $waiting-animation_delay;
+   }
+}
+
+.waiting-wrapper {
+   display: flex;
+   height: 100%;
+   width: 100%;
+   align-items: center;
+   justify-content: center;
+}
+
+.dialog-view {
+  .waiting-wrapper {
+    height: 85%;
+  }
+}

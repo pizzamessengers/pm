@@ -29,6 +29,13 @@ class User extends Authenticatable
     ];
 
     /**
+     * messages.
+     *
+     * @var array
+     */
+    protected $messages;
+
+    /**
      * Get the vk messenger for the user.
      */
     public function vk()
@@ -50,5 +57,19 @@ class User extends Authenticatable
     public function wapp()
     {
         return $this->hasOne('App\Messenger')->where('name', 'wapp')->first();
+    }
+
+    /**
+     * Get the messages for the user.
+     */
+    public function messages()
+    {
+        $this->messages = collect();
+
+        $this->hasMany('App\Messenger')->get()->each(function(Messenger $messenger) {
+            $this->messages = $this->messages->merge($messenger->messages());
+        });
+
+        return $this->messages;
     }
 }

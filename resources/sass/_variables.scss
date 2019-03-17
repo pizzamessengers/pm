@@ -18,3 +18,21 @@ $yellow: #ffed4a;
 $green: #38c172;
 $teal: #4dc0b5;
 $cyan: #6cb2eb;
+
+
+// Main
+$secondColor: $cyan;
+$borderColor: rgba(108, 178, 235, 0.2);
+$bg-color: #f8fafc;
+$delete: $red;
+$deleteHovered: #ab302c;
+
+
+// Waiting
+$waiting-color: #ddd;
+$waiting-width: 90px;
+$waiting-height: $waiting-width * 0.6;
+$waiting-circle_size: $waiting-width / 6;
+$waiting-box-shadow: 0 0 .55rem rgba(17,17,17,0.5),0 0 .55rem rgba(17,17,17,0.5);
+$waiting-animation_time: 1.5s;
+$waiting-animation_delay: 0.5s;

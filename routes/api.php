@@ -22,10 +22,13 @@ Route::put('v1/messengers/updating/{messenger}', 'MessengerController@toggleUpda
 Route::get('v1/messengers/updater/{messenger}', 'MessengerController@startUpdating')->name('startUpdating');
 
 Route::get('v1/dialogs/{dialog}', 'DialogController@show');
-Route::post('v1/dialogs', 'DialogController@addDialog');
+Route::post('v1/dialogs', 'DialogController@addDialogs');
 Route::delete('v1/dialogs', 'DialogController@deleteDialogs');
 Route::delete('v1/dialogs/{dialog}', 'DialogController@deleteDialog');
 Route::put('v1/dialogs/{dialog}', 'DialogController@toggleUpdating');
 
+Route::get('v1/messages', 'UserController@getMessages');
 Route::post('v1/messages', 'MessageController@addMessage')->name('addMessage');
 Route::post('v1/messages/send', 'MessageController@sendMessage');
+
+Route::post('v1/messages/wapp', 'MessageController@wapp');

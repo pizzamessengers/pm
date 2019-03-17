@@ -12,7 +12,7 @@ class Message extends Model
      * @var array
      */
     protected $fillable = [
-        'message_id', 'dialog_id', 'text', 'author_id', 'from_me'
+        'message_id', 'dialog_id', 'text', 'author_id', 'from_me', 'timestamp'
     ];
 
     /**

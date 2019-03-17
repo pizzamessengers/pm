@@ -28,6 +28,7 @@ class CreateMessagesTable extends Migration
                 ->on('authors')
                 ->onDelete('cascade');
           $table->boolean('from_me');
+          $table->string('timestamp');
           $table->timestamps();
         });
 

@@ -42,8 +42,8 @@ class MessageController extends Controller
       $message = Message::create($request->all());
     }
 
-    /**
-     * Store a new messages from whatsapp webhook.
+    /** 
+     * Processing whatsapp webhook.
      *
      * @return \Illuminate\Http\Response
      */
@@ -56,6 +56,7 @@ class MessageController extends Controller
 
       foreach($data['messages'] as $message)
       {
+        // если watching поменяется во время выполнения запроса, то сообщения создавать не нужно
         if ($watching !== Messenger::where('instance', $data['instanceId'])->first()->watching) break;
 
         if (($dialog = Dialog::where([
@@ -67,12 +68,13 @@ class MessageController extends Controller
         }
         else if ($dialog->updating === false) continue;
 
+        // если диалог существует и updating true или messenger watching 'all'
         $this->addMessage($message, $messenger);
       }
     }
 
     /**
-     * Get dialog id if exist or create new dialog.
+     * Store a new messages from whatsapp webhook.
      *
      * @param array $message
      * @param Messenger $messenger

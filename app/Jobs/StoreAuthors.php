@@ -104,7 +104,7 @@ class StoreAuthors implements ShouldQueue
       }
     }
     // TODO:
-    /*private function storeAuthorsVk() {
+    /*private function storeAuthorsWapp() {
       foreach ($this->profiles as $profile)
       {
         $authorId = Author::firstOrCreate([

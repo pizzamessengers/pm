@@ -85,7 +85,7 @@ class GetMessagesInst extends Command
       foreach ($threads as $i=>$thread)
       {
         $threadId = $thread->getThreadId();
-        if (($dialog = Dialog::where('dialog_id', $threadId)->first()) === null)
+        if (($dialog = Dialog::where('dialog_id', $threadId)->where('messenger_id', $messenger->id)->first()) === null)
         {
           $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp;
           $lastMessageTimestamp = substr($thread->getLastPermanentItem()->getTimestamp(), 0, 10);
@@ -303,15 +303,21 @@ class GetMessagesInst extends Command
      */
     private function authorId(int $userId, int $dialogId, Instagram $inst)
     {
-      $authorId = Author::where(
+      $authors = Author::where(
         'author_id',
         $userId
-      )->value('id');
+      )->get();
 
-      /*if (count($author_ids) > 1) {
-        // TODO: если в разных мессенджерах будут совпадать id разных авторов, то сделать доп. проверку
+      if (count($authors) > 0) {
+        foreach ($authors as $author) {
+          if ($author->dialogs()[0]->messenger()->name === 'inst')
+          {
+            $authorId = $author->id;
+            break;
+          }
+        }
       }
-      else */
+
       if ($authorId === null)
       {
         $profile = $inst->people->getInfoById($userId)->getUser();

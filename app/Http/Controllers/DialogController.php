@@ -182,7 +182,7 @@ class DialogController extends Controller
       }
 
       if (Dialog::where('dialog_id', $thread->getThreadId())
-        ->where('messenger_id', $request->user()->inst()->id)->count() !== 0)
+        ->where('messenger_id', $messenger->id)->count() !== 0)
       {
         return array(
           'success' => false,

@@ -262,9 +262,6 @@ class GetMessagesVk extends Command
         ]);
       }
 
-
-      // TODO: если в разных мессенджерах будут совпадать id разных диалогов, то сделать доп. проверку
-
       return $dialog->id;
     }
 
@@ -278,15 +275,21 @@ class GetMessagesVk extends Command
      */
     private function authorId(Int $fromId, Int $dialogId, Array $profiles)
     {
-      $authorId = Author::where(
+      $authors = Author::where(
         'author_id',
         $fromId
-      )->value('id');
+      )->get();
 
-      /*if (count($author_ids) > 1) {
-        // TODO: если в разных мессенджерах будут совпадать id разных авторов, то сделать доп. проверку
+      if (count($authors) > 0) {
+        foreach ($authors as $author) {
+          if ($author->dialogs()[0]->messenger()->name === 'inst')
+          {
+            $authorId = $author->id;
+            break;
+          }
+        }
       }
-      else */
+
       if ($authorId === null)
       {
         foreach ($profiles as $profile)

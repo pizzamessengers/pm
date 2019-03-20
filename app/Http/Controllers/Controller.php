@@ -31,28 +31,19 @@ class Controller extends BaseController
             'id' => $vk->id,
             'updating' => $vk->updating,
             'watching' => $vk->watching,
-            'dialogList' => $vk->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count'])
-              ->each(function($dialog) {
-                $dialog->last_message = json_decode($dialog->last_message);
-              }),
+            'dialogList' => $vk->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count']),
           ] : null,
           'inst' => $inst !== null ? [
             'id' => $inst->id,
             'updating' => $inst->updating,
             'watching' => $inst->watching,
-            'dialogList' => $inst->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count'])
-              ->each(function($dialog) {
-                $dialog->last_message = json_decode($dialog->last_message);
-              }),
+            'dialogList' => $inst->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count']),
           ] : null,
           'wapp' => $wapp !== null ? [
             'id' => $wapp->id,
             'updating' => $wapp->updating,
             'watching' => $wapp->watching,
-            'dialogList' => $wapp->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count'])
-              ->each(function($dialog) {
-                $dialog->last_message = json_decode($dialog->last_message);
-              }),
+            'dialogList' => $wapp->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count']),
           ] : null,
         ],
       ]);

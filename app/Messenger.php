@@ -56,6 +56,21 @@ class Messenger extends Model
     }
 
     /**
+     * Get the dialogs for the messenger.
+     *
+     * @param  \App\Messenger  $messenger
+     * @return \Illuminate\Http\Response
+     */
+    public function getDialogsWithLastMessageTimestamp()
+    {
+        return $this->dialogs()->get()
+                  ->each(function($dialog) {
+                    $dialog->last_message_timestamp = $dialog->last_message['timestamp'];
+                    $dialog->mess = $this->name;
+                  });
+    }
+
+    /**
      * Get the messages for the messenger.
      */
     public function messages()

@@ -19,16 +19,16 @@ class UserController extends Controller
     }
 
     /**
-     * Display the messages for the user.
+     * Display the dialogs for the user.
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function getMessages(Request $request)
+    public function getDialogsSortedByLastMessageTimestamp(Request $request)
     {
         return response()->json([
           'success' => true,
-          'messages' => $request->user()->messages()->sortBy('timestamp')->values(),
+          'dialogs' => $request->user()->getDialogsWithLastMessageTimestamp()->sortBy('last_message_timestamp'),
         ], 200);
     }
 }

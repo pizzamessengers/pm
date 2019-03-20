@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import LinkedDialog from "./LinkedDialog";
 import Dialog from "./Dialog";
 import DialogController from "./DialogController";
 
@@ -17,7 +18,7 @@ export default class Dialogs extends Component {
   };
 
   deleteDialog = dialog => {
-    let { mess } = this.props;
+    let mess = dialog.mess;
     axios.delete("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
     socials[mess].dialogList.splice(
       socials[mess].dialogList.map(x => x.id).indexOf(dialog.id),
@@ -28,18 +29,24 @@ export default class Dialogs extends Component {
 
   render() {
     let { dialogs } = this.state;
-    let { withController, mess } = this.props;
+    let { withController, linked, fromMessagesWindow } = this.props;
 
-    return (
-      <ul className="navbar-nav">
+    return dialogs.length > 0 ? (
+      <ul className="list">
         {dialogs.map((dialog, i) => (
-          <li key={i} className="nav-item d-flex align-items-center my-1">
+          <li key={i} className="nav-item d-flex align-items-center my-1 w-100">
             {withController ? (
               <DialogController
                 toggleUpdating={this.toggleUpdating}
                 deleteDialog={this.deleteDialog}
                 dialog={dialog}
-                mess={mess}
+                mess={dialog.mess}
+              />
+            ) : linked ? (
+              <LinkedDialog
+                dialog={dialog}
+                mess={dialog.mess}
+                fromMessagesWindow={fromMessagesWindow}
               />
             ) : (
               <Dialog dialog={dialog} />
@@ -47,6 +54,12 @@ export default class Dialogs extends Component {
           </li>
         ))}
       </ul>
+    ) : (
+      <div className="no-messages-wrapper">
+        <div className="no-messages">
+          У вас еще не было новых сообщений с момента запуска сервиса
+        </div>
+      </div>
     );
   }
 }

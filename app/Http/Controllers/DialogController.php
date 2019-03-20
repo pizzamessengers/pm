@@ -50,9 +50,9 @@ class DialogController extends Controller
 
       if ($afterQuery)
       {
-        $dialog = $dialogs['items'][0];
+        $vkChat = $dialogs['items'][0];
         if (Dialog::where([
-          ['dialog_id', $dialog['peer']['id']],
+          ['dialog_id', $vkChat['peer']['id']],
           ['messenger_id', $messenger->id]
         ])->first() !== null)
         {
@@ -63,14 +63,14 @@ class DialogController extends Controller
         }
 
         $profiles = $vk->messages()->getConversationMembers($token, array(
-          'peer_id' => $dialog['peer']['id'],
+          'peer_id' => $vkChat['peer']['id'],
           'fields' => 'photo_100',
         ))['profiles'];
 
-        $dialogData = $this->dialogIdNamePhotoMembers($dialog, $dialogs);
+        $dialogData = $this->dialogIdNamePhotoMembers($vkChat, $dialogs);
 
         $lastMessage = $vk->messages()->getById($token, array(
-          'message_ids' => $dialog['last_message_id'],
+          'message_ids' => $vkChat['last_message_id'],
         ))['items'][0];
 
         $lastMessageText = $lastMessage['text'];
@@ -82,7 +82,7 @@ class DialogController extends Controller
         $dialog = Dialog::create([
           'name' => $dialogData['name'],
           'messenger_id' => $messenger->id,
-          'dialog_id' => (string) $dialog['peer']['id'],
+          'dialog_id' => (string) $vkChat['peer']['id'],
           'last_message' => array(
             'text' => $lastMessageText,
             'timestamp' =>  $lastMessage['date']
@@ -212,18 +212,17 @@ class DialogController extends Controller
         'name' => $thread->getThreadTitle(),
         'messenger_id' => $messenger->id,
         'dialog_id' => $thread->getThreadId(),
-        'last_message' => json_encode([
+        'last_message' => array(
           'id' => $thread->getLastPermanentItem()->getItemId(),
           'text' => $lastMessageText,
           'timestamp' => $thread->getLastPermanentItem()->getTimestamp(),
-        ]),
+        ),
         'members_count' => count($thread->getUsers()) + 1,
         'photo' => $photo,
         'unread_count' => 0,
       ]);
       StoreAuthors::dispatch('inst', $profiles, $dialog->id);
 
-      $dialog->last_message = json_decode($dialog->last_message);
       $dialogList[] = $dialog;
 
       return array(
@@ -364,7 +363,10 @@ class DialogController extends Controller
         {
           $message['text'] = mb_substr($message['text'], 0, 40, 'UTF-8').'...';
         }
-        $dialogs[$i]['last_message'] = $message['text'];
+        $dialogs[$i]['last_message'] = array(
+          'text' => $message['text'],
+          'timestamp' => $message['date'],
+        );
       }
 
       return $dialogs;

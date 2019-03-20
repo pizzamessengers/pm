@@ -63,10 +63,10 @@ class MessengerController extends Controller
               'need_pts' => 1,
               'lp_version' => 3,
             ));
-            $messengerData['lp'] = json_encode([
+            $messengerData['lp'] = array(
               'ts' => $lpServer['ts'],
               'pts' => $lpServer['pts'],
-            ]);
+            );
 
             if ($messengerData['watching'] === 'dialogs')
             {
@@ -82,7 +82,7 @@ class MessengerController extends Controller
                 $dialog = $item['conversation'];
                 $lastMessage = $item['last_message'];
 
-                $text = strlen($lastMessage['text']) > 40 ?
+                $lastMessageText = strlen($lastMessage['text']) > 40 ?
                   mb_substr($lastMessage['text'], 0, 40, 'UTF-8').'...' :
                   $lastMessage['text'];
 
@@ -112,7 +112,10 @@ class MessengerController extends Controller
                   'id' => $dialog['peer']['id'],
                   'name' => $data['name'],
                   'photo' => $data['photo'],
-                  'last_message' => $text,
+                  'last_message' => array(
+                    'text' => $lastMessageText,
+                    'timestamp' => $lastMessage['date'],
+                  ),
                   'members_count' => $data['members_count'],
                 ));
 
@@ -179,7 +182,7 @@ class MessengerController extends Controller
 
             if ($messengerData['watching'] === 'dialogs')
             {
-              // TODO: 
+              // TODO:
             }
 
             break;
@@ -193,16 +196,16 @@ class MessengerController extends Controller
       }
 
     /**
-     * Display the messages for the specified messenger.
+     * Display the dialogs for the specified messenger.
      *
      * @param  \App\Messenger  $messenger
      * @return \Illuminate\Http\Response
      */
-    public function showMessages(Messenger $messenger)
+    public function getDialogsSortedByLastMessageTimestamp(Messenger $messenger)
     {
         return response()->json([
           'success' => true,
-          'messages' => $messenger->messages()->sortBy('timestamp')->values(),
+          'dialogs' => $messenger->getDialogsWithLastMessageTimestamp()->sortBy('last_message_timestamp'),
         ], 200);
     }
 
@@ -283,7 +286,18 @@ class MessengerController extends Controller
      */
     public function deleteMessenger(Request $request)
     {
-        $messenger = $request->user()->{$request->name}()->delete();
+        $messenger = $request->user()->{$request->name}()->dialogs()->get()->each(function($dialog)
+        {
+          $dialog->authors()->each(function($author)
+          {
+            if (count($author->dialogs()) === 1)
+            {
+              $author->delete();
+            }
+          });
+        });
+
+        $messenger->delete();
 
         return response()->json([
           'success' => true,

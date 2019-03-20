@@ -33,7 +33,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $messages;
+    protected $dialogs;
 
     /**
      * Get the vk messenger for the user.
@@ -60,16 +60,16 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the messages for the user.
+     * Get the dialogs for the user.
      */
-    public function messages()
+    public function getDialogsWithLastMessageTimestamp()
     {
-        $this->messages = collect();
+        $this->dialogs = collect();
 
         $this->hasMany('App\Messenger')->get()->each(function(Messenger $messenger) {
-            $this->messages = $this->messages->merge($messenger->messages());
+            $this->dialogs = $this->dialogs->merge($messenger->getDialogsWithLastMessageTimestamp());
         });
 
-        return $this->messages;
+        return $this->dialogs;
     }
 }

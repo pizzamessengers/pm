@@ -1,12 +1,12 @@
 import React from "react";
 import DialogsConnection from "./dialogs/DialogsConnection";
-import MessengerMessages from "./messages/MessengerMessages";
+import MessengerDialogs from "./messages/MessengerDialogs";
 
 const ConnectedMessenger = ({ mess, watching }) =>
   watching === "dialogs" ? (
     <DialogsConnection mess={mess} />
   ) : (
-    <MessengerMessages mess={mess} />
+    <MessengerDialogs mess={mess} />
   );
 
 export default ConnectedMessenger;

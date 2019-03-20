@@ -28,34 +28,24 @@ export default class Messages extends Component {
   }
 
   render() {
-    let { messages, fromMessagesWindow, fromDialogView } = this.props;
+    let { messages } = this.props;
 
     return (
-      <div className="messages-wrapper" ref={this.messagesWrapper}>
-        {messages.length > 0 ? (
-          <ul className="messages navbar-nav">
-            {messages.map((message, i) => (
-              <li key={i}>
-                <Message
-                  message={message}
-                  same={
-                    i > 0
-                      ? message.author.avatar === messages[i - 1].author.avatar
-                      : false
-                  }
-                  fromMessagesWindow={fromMessagesWindow}
-                  fromDialogView={fromDialogView}
-                />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="no-messages-wrapper">
-            <div className="no-messages">
-              У вас еще не было новых сообщений с момента запуска сервиса
-            </div>
-          </div>
-        )}
+      <div className="list-wrapper" ref={this.messagesWrapper}>
+        <ul className="list navbar-nav">
+          {messages.map((message, i) => (
+            <li key={i}>
+              <Message
+                message={message}
+                same={
+                  i > 0
+                    ? message.author.avatar === messages[i - 1].author.avatar
+                    : false
+                }
+              />
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }

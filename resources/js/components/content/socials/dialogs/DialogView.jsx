@@ -22,7 +22,7 @@ export default class DialogView extends Component {
       .then(response => {
         if (this.state.messages.length !== response.data.messages.length) {
           this.setState({ messages: response.data.messages });
-        }
+        };
         this.setState({ waiting: false });
       });
     this.interval = setInterval(() => {
@@ -69,7 +69,7 @@ export default class DialogView extends Component {
         <div className="card-header">{this.name()}</div>
 
         <div className="card-body dialog-view">
-          {waiting ? <Waiting /> : <Messages messages={messages} fromDialogView />}
+          {waiting ? <Waiting /> : <Messages messages={messages} />}
 
           <div className="card-footer send-message-wrapper">
             <div className="send-message">

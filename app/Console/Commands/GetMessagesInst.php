@@ -123,11 +123,11 @@ class GetMessagesInst extends Command
             'messenger_id' => $messenger->id,
             'dialog_id' => $threadId,
             'name' => $thread->getThreadTitle(),
-            'last_message' => json_encode([
+            'last_message' => array(
               'id' => $thread->getLastPermanentItem()->getItemId(),
               'text' => $lastMessageText,
-              'timestamp' => $thread->getLastPermanentItem()->getTimestamp(),
-            ]),
+              'timestamp' => $lastMessageTimestamp,
+            ),
             'members_count' => count($thread->getUsers()) + 1,
             'photo' => $photo,
             'unread_count' => 0,
@@ -139,7 +139,7 @@ class GetMessagesInst extends Command
         else
         {
           if ($dialog->updating === false) continue;
-          if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message_id) break;
+          if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message['id']) break;
           $thread = $inst->direct->getThread($threadId)->getThread();
           $this->addMessages($thread, $dialog, $inst);
 
@@ -153,11 +153,11 @@ class GetMessagesInst extends Command
             $lastMessageText = mb_substr($lastMessageText, 0, 40, 'UTF-8').'...';
           }
 
-          $dialog->last_message = json_encode([
+          $dialog->last_message = array(
             'id' => $thread->getLastPermanentItem()->getItemId(),
             'text' => $lastMessageText,
-            'timestamp' => $thread->getLastPermanentItem()->getTimestamp(),
-          ]);
+            'timestamp' => substr($thread->getLastPermanentItem()->getTimestamp(), 0, 10),
+          );
           $dialog->save();
         }
 
@@ -216,7 +216,7 @@ class GetMessagesInst extends Command
     )
     {
       $dialogId = $dialog->id;
-      $lastMessageId = json_decode($dialog->last_message)->id;
+      $lastMessageId = $dialog->last_message['id'];
 
       foreach ($thread->getItems() as $i=>$message)
       {
@@ -310,6 +310,7 @@ class GetMessagesInst extends Command
 
       if (count($authors) > 0) {
         foreach ($authors as $author) {
+          info($author->dialogs());
           if ($author->dialogs()[0]->messenger()->name === 'inst')
           {
             $authorId = $author->id;
@@ -318,7 +319,7 @@ class GetMessagesInst extends Command
         }
       }
 
-      if ($authorId === null)
+      if (empty($authorId))
       {
         $profile = $inst->people->getInfoById($userId)->getUser();
         $name = explode(' ', $profile->getFullName());

@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('v1/messengers/{messenger}', 'MessengerController@showMessages');
+Route::get('v1/messengers/{messenger}/getDialogs', 'MessengerController@getDialogsSortedByLastMessageTimestamp');
 Route::post('v1/messengers', 'MessengerController@addMessenger');
 Route::delete('v1/messengers', 'MessengerController@deleteMessenger');
 Route::put('v1/messengers/watching/{messenger}', 'MessengerController@toggleWatching');
@@ -27,8 +27,9 @@ Route::delete('v1/dialogs', 'DialogController@deleteDialogs');
 Route::delete('v1/dialogs/{dialog}', 'DialogController@deleteDialog');
 Route::put('v1/dialogs/{dialog}', 'DialogController@toggleUpdating');
 
-Route::get('v1/messages', 'UserController@getMessages');
 Route::post('v1/messages', 'MessageController@addMessage')->name('addMessage');
 Route::post('v1/messages/send', 'MessageController@sendMessage');
 
 Route::post('v1/messages/wapp', 'MessageController@wapp');
+
+Route::get('v1/user/getDialogs', 'UserController@getDialogsSortedByLastMessageTimestamp');

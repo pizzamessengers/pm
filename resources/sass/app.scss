@@ -21,6 +21,10 @@
 .wrapper {
   height: 100%;
 
+  .dialogs {
+
+  }
+
   .messagesWindow, .content {
     width: 100%;
     transition: 0.5s;
@@ -92,73 +96,147 @@
     }
   }
 
-  .messages-wrapper {
+  .list-wrapper {
     height: 100%;
     overflow-y: auto;
+  }
 
-    .messages {
-      width: 100%;
-      padding-right: 6px;
+  .list {
+    width: 100%;
+    margin: 0;
+    padding: 0 6px;
 
-      .message {
-        padding: 6px;
-        border-radius: 10px;
-        min-width: 300px;
-        max-width: 400px;
+    .message {
+      padding: 6px;
+      border-radius: 10px;
+      min-width: 300px;
+      max-width: 400px;
 
-        .avatar {
-          width: 40px;
-          height: 40px;
-          margin-right: 10px;
-          border-radius: 50%;
+      .avatar {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+        border-radius: 50%;
+      }
+
+      .message-body {
+        &.not-from-me-same {
+          margin-left: 50px;
+        }
+      }
+
+      .text {
+        box-sizing: border-box;
+        border: 1.2px solid rgb(238, 238, 238);
+        border-radius: 20px;
+        padding: 10px 14px;
+
+        &.from-me {
+          background-color: rgb(238, 238, 238);
         }
 
-        .message-body {
-          &.not-from-me-same {
-            margin-left: 50px;
-          }
+        &.with-attachments {
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
         }
+      }
 
-        .text {
-          box-sizing: border-box;
-          border: 1.2px solid rgb(238, 238, 238);
-          border-radius: 20px;
-          padding: 10px 14px;
-
-          &.from-me {
-            background-color: rgb(238, 238, 238);
-          }
-
-          &.with-attachments {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-          }
-        }
-
-        .attachment {
-          img {
-            max-width: 100%;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-          }
+      .attachment {
+        img {
+          max-width: 100%;
+          border-bottom-left-radius: 20px;
+          border-bottom-right-radius: 20px;
         }
       }
     }
 
-    .no-messages-wrapper {
+    .linked-dialog {
       width: 100%;
-      height: 100%;
+      color: #000;
+
+      &:hover {
+
+        .dialog {
+          background-color: #123;
+          color: #fff;
+        }
+      }
+    }
+
+    .dialog {
+      width: 100%;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
       display: -webkit-flex;
       display: -ms-flex;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 8px;
+      border-radius: 4px;
+      position: relative;
 
-      .no-messages {
-        width: 70%;
-        height: auto;
-        text-align: center;
+      .avatar {
+        width: 60px;
+        height: 60px;
+        margin-right: 14px;
+        border-radius: 50%;
       }
+
+      .dialog-data {
+        width: calc(100% - 74px);
+        display: -webkit-flex;
+        display: -ms-flex;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .title-text {
+          .title {
+            font-size: 20px;
+          }
+
+          .text {
+            font-style: 16px;
+          }
+        }
+
+        .timestamp {
+          font-size: 14px;
+        }
+      }
+
+      .unread-count {
+        position: absolute;
+        display: -webkit-flex;
+        display: -ms-flex;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 26px;
+        height: 26px;
+        top: 0;
+        left: 0;
+        background-color: $red;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .no-messages-wrapper {
+    width: 100%;
+    height: 100%;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .no-messages {
+      width: 70%;
+      height: auto;
+      text-align: center;
     }
   }
 

@@ -15,7 +15,7 @@ class Dialog extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'dialog_id', 'messenger_id', 'last_message_id', 'last_message', 'photo', 'members_count', 'unread_count',
+        'name', 'dialog_id', 'messenger_id', 'last_message', 'photo', 'members_count', 'unread_count',
     ];
 
     /**
@@ -28,9 +28,18 @@ class Dialog extends Model
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'last_message' => 'array',
+    ];
+
+    /**
      * Get the messages for the dialog.
      */
-    public function messages($that = null)
+    public function messages()
     {
       return $this->hasMany('App\Message')
                   ->get(['id', 'dialog_id', 'author_id', 'from_me', 'text', 'timestamp'])

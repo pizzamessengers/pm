@@ -82,7 +82,6 @@ export default class DialogsConnection extends Component {
           <Dialogs
             dialogs={socials[this.props.mess].dialogList}
             withController={true}
-            mess={this.props.mess}
           />
         ) : null}
         {this.state.modal.show ? (

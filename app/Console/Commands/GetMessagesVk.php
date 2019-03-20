@@ -57,12 +57,12 @@ class GetMessagesVk extends Command
         ->where('updating', true)
         ->get()->each(function(Messenger $messenger) {
           $vk = new VKApiClient();
-          $lp = json_decode($messenger->lp);
+          $lp = $messenger->lp;
           $watching = $messenger->watching;
 
           $response = $vk->messages()->getLongPollHistory($messenger->token, array(
-            'ts' => $lp->ts,
-            'pts' => $lp->pts,
+            'ts' => $lp['ts'],
+            'pts' => $lp['pts'],
             'fields' => 'photo_100',
             'lp_version' => 3,
           ));
@@ -87,8 +87,8 @@ class GetMessagesVk extends Command
               $this->addMessage($message, $profiles, $messenger, $vk);
             }
 
-            $lp->pts = $response['new_pts'];
-            $messenger->lp = json_encode($lp);
+            $lp['pts'] = $response['new_pts'];
+            $messenger->lp = $lp;
             $messenger->save();
           }
         });
@@ -290,7 +290,7 @@ class GetMessagesVk extends Command
         }
       }
 
-      if ($authorId === null)
+      if (empty($authorId))
       {
         foreach ($profiles as $profile)
         {

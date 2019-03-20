@@ -12236,35 +12236,36 @@ a.text-dark:focus {
   padding: 0;
 }
 
-.wrapper .messages-wrapper {
+.wrapper .list-wrapper {
   height: 100%;
   overflow-y: auto;
 }
 
-.wrapper .messages-wrapper .messages {
+.wrapper .list {
   width: 100%;
-  padding-right: 6px;
+  margin: 0;
+  padding: 0 6px;
 }
 
-.wrapper .messages-wrapper .messages .message {
+.wrapper .list .message {
   padding: 6px;
   border-radius: 10px;
   min-width: 300px;
   max-width: 400px;
 }
 
-.wrapper .messages-wrapper .messages .message .avatar {
+.wrapper .list .message .avatar {
   width: 40px;
   height: 40px;
   margin-right: 10px;
   border-radius: 50%;
 }
 
-.wrapper .messages-wrapper .messages .message .message-body.not-from-me-same {
+.wrapper .list .message .message-body.not-from-me-same {
   margin-left: 50px;
 }
 
-.wrapper .messages-wrapper .messages .message .text {
+.wrapper .list .message .text {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   border: 1.2px solid #eeeeee;
@@ -12272,22 +12273,101 @@ a.text-dark:focus {
   padding: 10px 14px;
 }
 
-.wrapper .messages-wrapper .messages .message .text.from-me {
+.wrapper .list .message .text.from-me {
   background-color: #eeeeee;
 }
 
-.wrapper .messages-wrapper .messages .message .text.with-attachments {
+.wrapper .list .message .text.with-attachments {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-.wrapper .messages-wrapper .messages .message .attachment img {
+.wrapper .list .message .attachment img {
   max-width: 100%;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }
 
-.wrapper .messages-wrapper .no-messages-wrapper {
+.wrapper .list .linked-dialog {
+  width: 100%;
+  color: #000;
+}
+
+.wrapper .list .linked-dialog:hover .dialog {
+  background-color: #123;
+  color: #fff;
+}
+
+.wrapper .list .dialog {
+  width: 100%;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.wrapper .list .dialog .avatar {
+  width: 60px;
+  height: 60px;
+  margin-right: 14px;
+  border-radius: 50%;
+}
+
+.wrapper .list .dialog .dialog-data {
+  width: calc(100% - 74px);
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.wrapper .list .dialog .dialog-data .title-text .title {
+  font-size: 20px;
+}
+
+.wrapper .list .dialog .dialog-data .title-text .text {
+  font-style: 16px;
+}
+
+.wrapper .list .dialog .dialog-data .timestamp {
+  font-size: 14px;
+}
+
+.wrapper .list .dialog .unread-count {
+  position: absolute;
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 26px;
+  height: 26px;
+  top: 0;
+  left: 0;
+  background-color: #e3342f;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 14px;
+}
+
+.wrapper .no-messages-wrapper {
   width: 100%;
   height: 100%;
   display: -ms-flex;
@@ -12302,7 +12382,7 @@ a.text-dark:focus {
           justify-content: center;
 }
 
-.wrapper .messages-wrapper .no-messages-wrapper .no-messages {
+.wrapper .no-messages-wrapper .no-messages {
   width: 70%;
   height: auto;
   text-align: center;

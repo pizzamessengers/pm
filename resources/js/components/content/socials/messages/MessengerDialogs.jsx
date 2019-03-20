@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import Messages from "./Messages";
+import Dialogs from "./../dialogs/Dialogs";
 import Waiting from "./../../elements/Waiting";
 
 export default class MessengerMessages extends Component {
@@ -7,7 +7,7 @@ export default class MessengerMessages extends Component {
     super(props);
     this.state = {
       waiting: true,
-      messages: []
+      dialogs: []
     };
 
     this.interval;
@@ -18,12 +18,12 @@ export default class MessengerMessages extends Component {
       .get(
         "api/v1/messengers/" +
           socials[this.props.mess].id +
-          "?api_token=" +
+          "/getDialogs?api_token=" +
           apiToken
       )
       .then(response => {
-        if (this.state.messages.length !== response.data.messages.length) {
-          this.setState({ messages: response.data.messages });
+        if (this.state.dialogs.length !== response.data.dialogs.length) {
+          this.setState({ dialogs: response.data.dialogs });
         }
         this.setState({ waiting: false });
       });
@@ -32,12 +32,12 @@ export default class MessengerMessages extends Component {
         .get(
           "api/v1/messengers/" +
             socials[this.props.mess].id +
-            "?api_token=" +
+            "/getDialogs?api_token=" +
             apiToken
         )
         .then(response => {
-          if (this.state.messages.length !== response.data.messages.length) {
-            this.setState({ messages: response.data.messages });
+          if (this.state.dialogs.length !== response.data.dialogs.length) {
+            this.setState({ dialogs: response.data.dialogs });
           }
         });
     }, 5000);
@@ -45,7 +45,7 @@ export default class MessengerMessages extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.mess !== prevProps.mess) {
-      this.setState({ waiting: true, messages: [] });
+      this.setState({ waiting: true, dialogs: [] });
       axios
         .get(
           "api/v1/messengers/" +
@@ -54,8 +54,8 @@ export default class MessengerMessages extends Component {
             apiToken
         )
         .then(response => {
-          if (this.state.messages.length !== response.data.messages.length) {
-            this.setState({ messages: response.data.messages });
+          if (this.state.dialogs.length !== response.data.dialogs.length) {
+            this.setState({ dialogs: response.data.dialogs });
           }
           this.setState({ waiting: false });
         });
@@ -67,8 +67,8 @@ export default class MessengerMessages extends Component {
   }
 
   render() {
-    let { waiting, messages } = this.state;
-    console.log();
-    return waiting ? <Waiting /> : <Messages messages={messages} />;
+    let { waiting, dialogs } = this.state;
+    let { mess } = this.props;
+    return waiting ? <Waiting /> : <Dialogs dialogs={dialogs} linked={true} />;
   }
 }

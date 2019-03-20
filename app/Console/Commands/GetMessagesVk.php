@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use VK\Client\VKApiClient;
 use App\Attachment;
 use App\Messenger;
 use App\Dialog;
@@ -56,27 +55,23 @@ class GetMessagesVk extends Command
       Messenger::where('name', 'vk')
         ->where('updating', true)
         ->get()->each(function(Messenger $messenger) {
-          $vk = new VKApiClient();
           $lp = $messenger->lp;
           $watching = $messenger->watching;
 
-          $response = $vk->messages()->getLongPollHistory($messenger->token, array(
-            'ts' => $lp['ts'],
-            'pts' => $lp['pts'],
-            'fields' => 'photo_100',
-            'lp_version' => 3,
-          ));
+          $response = json_decode(file_get_contents(
+            'https://api.vk.com/method/execute.lpHistory?ts='.$lp['ts'].'&pts='.$lp['pts'].'&access_token='.$messenger->token.'&v=5.92'
+          ))->response;
 
-          $messages = $response['messages'];
+          $messages = $response->messages;
 
-          if ($messages['count'] > 0)
+          if ($messages->count > 0)
           {
-            $profiles = $response['profiles'];
-            foreach ($messages['items'] as $message)
+            $profiles = $response->profiles;
+            foreach ($messages->items as $message)
             {
               if ($watching !== Messenger::find($messenger->id)->watching) break;
               if (($dialog = Dialog::where([
-                ['dialog_id', $message['peer_id']],
+                ['dialog_id', $message->peer_id],
                 ['messenger_id', $messenger->id]
               ])->first()) === null)
               {
@@ -84,10 +79,10 @@ class GetMessagesVk extends Command
               }
               else if ($dialog->updating === false) continue;
 
-              $this->addMessage($message, $profiles, $messenger, $vk);
+              $this->addMessage($message, $profiles, $messenger);
             }
 
-            $lp['pts'] = $response['new_pts'];
+            $lp['pts'] = $response->new_pts;
             $messenger->lp = $lp;
             $messenger->save();
           }
@@ -97,65 +92,74 @@ class GetMessagesVk extends Command
     /**
      * Create new message and author if doesn't exist.
      *
-     * @param array data about message $message
+     * @param object data about message $message
      * @param array array of profiles from response $profiles
      * @param Messenger $messenger
-     * @param VKApiClient $vk
      */
-    private function addMessage(array $message, array $profiles, Messenger $messenger, VKApiClient $vk)
+    private function addMessage(object $message, array $profiles, Messenger $messenger)
     {
-      $dialogId = $this->dialogId($message['peer_id'], $messenger, $vk);
-      $authorId = $this->authorId($message['from_id'], $dialogId, $profiles);
+      $dialog = $this->dialogId($message->peer_id, $messenger);
+      $authorId = $this->authorId($message->from_id, $dialog->id, $profiles);
 
       $newMessage = Message::create([
-        'message_id' => (string) $message['id'],
-        'dialog_id' => $dialogId,
+        'message_id' => (string) $message->id,
+        'dialog_id' => $dialog->id,
         'author_id' => $authorId,
-        'text' => $message['text'],
-        'from_me' => $message['out'],
-        'timestamp' => $message['date'] + '000',
+        'text' => $message->text,
+        'from_me' => $message->out,
+        'timestamp' => $message->date.'000',
       ]);
 
-      if (count($message['attachments']) > 0)
+      if (!$message->out)
       {
-        $this->attachments($message['attachments'], $newMessage->id, $messenger, $vk);
+        $dialog->unread_count++;
+      }
+
+      $dialog->last_message = array(
+        'text' => $newMessage->text,
+        'timestamp' => $newMessage->timestamp,
+      );
+      $dialog->save();
+
+      if (count($message->attachments) > 0)
+      {
+        $this->attachments($message->attachments, $newMessage->id, $messenger);
       }
     }
 
     /**
      * Create attachment instance.
      *
-     * @param array $attachments
+     * @param object $attachments
      * @param int $messageId
      * @param Messenger $messenger
-     * @param VKApiClient $vk
      */
-    private function attachments(Array $attachments, Int $messageId, Messenger $messenger, VKApiClient $vk)
+    private function attachments(object $attachments, int $messageId, Messenger $messenger)
     {
       foreach ($attachments as $attachment) {
-        switch ($attachment['type']) {
+        switch ($attachment->type) {
           case 'doc':
-            $preview = $attachment['doc']['preview'];
+            $preview = $attachment->doc->preview;
             switch (key($preview)) {
               case 'audio_msg':
                 $type = 'audio';
                 $name = null;
-                $url = $preview['audio_msg']['link_mp3'];
+                $url = $preview->audio_msg->link_mp3;
                 break;
               case 'photo':
                 $type = 'photo';
                 $name = null;
-                $url = $preview['photo']['sizes'][0]['src'];
+                $url = $preview->photo->sizes[0]->src;
                 break;
             }
             break;
           case 'photo':
             $type = 'image';
             $name = null;
-            foreach ($attachment['photo']['sizes'] as $size) {
-              if ($size['type'] === 'm')
+            foreach ($attachment->photo->sizes as $size) {
+              if ($size->type === 'm')
               {
-                $url = $size['url'];
+                $url = $size->url;
                 break;
               }
             }
@@ -163,23 +167,23 @@ class GetMessagesVk extends Command
           case 'video':
             $type = 'video';
 
-            $video = $vk->video()->get($messenger->token, array(
-              'videos' => $attachment['video']['owner_id'].'_'.$attachment['video']['id'],
-            ));
+            $video = json_decode(file_get_contents(
+              'https://api.vk.com/method/execute.video?videos='.$attachment->video->owner_id.'_'.$attachment->video->id.'&access_token='.$messenger->token.'&v=5.92'
+            ))->response;
 
             $name = null;
-            $url = ($video['count'] === 0) ? 'https://vk.com/images/camera_100.png' : $video['items'][0]['player'];
+            $url = ($video->count === 0) ? 'https://vk.com/images/camera_100.png' : $video->items[0]->player;
             break;
           case 'audio':
             $type = 'audio';
-            $name = $attachment['audio']['title'].' - '.$attachment['audio']['artist'];
-            $url = $attachment['audio']['url'];
+            $name = $attachment->audio->title.' - '.$attachment->audio->artist;
+            $url = $attachment->audio->url;
             $url = substr($url, 0, strpos($url, "mp3")+3);
             break;
           case 'sticker':
             $type = 'image';
             $name = null;
-            $url = $attachment['sticker']['images'][1]['url'];
+            $url = $attachment->sticker->images[1]->url;
             break;
           case 'market':
             $type = 'market';
@@ -188,8 +192,8 @@ class GetMessagesVk extends Command
             break;
           case 'link':
             $type = 'link';
-            $url = $attachment['link']['url'];
-            $name = $attachment['link']['title'];
+            $url = $attachment->link->url;
+            $name = $attachment->link->title;
             // TODO: market
             break;
         }
@@ -208,61 +212,63 @@ class GetMessagesVk extends Command
      *
      * @param int id of dialog from response $dialogId
      * @param Messenger $messenger
-     * @param VKApiClient $vk
-     * @return int dialog id $dialogId
+     * @return Dialog $dialog
      */
-    private function dialogId(Int $dialogId, Messenger $messenger, VKApiClient $vk)
+    private function dialogId(int $dialogId, Messenger $messenger)
     {
       if (($dialog = Dialog::where([
         ['messenger_id', $messenger->id],
         ['dialog_id', (string) $dialogId],
       ])->first()) === null)
       {
-        $chat = $vk->messages()->getConversationsById($messenger->token, array(
-          'peer_ids' => $dialogId,
-          'extended' => 1,
-        ));
+        $chat = json_decode(file_get_contents(
+          'https://api.vk.com/method/execute.convById?peer_ids='.$dialogId.'&access_token='.$messenger->token.'&v=5.92'
+        ))->response;
 
-        if ($chat['items'][0]['peer']['type'] === 'user')
+        if ($chat->items[0]->peer->type === 'user')
         {
-          foreach ($chat['profiles'] as $profile)
+          foreach ($chat->profiles as $profile)
           {
-            if ($profile['id'] === $chat['items'][0]['peer']['id']) break;
+            if ($profile->id === $chat->items[0]->peer->id) break;
           }
 
-          $name = $profile['first_name'].' '.$profile['last_name'];
-          $photo = $profile['photo_100'];
+          $name = $profile->first_name.' '.$profile->last_name;
+          $photo = $profile->photo_100;
           $membersCount = 2;
         }
         else
         {
-          $name = $chat['items'][0]['chat_settings']['title'];
-          $photo = array_key_exists('photo', $chat['items'][0]['chat_settings']) ?
-            $chat['items'][0]['chat_settings']['photo']['photo_100'] :
+          $name = $chat->items[0]->chat_settings->title;
+          $photo = $chat->items[0]->chat_settings->photo ?
+            $chat->items[0]->chat_settings->photo->photo_100 :
             'https://vk.com/images/camera_100.png';
-          $membersCount = $chat['items'][0]['chat_settings']['members_count'];
+          $membersCount = $chat->items[0]->chat_settings->members_count;
         }
 
-        $lastMessage = $vk->messages()->getById($messenger->token, array(
-          'message_ids' => $chat['items'][0]['last_message_id'],
-        ))['items'][0];
+        $lastMessage = json_decode(file_get_contents(
+          'https://api.vk.com/method/execute.messageById?message_ids='.$chat->items[0]->last_message_id.'&access_token='.$messenger->token.'&v=5.92'
+        ))->response->items[0];
 
-        if (strlen($lastMessage['text']) > 40)
+        if (strlen($lastMessage->text) > 40)
         {
-          $lastMessage['text'] = mb_substr($lastMessage['text'], 0, 40, 'UTF-8').'...';
+          $lastMessage->text = mb_substr($lastMessage->text, 0, 40, 'UTF-8').'...';
         }
 
         $dialog = Dialog::create([
           'messenger_id' => $messenger->id,
           'dialog_id' => (string) $dialogId,
           'name' => $name,
-          'last_message' => $lastMessage['text'],
+          'last_message' => array(
+            'text' => $lastMessage->text,
+            'timestamp' => $lastMessage->date.'000',
+          ),
           'members_count' => $membersCount,
           'photo' => $photo,
+          'unread_count' => 0,
         ]);
       }
 
-      return $dialog->id;
+      return $dialog;
     }
 
     /**
@@ -273,7 +279,7 @@ class GetMessagesVk extends Command
      * @param array profiles from lp response $profiles
      * @return int author id
      */
-    private function authorId(Int $fromId, Int $dialogId, Array $profiles)
+    private function authorId(int $fromId, int $dialogId, array $profiles)
     {
       $authors = Author::where(
         'author_id',
@@ -294,14 +300,14 @@ class GetMessagesVk extends Command
       {
         foreach ($profiles as $profile)
         {
-          if ($profile['id'] === $fromId) break;
+          if ($profile->id === $fromId) break;
         }
 
         $authorId = Author::create([
-          'author_id' => $profile['id'],
-          'first_name' => $profile['first_name'],
-          'last_name' => $profile['last_name'],
-          'avatar' => $profile['photo_100'],
+          'author_id' => $profile->id,
+          'first_name' => $profile->first_name,
+          'last_name' => $profile->last_name,
+          'avatar' => $profile->photo_100,
         ])->id;
       }
 

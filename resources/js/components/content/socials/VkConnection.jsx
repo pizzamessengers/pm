@@ -25,17 +25,14 @@ export default class VkConnection extends Component {
         </a>
         <form
           onSubmit={e => {
-            e.preventDefault();
-            axios
-              .post("https://api.vk.com/method/execute.send?access_token=dcbbf9c537bdcc58f9c4ad966bf5f1ba1cf8a2c2c32d2fac8efcc4590da5af7dd2133e8e068cb7962d0da&v=5.92")
-              .then(function(response) {
-              });
-            /*connect(
+            connect(
               "vk",
-              { token: this.token() },
+              {
+                token: this.token(),
+              },
               $("input[name='watching']:checked").val(),
               e
-            );*/
+            );
           }}
           className="d-flex flex-column justify-content-center align-items-center"
         >

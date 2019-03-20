@@ -4,7 +4,7 @@ import VkConnection from "./VkConnection";
 import InstConnection from "./InstConnection";
 import WappConnection from "./WappConnection";
 
-const MessengerConnection = ({ mess, connect, url }) => {
+const MessengerConnection = ({ mess, connect }) => {
   let rightComponentForConnection = () => {
     switch (mess) {
       case "vk":

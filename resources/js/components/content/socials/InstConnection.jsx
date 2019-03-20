@@ -9,7 +9,7 @@ export default class Inst extends Component {
   }
 
   render() {
-    let { connect, remove } = this.props;
+    let { connect } = this.props;
     return (
       <form
         onSubmit={e => {

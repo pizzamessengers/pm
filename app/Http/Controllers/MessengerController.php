@@ -6,7 +6,6 @@ use App\Messenger;
 use App\Dialog;
 use App\Message;
 use Illuminate\Http\Request;
-use VK\Client\VKApiClient;
 use InstagramAPI\Instagram;
 use InstagramAPI\Exception\InvalidUserException;
 use InstagramAPI\Exception\IncorrectPasswordException;
@@ -57,64 +56,58 @@ class MessengerController extends Controller
 
         switch ($request->name) {
           case 'vk':
-            $messengerData['token'] = $request->props['token'];
-            $vk = new VKApiClient();
-            $lpServer = $vk->messages()->getLongPollServer($messengerData['token'], array(
-              'need_pts' => 1,
-              'lp_version' => 3,
-            ));
+            $token = $request->props['token'];
+            $messengerData['token'] = $token;
+
+            $lp = json_decode(file_get_contents('https://api.vk.com/method/execute.lp?access_token='.$token.'&v=5.92'))->response;
             $messengerData['lp'] = array(
-              'ts' => $lpServer['ts'],
-              'pts' => $lpServer['pts'],
+              'ts' => $lp->ts,
+              'pts' => $lp->pts,
             );
 
             if ($messengerData['watching'] === 'dialogs')
             {
-              $vkRes = $vk->messages()->getConversations($messengerData['token'], array(
-                'count' => 20,
-                'extended' => 1,
-                'fields' => 'photo_100',
-              ));
+              $vkRes = json_decode(file_get_contents('https://api.vk.com/method/execute.conv?access_token='.$token.'&v=5.92'))->response;
 
-              $profiles = $vkRes['profiles'];
+              $profiles = $vkRes->profiles;
 
-              foreach ($vkRes['items'] as $item) {
-                $dialog = $item['conversation'];
-                $lastMessage = $item['last_message'];
+              foreach ($vkRes->items as $item) {
+                $dialog = $item->conversation;
+                $lastMessage = $item->last_message;
 
-                $lastMessageText = strlen($lastMessage['text']) > 40 ?
-                  mb_substr($lastMessage['text'], 0, 40, 'UTF-8').'...' :
-                  $lastMessage['text'];
+                $lastMessageText = strlen($lastMessage->text) > 40 ?
+                  mb_substr($lastMessage->text, 0, 40, 'UTF-8').'...' :
+                  $lastMessage->text;
 
                 $data = array();
-                if ($dialog['peer']['type'] === 'chat')
+                if ($dialog->peer->type === 'chat')
                 {
-                  $settings = $dialog['chat_settings'];
+                  $settings = $dialog->chat_settings;
 
-                  $data['name'] = $settings['title'];
-                  $data['photo'] = array_key_exists('photo', $settings) ?
-                    $settings['photo']['photo_100'] :
+                  $data['name'] = $settings->title;
+                  $data['photo'] = $settings->photo ?
+                    $settings->photo->photo_100 :
                     'https://vk.com/images/camera_100.png';
-                  $data['members_count'] = $settings['members_count'];
+                  $data['members_count'] = $settings->members_count;
                 }
                 else
                 {
                   foreach ($profiles as $profile) {
-                    if ($profile['id'] === $dialog['peer']['id']) break;
+                    if ($profile->id === $dialog->peer->id) break;
                   }
 
-                  $data['name'] = $profile['first_name'].' '.$profile['last_name'];
-                  $data['photo'] = $profile['photo_100'];
+                  $data['name'] = $profile->first_name.' '.$profile->last_name;
+                  $data['photo'] = $profile->photo_100;
                   $data['members_count'] = 2;
                 }
 
                 array_push($dialogs, array(
-                  'id' => $dialog['peer']['id'],
+                  'id' => $dialog->peer->id,
                   'name' => $data['name'],
                   'photo' => $data['photo'],
                   'last_message' => array(
                     'text' => $lastMessageText,
-                    'timestamp' => $lastMessage['date'] + '000',
+                    'timestamp' => $lastMessage->date.'000',
                   ),
                   'members_count' => $data['members_count'],
                 ));

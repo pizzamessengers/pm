@@ -71,10 +71,10 @@ class StoreAuthors implements ShouldQueue
       foreach ($this->profiles as $profile)
       {
         $authorId = Author::firstOrCreate([
-          'author_id' => $profile['id'],
-          'first_name' => $profile['first_name'],
-          'last_name' => $profile['last_name'],
-          'avatar' => $profile['photo_100'],
+          'author_id' => $profile->id,
+          'first_name' => $profile->first_name,
+          'last_name' => $profile->last_name,
+          'avatar' => $profile->photo_100,
         ])->id;
 
         DB::table('author_dialog')->insert([

@@ -7,7 +7,6 @@ use App\Author;
 use App\Dialog;
 use App\Messenger;
 use Illuminate\Http\Request;
-use VK\Client\VKApiClient;
 use App\Jobs\StoreAuthors;
 use InstagramAPI\Instagram;
 use InstagramAPI\Response\Model\DirectThread;
@@ -37,14 +36,12 @@ class DialogController extends Controller
     /**
      * Create vk dialog.
      *
-     * @param array $dialogs
+     * @param object $dialogs
      * @param Messenger $messenger
-     * @param VKApiClient $vk
-     * @param string $token
      * @param bool $afterQuery
      * @return \Illuminate\Http\Response
      */
-    private function addDialogsVk(array $dialogs, Messenger $messenger, VKApiClient $vk, string $token, bool $afterQuery)
+    private function addDialogsVk(object $dialogs, Messenger $messenger, bool $afterQuery)
     {
       $dialogList = array();
 
@@ -62,18 +59,17 @@ class DialogController extends Controller
           );
         }
 
-        $profiles = $vk->messages()->getConversationMembers($token, array(
-          'peer_id' => $vkChat['peer']['id'],
-          'fields' => 'photo_100',
-        ))['profiles'];
+        $profiles = json_decode(file_get_contents(
+          'https://api.vk.com/method/execute.convMembers?peer_id='.$vkChat['peer']['id'].'&access_token='.$messenger->token.'&v=5.92'
+        ))->response->profiles;
 
         $dialogData = $this->dialogIdNamePhotoMembers($vkChat, $dialogs);
 
-        $lastMessage = $vk->messages()->getById($token, array(
-          'message_ids' => $vkChat['last_message_id'],
-        ))['items'][0];
+        $lastMessage = json_decode(file_get_contents(
+          'https://api.vk.com/method/execute.messageById?message_ids='.$vkChat['last_message_id'].'&access_token='.$messenger->token.'&v=5.92'
+        ))->response->items[0];
 
-        $lastMessageText = $lastMessage['text'];
+        $lastMessageText = $lastMessage->text;
         if (strlen($lastMessageText) > 40)
         {
           $lastMessageText = mb_substr($lastMessageText, 0, 40, 'UTF-8').'...';
@@ -85,10 +81,11 @@ class DialogController extends Controller
           'dialog_id' => (string) $vkChat['peer']['id'],
           'last_message' => array(
             'text' => $lastMessageText,
-            'timestamp' =>  $lastMessage['date']
+            'timestamp' =>  $lastMessage->date.'000',
           ),
           'members_count' => $dialogData['members_count'],
           'photo' => $dialogData['photo'],
+          'unread_count' => 0,
         ]);
 
         StoreAuthors::dispatch('vk', $profiles, $dialog->id);
@@ -109,10 +106,9 @@ class DialogController extends Controller
             );
           }
 
-          $profiles = $vk->messages()->getConversationMembers($token, array(
-            'peer_id' => $dialog['dialog_id'],
-            'fields' => 'photo_100',
-          ))['profiles'];
+          $profiles = json_decode(file_get_contents(
+            'https://api.vk.com/method/execute.convMembers?peer_id='.$dialog['dialog_id'].'&access_token='.$messenger->token.'&v=5.92'
+          ))->response->profiles;
 
           $dialog = Dialog::create([
             'name' => $dialog['name'],
@@ -121,6 +117,7 @@ class DialogController extends Controller
             'last_message' => $dialog['last_message'],
             'members_count' => $dialog['members_count'],
             'photo' => $dialog['photo'],
+            'unread_count' => 0,
           ]);
 
           StoreAuthors::dispatch('vk', $profiles, $dialog->id);
@@ -236,25 +233,20 @@ class DialogController extends Controller
      *
      * @param string $query
      * @param Messenger $messenger
-     * @param VKApiClient $vk
-     * @param string $token
      * @return \Illuminate\Http\Response
      */
-    public function processQueryVk(string $q, Messenger $messenger, VKApiClient $vk, string $token)
+    public function processQueryVk(string $q, Messenger $messenger)
     {
-      $vkRes = $vk->messages()->searchConversations($token, array(
-        'q' => $q,
-        'extended' => 1,
-        'fields' => 'photo_100',
-        'count' => 50,
-      ));
+      $vkRes = json_decode(file_get_contents(
+        'https://api.vk.com/method/execute.searchConv?q='.$q.'&access_token='.$messenger->token.'&v=5.92'
+      ))->response;
 
-      if (($count = $vkRes['count']) !== 1)
+      if (($count = $vkRes->count) !== 1)
       {
-        return $this->notTheOnly($count, $vkRes, $vk, $token);
+        return $this->notTheOnly($count, $vkRes, $messenger->token);
       }
 
-      return $this->addDialogsVk($vkRes, $messenger, $vk, $token, true);
+      return $this->addDialogsVk($vkRes, $messenger, true);
     }
 
     /**
@@ -269,12 +261,9 @@ class DialogController extends Controller
         case 'vk':
           $messenger = $request->user()->vk();
 
-          $vk = new VKApiClient();
-          $token = $messenger->token;
-
           $result = $request->q ?
-            $this->processQueryVk($request->q, $messenger, $vk, $token) :
-            $this->addDialogsVk($request->dialogs, $messenger, $vk, $token, false);
+            $this->processQueryVk($request->q, $messenger) :
+            $this->addDialogsVk($request->dialogs, $messenger, false);
           break;
         case 'inst':
           $result = $this->addDialogsInst($request);
@@ -291,12 +280,11 @@ class DialogController extends Controller
      * if count of dialogs more or less than 1
      *
      * @param  int $count
-     * @param  array $dialogsVk
-     * @param  VKApiClient $vk
+     * @param  object $dialogsVk
      * @param  string $token
      * @return array response data
      */
-    private function notTheOnly(int $count, array $dialogsVk, VKApiClient $vk, string $token)
+    private function notTheOnly(int $count, object $dialogsVk, string $token)
     {
       if ($count === 0)
       {
@@ -307,7 +295,7 @@ class DialogController extends Controller
       }
       else if ($count > 1)
       {
-        $dialogs = $this->dialogs($dialogsVk, $vk, $token);
+        $dialogs = $this->dialogs($dialogsVk, $token);
 
         return array(
           'success' => true,
@@ -320,24 +308,23 @@ class DialogController extends Controller
     /**
      * Create dialog array
      *
-     * @param  array $dialogsVk
-     * @param  VKApiClient $vk
-     * @param  string $token
+     * @param object $dialogsVk
+     * @param string $token
      * @return array $dialogs
      */
-    public function dialogs(array $dialogsVk, VKApiClient $vk, string $token)
+    public function dialogs(object $dialogsVk, string $token)
     {
       $dialogs = array();
       $messageIds = '';
 
-      foreach ($dialogsVk['items'] as $i=>$dialog)
+      foreach ($dialogsVk->items as $i=>$dialog)
       {
         $dialogs[$i] = $this->dialogIdNamePhotoMembers($dialog, $dialogsVk);
 
-        $messageIds .= $dialog['last_message_id'].',';
+        $messageIds .= $dialog->last_message_id.',';
       }
 
-      $dialogs = $this->mapMessages($dialogs, $messageIds, $vk, $token);
+      $dialogs = $this->mapMessages($dialogs, $messageIds, $token);
 
       return $dialogs;
     }
@@ -347,25 +334,24 @@ class DialogController extends Controller
      *
      * @param  array $dialogs
      * @param  string $messageIds
-     * @param  VKApiClient $vk
      * @param  string $token
      * @return array $dialogs
      */
-    public function mapMessages(array $dialogs, string $messageIds, VKApiClient $vk, string $token)
+    public function mapMessages(array $dialogs, string $messageIds, string $token)
     {
-      $messages = $vk->messages()->getById($token, array(
-        'message_ids' => $messageIds,
-      ))['items'];
+      $messages = json_decode(file_get_contents(
+        'https://api.vk.com/method/execute.messageById?message_ids='.$messageIds.'&access_token='.$messenger->token.'&v=5.92'
+      ))->response->items;
 
       foreach ($messages as $i=>$message)
       {
-        if (strlen($message['text']) > 40)
+        if (strlen($message->text) > 40)
         {
-          $message['text'] = mb_substr($message['text'], 0, 40, 'UTF-8').'...';
+          $message->text = mb_substr($message->text, 0, 40, 'UTF-8').'...';
         }
         $dialogs[$i]['last_message'] = array(
-          'text' => $message['text'],
-          'timestamp' => $message['date'] + '000',
+          'text' => $message->text,
+          'timestamp' => $message->date.'000',
         );
       }
 
@@ -375,34 +361,34 @@ class DialogController extends Controller
     /**
      * Get dialog name, photo and members count
      *
-     * @param  array $dialog
-     * @param  array $dialogsVk
+     * @param object $dialog
+     * @param object $dialogsVk
      * @return string
      */
-    public function dialogIdNamePhotoMembers(array $dialog, array $dialogsVk)
+    public function dialogIdNamePhotoMembers(object $dialog, object $dialogsVk)
     {
-      if ($dialog['peer']['type'] === 'user')
+      if ($dialog->peer->type === 'user')
       {
-        foreach ($dialogsVk['profiles'] as $profile)
+        foreach ($dialogsVk->profiles as $profile)
         {
-          if ($profile['id'] === $dialog['peer']['id']) break;
+          if ($profile->id === $dialog->peer->id) break;
         }
 
-        $name = $profile['first_name'].' '.$profile['last_name'];
-        $photo = $profile['photo_100'];
+        $name = $profile->first_name.' '.$profile->last_name;
+        $photo = $profile->photo_100;
         $membersCount = 2;
       }
       else
       {
-        $name = $dialog['chat_settings']['title'];
-        $photo = array_key_exists('photo', $dialog['chat_settings']) ?
-          $dialog['chat_settings']['photo']['photo_100'] :
+        $name = $dialog->chat_settings->title;
+        $photo = $dialog->chat_settings->photo ?
+          $dialog->chat_settings->photo->photo_100 :
           'https://vk.com/images/camera_100.png';
-        $membersCount = $dialog['chat_settings']['members_count'];
+        $membersCount = $dialog->chat_settings->members_count;
       }
 
       return array(
-        'dialog_id' => $dialog['peer']['id'],
+        'dialog_id' => $dialog->peer->id,
         'name' => $name,
         'photo' => $photo,
         'members_count' => $membersCount,

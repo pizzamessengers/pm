@@ -72906,8 +72906,7 @@ var _initialiseProps = function _initialiseProps() {
 
 var MessengerConnection = function MessengerConnection(_ref) {
   var mess = _ref.mess,
-      connect = _ref.connect,
-      url = _ref.url;
+      connect = _ref.connect;
 
   var rightComponentForConnection = function rightComponentForConnection() {
     switch (mess) {
@@ -72982,6 +72981,8 @@ var VkConnection = function (_Component) {
   _createClass(VkConnection, [{
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       var connect = this.props.connect;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -73000,14 +73001,9 @@ var VkConnection = function (_Component) {
           "form",
           {
             onSubmit: function onSubmit(e) {
-              e.preventDefault();
-              axios.post("https://api.vk.com/method/execute.send?access_token=dcbbf9c537bdcc58f9c4ad966bf5f1ba1cf8a2c2c32d2fac8efcc4590da5af7dd2133e8e068cb7962d0da&v=5.92").then(function (response) {});
-              /*connect(
-                "vk",
-                { token: this.token() },
-                $("input[name='watching']:checked").val(),
-                e
-              );*/
+              connect("vk", {
+                token: _this2.token()
+              }, $("input[name='watching']:checked").val(), e);
             },
             className: "d-flex flex-column justify-content-center align-items-center"
           },
@@ -73082,9 +73078,7 @@ var Inst = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props = this.props,
-          connect = _props.connect,
-          remove = _props.remove;
+      var connect = this.props.connect;
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         "form",
@@ -82968,11 +82962,8 @@ var MessengerDialogs = function (_Component) {
 
       if (this.props.mess !== prevProps.mess) {
         this.setState({ waiting: true, dialogs: [] });
-        axios.get("api/v1/messengers/" + socials[this.props.mess].id + "?api_token=" + apiToken).then(function (response) {
-          if (_this3.state.dialogs.length !== response.data.dialogs.length) {
-            _this3.setState({ dialogs: response.data.dialogs });
-          }
-          _this3.setState({ waiting: false });
+        axios.get("api/v1/messengers/" + socials[this.props.mess].id + "/getDialogs?api_token=" + apiToken).then(function (response) {
+          _this3.setState({ dialogs: response.data.dialogs, waiting: false });
         });
       }
     }

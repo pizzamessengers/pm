@@ -45,14 +45,11 @@ export default class MessengerDialogs extends Component {
         .get(
           "api/v1/messengers/" +
             socials[this.props.mess].id +
-            "?api_token=" +
+            "/getDialogs?api_token=" +
             apiToken
         )
         .then(response => {
-          if (this.state.dialogs.length !== response.data.dialogs.length) {
-            this.setState({ dialogs: response.data.dialogs });
-          }
-          this.setState({ waiting: false });
+            this.setState({ dialogs: response.data.dialogs, waiting: false });
         });
     }
   }

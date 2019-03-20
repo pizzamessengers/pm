@@ -1,75 +1,71 @@
 import React from "react";
 
-const Dialog = ({ dialog }) => {
+const Dialog = ({ dialog, choosing }) => {
   let timestamp = () => {
     let rightDecl = count => {
       let num = count % 10;
-      if (count === 1) {
+      if (num === 1) {
         return "у";
-      } else if (count > 1 && count <= 4) {
+      } else if (num > 1 && num <= 4) {
         return "ы";
       } else {
         return "";
       }
     };
 
-    let d = Math.floor(new Date() / 1000),
-      startToday = Math.floor(new Date().setHours(0, 0, 0, 0) / 1000),
-      startYest = startToday - 86400,
-      diff = d - dialog.last_message.timestamp;
+    let d = new Date(),
+      lmt = +dialog.last_message.timestamp,
+      startToday = new Date().setHours(0, 0, 0, 0),
+      startYest = startToday - 86400000,
+      diff = d - lmt;
 
-    if (diff < 60) {
-      return diff + " " + "секунд" + rightDecl(diff) + " назад";
-    } else if (diff < 3600) {
-      return diff + " " + "минут" + rightDecl(Math.floor(diff / 60)) + " назад";
+    if (diff < 60000) {
+      let count = Math.floor(diff / 1000);
+      return count + " " + "секунд" + rightDecl(count) + " назад";
+    } else if (diff < 3600000) {
+      let count = Math.floor(diff / 60000);
+      return count + " " + "минут" + rightDecl(count) + " назад";
     } else if (diff < d - startToday) {
       var options = {
+        timezone: 'UTC+1',
         hour: "numeric",
         minute: "numeric"
       };
 
-      return (
-        "сегодня " +
-        new Date(dialog.last_message.timestamp).toLocaleString("ru", options)
-      );
+      return "сегодня, " + new Date(lmt).toLocaleString("ru", options);
     } else if (diff < d - startYest) {
       var options = {
+        timezone: 'UTC',
         hour: "numeric",
         minute: "numeric"
       };
 
-      return (
-        "вчера " +
-        new Date(+dialog.last_message.timestamp).toLocaleString("ru", options)
-      );
+      return "вчера, " + new Date(lmt).toLocaleString("ru", options);
     } else {
       var options = {
+        timezone: 'UTC',
         month: "long",
-        day: "short",
-        hour: "numeric",
-        minute: "numeric"
+        day: "2-digit"
       };
 
-      return new Date(+dialog.last_message.timestamp).toLocaleString(
-        "ru",
-        options
-      );
+      return new Date(lmt).toLocaleString("ru", options);
     }
   };
 
-  console.log(dialog);
-
   return (
-    <div className="dialog">
+    <div className={dialog.unread_count !== 0 ? "dialog unread" : "dialog"}>
       <img className="avatar" src={dialog.photo} />
       <div className="dialog-data">
         <div className="title-text">
           <div className="title">{dialog.name}</div>
+          {choosing ? <div>{dialog.members_count}</div> : null}
           <div className="text">{dialog.last_message.text}</div>
         </div>
         <div className="timestamp">{timestamp()}</div>
       </div>
-      {dialog.unread_count !== 0 ? <div className="unread-count">{dialog.unread_count}</div> : null}
+      {dialog.unread_count !== 0 ? (
+        <div className="unread-count">{dialog.unread_count}</div>
+      ) : null}
     </div>
   );
 };

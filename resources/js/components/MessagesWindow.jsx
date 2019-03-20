@@ -15,18 +15,13 @@ export default class MessagesWindow extends Component {
 
   componentWillMount() {
     axios.get("api/v1/user/getDialogs?api_token=" + apiToken).then(response => {
-      if (this.state.dialogs.length !== response.data.dialogs.length) {
-        this.setState({ dialogs: response.data.dialogs });
-      }
-      this.setState({ waiting: false });
+      this.setState({ dialogs: response.data.dialogs, waiting: false });
     });
     this.interval = setInterval(() => {
       axios
         .get("api/v1/user/getDialogs?api_token=" + apiToken)
         .then(response => {
-          if (this.state.dialogs.length !== response.data.dialogs.length) {
-            this.setState({ dialogs: response.data.dialogs });
-          }
+          this.setState({ dialogs: response.data.dialogs });
         });
     }, 5000);
   }
@@ -42,7 +37,7 @@ export default class MessagesWindow extends Component {
         {waiting ? (
           <Waiting />
         ) : (
-          <Dialogs dialogs={dialogs} linked={true} fromMessagesWindow={true} />
+          <Dialogs dialogs={dialogs} fromMessagesWindow={true} />
         )}
       </div>
     );

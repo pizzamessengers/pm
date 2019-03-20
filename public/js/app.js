@@ -2918,95 +2918,37 @@ var Waiting = function Waiting() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__LinkedDialog__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Dialog__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__DialogController__ = __webpack_require__(196);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
 
-
-
-
-var Dialogs = function (_Component) {
-  _inherits(Dialogs, _Component);
-
-  function Dialogs(props) {
-    _classCallCheck(this, Dialogs);
-
-    var _this = _possibleConstructorReturn(this, (Dialogs.__proto__ || Object.getPrototypeOf(Dialogs)).call(this, props));
-
-    _this.toggleUpdating = function (dialog) {
-      dialog.updating = !dialog.updating;
-      axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
-      _this.forceUpdate();
-    };
-
-    _this.deleteDialog = function (dialog) {
-      var mess = dialog.mess;
-      axios.delete("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
-      socials[mess].dialogList.splice(socials[mess].dialogList.map(function (x) {
-        return x.id;
-      }).indexOf(dialog.id), 1);
-      _this.setState({ dialogs: socials[mess].dialogList });
-    };
-
-    _this.state = {
-      dialogs: _this.props.dialogs
-    };
-    return _this;
-  }
-
-  _createClass(Dialogs, [{
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      var dialogs = this.state.dialogs;
-      var _props = this.props,
-          withController = _props.withController,
-          linked = _props.linked,
-          fromMessagesWindow = _props.fromMessagesWindow;
-
-
-      return dialogs.length > 0 ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "ul",
-        { className: "list" },
-        dialogs.map(function (dialog, i) {
-          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            "li",
-            { key: i, className: "nav-item d-flex align-items-center my-1 w-100" },
-            withController ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__DialogController__["a" /* default */], {
-              toggleUpdating: _this2.toggleUpdating,
-              deleteDialog: _this2.deleteDialog,
-              dialog: dialog,
-              mess: dialog.mess
-            }) : linked ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__LinkedDialog__["a" /* default */], {
-              dialog: dialog,
-              mess: dialog.mess,
-              fromMessagesWindow: fromMessagesWindow
-            }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Dialog__["a" /* default */], { dialog: dialog })
-          );
+var Dialogs = function Dialogs(_ref) {
+  var dialogs = _ref.dialogs,
+      withController = _ref.withController,
+      fromMessagesWindow = _ref.fromMessagesWindow;
+  return dialogs.length > 0 ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    "ul",
+    { className: "list" },
+    dialogs.map(function (dialog, i) {
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        "li",
+        { key: i, className: "nav-item d-flex align-items-center my-1 w-100" },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__LinkedDialog__["a" /* default */], {
+          dialog: dialog,
+          mess: dialog.mess,
+          fromMessagesWindow: fromMessagesWindow
         })
-      ) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "div",
-        { className: "no-messages-wrapper" },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          { className: "no-messages" },
-          "\u0423 \u0432\u0430\u0441 \u0435\u0449\u0435 \u043D\u0435 \u0431\u044B\u043B\u043E \u043D\u043E\u0432\u044B\u0445 \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u0439 \u0441 \u043C\u043E\u043C\u0435\u043D\u0442\u0430 \u0437\u0430\u043F\u0443\u0441\u043A\u0430 \u0441\u0435\u0440\u0432\u0438\u0441\u0430"
-        )
       );
-    }
-  }]);
-
-  return Dialogs;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+    })
+  ) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    "div",
+    { className: "no-messages-wrapper" },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      "div",
+      { className: "no-messages" },
+      "\u0423 \u0432\u0430\u0441 \u0435\u0449\u0435 \u043D\u0435 \u0431\u044B\u043B\u043E \u043D\u043E\u0432\u044B\u0445 \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u0439 \u0441 \u043C\u043E\u043C\u0435\u043D\u0442\u0430 \u0437\u0430\u043F\u0443\u0441\u043A\u0430 \u0441\u0435\u0440\u0432\u0438\u0441\u0430"
+    )
+  );
+};
 
 /* harmony default export */ __webpack_exports__["a"] = (Dialogs);
 
@@ -3020,60 +2962,63 @@ var Dialogs = function (_Component) {
 
 
 var Dialog = function Dialog(_ref) {
-  var dialog = _ref.dialog;
+  var dialog = _ref.dialog,
+      choosing = _ref.choosing;
 
   var timestamp = function timestamp() {
     var rightDecl = function rightDecl(count) {
       var num = count % 10;
-      if (count === 1) {
+      if (num === 1) {
         return "у";
-      } else if (count > 1 && count <= 4) {
+      } else if (num > 1 && num <= 4) {
         return "ы";
       } else {
         return "";
       }
     };
 
-    var d = Math.floor(new Date() / 1000),
-        startToday = Math.floor(new Date().setHours(0, 0, 0, 0) / 1000),
-        startYest = startToday - 86400,
-        diff = d - dialog.last_message.timestamp;
+    var d = new Date(),
+        lmt = +dialog.last_message.timestamp,
+        startToday = new Date().setHours(0, 0, 0, 0),
+        startYest = startToday - 86400000,
+        diff = d - lmt;
 
-    if (diff < 60) {
-      return diff + " " + "секунд" + rightDecl(diff) + " назад";
-    } else if (diff < 3600) {
-      return diff + " " + "минут" + rightDecl(Math.floor(diff / 60)) + " назад";
+    if (diff < 60000) {
+      var count = Math.floor(diff / 1000);
+      return count + " " + "секунд" + rightDecl(count) + " назад";
+    } else if (diff < 3600000) {
+      var _count = Math.floor(diff / 60000);
+      return _count + " " + "минут" + rightDecl(_count) + " назад";
     } else if (diff < d - startToday) {
       var options = {
+        timezone: 'UTC+1',
         hour: "numeric",
         minute: "numeric"
       };
 
-      return "сегодня " + new Date(dialog.last_message.timestamp).toLocaleString("ru", options);
+      return "сегодня, " + new Date(lmt).toLocaleString("ru", options);
     } else if (diff < d - startYest) {
       var options = {
+        timezone: 'UTC',
         hour: "numeric",
         minute: "numeric"
       };
 
-      return "вчера " + new Date(+dialog.last_message.timestamp).toLocaleString("ru", options);
+      return "вчера, " + new Date(lmt).toLocaleString("ru", options);
     } else {
       var options = {
+        timezone: 'UTC',
         month: "long",
-        day: "short",
-        hour: "numeric",
-        minute: "numeric"
+        day: "2-digit"
       };
 
-      return new Date(+dialog.last_message.timestamp).toLocaleString("ru", options);
+      return new Date(lmt).toLocaleString("ru", options);
     }
   };
 
-  console.log(dialog);
-
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     "div",
-    { className: "dialog" },
+    { className: dialog.unread_count !== 0 ? "dialog unread" : "dialog" },
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", { className: "avatar", src: dialog.photo }),
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       "div",
@@ -3086,6 +3031,11 @@ var Dialog = function Dialog(_ref) {
           { className: "title" },
           dialog.name
         ),
+        choosing ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          null,
+          dialog.members_count
+        ) : null,
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           "div",
           { className: "text" },
@@ -18864,7 +18814,7 @@ var DialogChoosing = function DialogChoosing(_ref) {
             value: i,
             name: "dialog"
           }),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Dialog__["a" /* default */], { dialog: dialog })
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Dialog__["a" /* default */], { dialog: dialog, choosing: true })
         );
       })
     ),
@@ -72604,16 +72554,11 @@ var MessagesWindow = function (_Component) {
       var _this2 = this;
 
       axios.get("api/v1/user/getDialogs?api_token=" + apiToken).then(function (response) {
-        if (_this2.state.dialogs.length !== response.data.dialogs.length) {
-          _this2.setState({ dialogs: response.data.dialogs });
-        }
-        _this2.setState({ waiting: false });
+        _this2.setState({ dialogs: response.data.dialogs, waiting: false });
       });
       this.interval = setInterval(function () {
         axios.get("api/v1/user/getDialogs?api_token=" + apiToken).then(function (response) {
-          if (_this2.state.dialogs.length !== response.data.dialogs.length) {
-            _this2.setState({ dialogs: response.data.dialogs });
-          }
+          _this2.setState({ dialogs: response.data.dialogs });
         });
       }, 5000);
     }
@@ -72632,7 +72577,7 @@ var MessagesWindow = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         "div",
         { className: "messagesWindow" },
-        waiting ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__content_elements_Waiting__["a" /* default */], null) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__content_socials_dialogs_Dialogs__["a" /* default */], { dialogs: dialogs, linked: true, fromMessagesWindow: true })
+        waiting ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__content_elements_Waiting__["a" /* default */], null) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__content_socials_dialogs_Dialogs__["a" /* default */], { dialogs: dialogs, fromMessagesWindow: true })
       );
     }
   }]);
@@ -72650,41 +72595,82 @@ var MessagesWindow = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__LinkedDialog__ = __webpack_require__(87);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
 
-var DialogController = function DialogController(_ref) {
-  var dialog = _ref.dialog,
-      mess = _ref.mess,
-      toggleUpdating = _ref.toggleUpdating,
-      deleteDialog = _ref.deleteDialog;
 
-  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-    __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
-    null,
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__LinkedDialog__["a" /* default */], { dialog: dialog, mess: mess }),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
-      checked: dialog.updating,
-      className: "col-1",
-      type: "checkbox",
-      onChange: function onChange() {
-        return toggleUpdating(dialog);
-      }
-    }),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      "button",
-      {
-        className: "btn btn-delete col-3",
-        onClick: function onClick() {
-          return deleteDialog(dialog);
-        }
-      },
-      "\u0443\u0434\u0430\u043B\u0438\u0442\u044C"
-    )
-  );
-};
+var DialogController = function (_Component) {
+  _inherits(DialogController, _Component);
+
+  function DialogController(props) {
+    _classCallCheck(this, DialogController);
+
+    var _this = _possibleConstructorReturn(this, (DialogController.__proto__ || Object.getPrototypeOf(DialogController)).call(this, props));
+
+    _this.toggleUpdating = function (dialog) {
+      dialog.updating = !dialog.updating;
+      _this.setState({ updating: dialog.updating });
+      axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
+    };
+
+    _this.state = {
+      updating: _this.props.dialog.updating
+    };
+    return _this;
+  }
+
+  _createClass(DialogController, [{
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      var updating = this.state.updating;
+      var _props = this.props,
+          dialog = _props.dialog,
+          deleteDialog = _props.deleteDialog,
+          mess = _props.mess;
+
+
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_0_react__["Fragment"],
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__LinkedDialog__["a" /* default */], { dialog: dialog, mess: mess }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(CheckBox, {
+          checked: updating,
+          handleChange: function handleChange(e) {
+            return _this2.toggleUpdating(e);
+          },
+          name: dialog.id,
+          withOn: true
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "button",
+          {
+            className: "btn btn-delete col-3",
+            onClick: function onClick() {
+              return deleteDialog(dialog);
+            }
+          },
+          "\u0443\u0434\u0430\u043B\u0438\u0442\u044C"
+        )
+      );
+    }
+  }]);
+
+  return DialogController;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
 /* harmony default export */ __webpack_exports__["a"] = (DialogController);
+
+
+DialogController;
 
 /***/ }),
 /* 197 */
@@ -72744,29 +72730,21 @@ var Socials = function Socials() {
     { className: "container" },
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       "div",
-      { className: "row justify-content-center" },
+      { className: "card" },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "div",
-        { className: "col-md-8" },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "div",
-          { className: "card" },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["d" /* Switch */],
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
-              exact: true,
-              path: "/app/socials/:messenger",
-              render: function render(browser) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Social__["a" /* default */], { mess: browser.match.params.messenger });
-              }
-            }),
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
-              path: "/app/socials/:messenger/dialog/:dialogId/",
-              component: __WEBPACK_IMPORTED_MODULE_3__dialogs_DialogView__["a" /* default */]
-            })
-          )
-        )
+        __WEBPACK_IMPORTED_MODULE_1_react_router_dom__["d" /* Switch */],
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
+          exact: true,
+          path: "/app/socials/:messenger",
+          render: function render(browser) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Social__["a" /* default */], { mess: browser.match.params.messenger });
+          }
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
+          path: "/app/socials/:messenger/dialog/:dialogId/",
+          component: __WEBPACK_IMPORTED_MODULE_3__dialogs_DialogView__["a" /* default */]
+        })
       )
     )
   );
@@ -73014,7 +72992,7 @@ var VkConnection = function (_Component) {
           {
             target: "_blank",
             className: "btn btn-primary mb-3",
-            href: "https://oauth.vk.com/authorize?client_id=6869374&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=offline,video&response_type=token&v=5.92"
+            href: "https://oauth.vk.com/authorize?client_id=6869374&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=messages,offline,video&response_type=token&v=5.92"
           },
           "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0442\u043E\u043A\u0435\u043D"
         ),
@@ -73310,7 +73288,7 @@ var ConnectedMessenger = function ConnectedMessenger(_ref) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Dialogs__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__DialogController__ = __webpack_require__(196);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__DialogChoosing__ = __webpack_require__(88);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -73364,11 +73342,20 @@ var DialogsConnection = function (_Component) {
       });
     };
 
+    _this.deleteDialog = function (dialog) {
+      var mess = dialog.mess;
+      axios.delete("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
+      socials[mess].dialogList.splice(socials[mess].dialogList.map(function (x) {
+        return x.id;
+      }).indexOf(dialog.id), 1);
+      _this.setState({ dialogs: socials[mess].dialogList });
+    };
+
     _this.handleClose = function () {
       _this.setState({
         modal: {
           show: false,
-          dialogs: null
+          dialogs: []
         }
       });
     };
@@ -73376,7 +73363,7 @@ var DialogsConnection = function (_Component) {
     _this.state = {
       modal: {
         show: false,
-        dialogs: null
+        dialogs: []
       }
     };
     _this.q = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createRef();
@@ -73417,10 +73404,24 @@ var DialogsConnection = function (_Component) {
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { type: "submit", value: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C" })
           )
         ),
-        socials[this.props.mess].dialogList ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__Dialogs__["a" /* default */], {
-          dialogs: socials[this.props.mess].dialogList,
-          withController: true
-        }) : null,
+        socials[this.props.mess].dialogList ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "ul",
+          { className: "list" },
+          socials[this.props.mess].dialogList.map(function (dialog, i) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              "li",
+              {
+                key: i,
+                className: "nav-item d-flex align-items-center my-1 w-100"
+              },
+              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__DialogController__["a" /* default */], {
+                deleteDialog: _this2.deleteDialog,
+                dialog: dialog,
+                mess: dialog.mess
+              })
+            );
+          })
+        ) : null,
         this.state.modal.show ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__DialogChoosing__["a" /* default */], {
           one: true,
           dialogs: dialogs,
@@ -82929,13 +82930,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
-var MessengerMessages = function (_Component) {
-  _inherits(MessengerMessages, _Component);
+var MessengerDialogs = function (_Component) {
+  _inherits(MessengerDialogs, _Component);
 
-  function MessengerMessages(props) {
-    _classCallCheck(this, MessengerMessages);
+  function MessengerDialogs(props) {
+    _classCallCheck(this, MessengerDialogs);
 
-    var _this = _possibleConstructorReturn(this, (MessengerMessages.__proto__ || Object.getPrototypeOf(MessengerMessages)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (MessengerDialogs.__proto__ || Object.getPrototypeOf(MessengerDialogs)).call(this, props));
 
     _this.state = {
       waiting: true,
@@ -82946,22 +82947,17 @@ var MessengerMessages = function (_Component) {
     return _this;
   }
 
-  _createClass(MessengerMessages, [{
+  _createClass(MessengerDialogs, [{
     key: "componentWillMount",
     value: function componentWillMount() {
       var _this2 = this;
 
       axios.get("api/v1/messengers/" + socials[this.props.mess].id + "/getDialogs?api_token=" + apiToken).then(function (response) {
-        if (_this2.state.dialogs.length !== response.data.dialogs.length) {
-          _this2.setState({ dialogs: response.data.dialogs });
-        }
-        _this2.setState({ waiting: false });
+        _this2.setState({ dialogs: response.data.dialogs, waiting: false });
       });
       this.interval = setInterval(function () {
         axios.get("api/v1/messengers/" + socials[_this2.props.mess].id + "/getDialogs?api_token=" + apiToken).then(function (response) {
-          if (_this2.state.dialogs.length !== response.data.dialogs.length) {
-            _this2.setState({ dialogs: response.data.dialogs });
-          }
+          _this2.setState({ dialogs: response.data.dialogs });
         });
       }, 5000);
     }
@@ -82993,14 +82989,14 @@ var MessengerMessages = function (_Component) {
           dialogs = _state.dialogs;
       var mess = this.props.mess;
 
-      return waiting ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__elements_Waiting__["a" /* default */], null) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__dialogs_Dialogs__["a" /* default */], { dialogs: dialogs, linked: true });
+      return waiting ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__elements_Waiting__["a" /* default */], null) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__dialogs_Dialogs__["a" /* default */], { dialogs: dialogs });
     }
   }]);
 
-  return MessengerMessages;
+  return MessengerDialogs;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
-/* harmony default export */ __webpack_exports__["a"] = (MessengerMessages);
+/* harmony default export */ __webpack_exports__["a"] = (MessengerDialogs);
 
 /***/ }),
 /* 288 */
@@ -83571,7 +83567,6 @@ var MessengersSettings = function (_Component) {
 
       if (currentMess === '') {
         currentMess = connectedMessengers[0];
-        this.props.history.push(this.props.location.pathname + '/' + currentMess);
       }
 
       this.setState({ connectedMessengers: connectedMessengers, currentMess: currentMess });
@@ -83585,11 +83580,12 @@ var MessengersSettings = function (_Component) {
           connectedMessengers = _state.connectedMessengers,
           currentMess = _state.currentMess;
 
+      if (this.props.location.pathname.substr(24) === '') this.props.history.push(this.props.location.pathname + '/' + currentMess);
 
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         "div",
         { className: "container modules-settings" },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__ModulesList__["a" /* default */], { modules: connectedMessengers, setting: 'messengers', currentModule: currentMess, changeCurrentModule: this.changeCurrentMess }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__ModulesList__["a" /* default */], { modules: connectedMessengers, setting: 'messenger', currentModule: currentMess, changeCurrentModule: this.changeCurrentMess }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_router_dom__["c" /* Route */], {
           path: "/app/settings/messenger/:mess(" + this.rightRoutes() + ")",
           render: function render(browser) {
@@ -83716,7 +83712,6 @@ var MessengerSettings = function (_Component) {
                 handleChange: function handleChange(e) {
                   return _this2.toggleUpdating(e);
                 },
-                id: "toggleUpdating",
                 name: "toggleUpdating",
                 withOn: true
               })
@@ -83743,7 +83738,6 @@ var MessengerSettings = function (_Component) {
                 handleChange: function handleChange(e) {
                   return _this2.toggleWatching(e);
                 },
-                id: "toggleWatching",
                 name: "toggleWatching"
               }),
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(

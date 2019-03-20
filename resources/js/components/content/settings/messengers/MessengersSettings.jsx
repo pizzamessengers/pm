@@ -23,7 +23,6 @@ export default class MessengersSettings extends Component {
 
     if (currentMess === '') {
       currentMess = connectedMessengers[0];
-      this.props.history.push(this.props.location.pathname + '/' + currentMess);
     }
 
     this.setState({ connectedMessengers, currentMess });
@@ -48,10 +47,11 @@ export default class MessengersSettings extends Component {
 
   render() {
     let { connectedMessengers, currentMess } = this.state;
+    if (this.props.location.pathname.substr(24) === '') this.props.history.push(this.props.location.pathname + '/' + currentMess);
 
     return (
       <div className="container modules-settings">
-        <ModulesList modules={connectedMessengers} setting={'messengers'} currentModule={currentMess} changeCurrentModule={this.changeCurrentMess} />
+        <ModulesList modules={connectedMessengers} setting={'messenger'} currentModule={currentMess} changeCurrentModule={this.changeCurrentMess} />
         <Route
           path={"/app/settings/messenger/:mess(" + this.rightRoutes() + ")"}
           render={browser => (

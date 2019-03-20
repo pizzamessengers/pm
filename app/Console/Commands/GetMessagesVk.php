@@ -113,7 +113,7 @@ class GetMessagesVk extends Command
         'author_id' => $authorId,
         'text' => $message['text'],
         'from_me' => $message['out'],
-        'timestamp' => $message['date'],
+        'timestamp' => $message['date'] + '000',
       ]);
 
       if (count($message['attachments']) > 0)

@@ -87,11 +87,11 @@ class GetMessagesInst extends Command
         $threadId = $thread->getThreadId();
         if (($dialog = Dialog::where('dialog_id', $threadId)->where('messenger_id', $messenger->id)->first()) === null)
         {
-          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp;
-          $lastMessageTimestamp = substr($thread->getLastPermanentItem()->getTimestamp(), 0, 10);
+          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp + '000';
+          $lastMessageTimestamp = substr($thread->getLastPermanentItem()->getTimestamp(), 0, 13);
 
           //если время последнего сообщения раньше регистрации мессенджера
-          if ((int) $lastMessageTimestamp <= (int) $messengerCreatedAt) break;
+          if ($lastMessageTimestamp <= $messengerCreatedAt) break;
 
           if ($messenger->watching === 'dialogs')
           {
@@ -156,7 +156,7 @@ class GetMessagesInst extends Command
           $dialog->last_message = array(
             'id' => $thread->getLastPermanentItem()->getItemId(),
             'text' => $lastMessageText,
-            'timestamp' => substr($thread->getLastPermanentItem()->getTimestamp(), 0, 10),
+            'timestamp' => substr($thread->getLastPermanentItem()->getTimestamp(), 0, 13),
           );
           $dialog->save();
         }
@@ -184,13 +184,12 @@ class GetMessagesInst extends Command
       int $messengerCreatedAt
     )
     {
-      $dialogId = $dialog->id;
-
       foreach ($thread->getItems() as $i=>$message)
       {
-        if (substr($message->getTimestamp(), 0, 10) > $messengerCreatedAt)
+        info(substr($message->getTimestamp(), 0, 13).' '.$messengerCreatedAt + '000');
+        if (substr($message->getTimestamp(), 0, 13) > ($messengerCreatedAt + '000'))
         {
-          $this->addMessage($message, $dialogId, $inst);
+          $this->addMessage($message, $dialog, $inst);
 
           if ($i === 19)
           {
@@ -215,14 +214,13 @@ class GetMessagesInst extends Command
       Instagram $inst
     )
     {
-      $dialogId = $dialog->id;
       $lastMessageId = $dialog->last_message['id'];
 
       foreach ($thread->getItems() as $i=>$message)
       {
         if ($message->getItemId() !== $lastMessageId)
         {
-          $this->addMessage($message, $dialogId, $inst);
+          $this->addMessage($message, $dialog, $inst);
 
           if ($i === 19)
           {
@@ -238,21 +236,29 @@ class GetMessagesInst extends Command
      * Create new message and author if doesn't exist.
      *
      * @param DirectThreadItem $message
-     * @param int $dialogId
+     * @param Dialog $dialog
      * @param Instagram $inst
      */
-    private function addMessage(DirectThreadItem $message, int $dialogId, Instagram $inst)
+    private function addMessage(DirectThreadItem $message, Dialog $dialog, Instagram $inst)
     {
-      $authorId = $this->authorId($message->getUserId(), $dialogId, $inst);
+      $authorId = $this->authorId($message->getUserId(), $dialog->id, $inst);
+
+      $fromMe = $message->getUserId() === $inst->account_id;
 
       $newMessage = Message::create([
         'message_id' => $message->getItemId(),
-        'dialog_id' => $dialogId,
+        'dialog_id' => $dialog->id,
         'author_id' => $authorId,
         'text' => ($message->getItemType() === 'text') ? $message->getText() : '',
-        'from_me' => $message->getUserId() === $inst->account_id ? true : false,
-        'timestamp' => substr($message->getTimestamp(), 0, 10),
+        'timestamp' => substr($message->getTimestamp(), 0, 13),
+        'from_me' => $fromMe,
       ]);
+
+      if (!$fromMe)
+      {
+        $dialog->unread_count++;
+        $dialog->save();
+      }
 
       if ($message->getItemType() !== 'text')
       {
@@ -310,7 +316,6 @@ class GetMessagesInst extends Command
 
       if (count($authors) > 0) {
         foreach ($authors as $author) {
-          info($author->dialogs());
           if ($author->dialogs()[0]->messenger()->name === 'inst')
           {
             $authorId = $author->id;

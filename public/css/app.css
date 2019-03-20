@@ -12184,10 +12184,10 @@ a.text-dark:focus {
   height: 90%;
 }
 
-.wrapper .content .container,
-.wrapper .content .row,
-.wrapper .content .row > div {
+.wrapper .content .container {
+  max-width: 660px;
   height: 100%;
+  padding: 0 10px;
 }
 
 .wrapper .content .card {
@@ -12216,7 +12216,7 @@ a.text-dark:focus {
   padding: 0;
 }
 
-.wrapper .content .dialog-view .messages-wrapper {
+.wrapper .content .dialog-view .list-wrapper {
   height: 90%;
 }
 
@@ -12250,7 +12250,7 @@ a.text-dark:focus {
 .wrapper .list .message {
   padding: 6px;
   border-radius: 10px;
-  min-width: 300px;
+  min-width: 286px;
   max-width: 400px;
 }
 
@@ -12290,19 +12290,16 @@ a.text-dark:focus {
 
 .wrapper .list .linked-dialog {
   width: 100%;
-  color: #000;
-}
-
-.wrapper .list .linked-dialog:hover .dialog {
-  background-color: #123;
-  color: #fff;
-}
-
-.wrapper .list .dialog {
-  width: 100%;
   max-width: 420px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.wrapper .list .linked-dialog:hover {
+  text-decoration: none;
+}
+
+.wrapper .list .dialog {
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -12310,6 +12307,16 @@ a.text-dark:focus {
   padding: 8px;
   border-radius: 4px;
   position: relative;
+  color: #000;
+}
+
+.wrapper .list .dialog.unread {
+  background-color: #f5f7fa;
+}
+
+.wrapper .list .dialog:hover {
+  background-color: #123;
+  color: #fff;
 }
 
 .wrapper .list .dialog .avatar {
@@ -12335,6 +12342,7 @@ a.text-dark:focus {
 
 .wrapper .list .dialog .dialog-data .title-text .title {
   font-size: 20px;
+  font-weight: 500;
 }
 
 .wrapper .list .dialog .dialog-data .title-text .text {
@@ -12343,6 +12351,25 @@ a.text-dark:focus {
 
 .wrapper .list .dialog .dialog-data .timestamp {
   font-size: 14px;
+  min-width: 110px;
+  text-align: right;
+}
+
+@media (max-width: 440px) {
+  .wrapper .list .dialog .dialog-data {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
+  }
+
+  .wrapper .list .dialog .dialog-data .timestamp {
+    margin-top: 6px;
+    width: 100%;
+  }
 }
 
 .wrapper .list .dialog .unread-count {
@@ -12359,12 +12386,37 @@ a.text-dark:focus {
           align-items: center;
   width: 26px;
   height: 26px;
-  top: 0;
-  left: 0;
+  top: 2px;
+  left: 2px;
   background-color: #e3342f;
   border-radius: 50%;
   color: #fff;
   font-size: 14px;
+}
+
+@media (max-width: 380px) {
+  .wrapper .list .dialog .avatar {
+    width: 46px;
+    height: 46px;
+  }
+
+  .wrapper .list .dialog .title-text .title {
+    font-size: 16px !important;
+  }
+
+  .wrapper .list .dialog .title-text .text {
+    font-style: 14px !important;
+  }
+
+  .wrapper .list .dialog .timestamp {
+    font-size: 12px !important;
+  }
+
+  .wrapper .list .dialog .unread-count {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
 }
 
 .wrapper .no-messages-wrapper {

@@ -28,7 +28,7 @@ class UserController extends Controller
     {
         return response()->json([
           'success' => true,
-          'dialogs' => $request->user()->getDialogsWithLastMessageTimestamp()->sortBy('last_message_timestamp'),
+          'dialogs' => $request->user()->getDialogsWithLastMessageTimestamp()->sortByDesc('last_message_timestamp')->values(),
         ], 200);
     }
 }

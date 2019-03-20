@@ -114,7 +114,7 @@ class MessengerController extends Controller
                   'photo' => $data['photo'],
                   'last_message' => array(
                     'text' => $lastMessageText,
-                    'timestamp' => $lastMessage['date'],
+                    'timestamp' => $lastMessage['date'] + '000',
                   ),
                   'members_count' => $data['members_count'],
                 ));
@@ -205,7 +205,7 @@ class MessengerController extends Controller
     {
         return response()->json([
           'success' => true,
-          'dialogs' => $messenger->getDialogsWithLastMessageTimestamp()->sortBy('last_message_timestamp'),
+          'dialogs' => $messenger->getDialogsWithLastMessageTimestamp()->sortByDesc('last_message_timestamp')->values(),
         ], 200);
     }
 
@@ -286,7 +286,8 @@ class MessengerController extends Controller
      */
     public function deleteMessenger(Request $request)
     {
-        $messenger = $request->user()->{$request->name}()->dialogs()->get()->each(function($dialog)
+        $messenger = $request->user()->{$request->name}();
+        $messenger->dialogs()->get()->each(function($dialog)
         {
           $dialog->authors()->each(function($author)
           {
@@ -295,6 +296,8 @@ class MessengerController extends Controller
               $author->delete();
             }
           });
+
+          $dialog->delete();
         });
 
         $messenger->delete();

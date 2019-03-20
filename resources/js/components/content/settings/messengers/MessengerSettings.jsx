@@ -71,7 +71,6 @@ export default class MessengerSettings extends Component {
               <CheckBox
                 checked={updating}
                 handleChange={e => this.toggleUpdating(e)}
-                id="toggleUpdating"
                 name="toggleUpdating"
                 withOn
               />
@@ -84,7 +83,6 @@ export default class MessengerSettings extends Component {
               <CheckBox
                 checked={watching === 'dialogs'}
                 handleChange={e => this.toggleWatching(e)}
-                id="toggleWatching"
                 name="toggleWatching"
               />
             <div className="label">dialogs</div>

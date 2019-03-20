@@ -42,7 +42,7 @@ class MessageController extends Controller
       $message = Message::create($request->all());
     }
 
-    /** 
+    /**
      * Processing whatsapp webhook.
      *
      * @return \Illuminate\Http\Response
@@ -100,7 +100,7 @@ class MessageController extends Controller
         'text' => $text,
         'author_id' => $authorId,
         'from_me' => $message['fromMe'],
-        'timestamp' => $message['time'],
+        'timestamp' => $message['time'] + '000',
       ]);
 
       if ($message->type !== 'chat')

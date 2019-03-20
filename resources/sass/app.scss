@@ -21,10 +21,6 @@
 .wrapper {
   height: 100%;
 
-  .dialogs {
-
-  }
-
   .messagesWindow, .content {
     width: 100%;
     transition: 0.5s;
@@ -53,8 +49,10 @@
     margin-left: auto;
     height: 90%;
 
-    .container, .row, .row>div {
+    .container {
+      max-width: 660px;
       height: 100%;
+      padding: 0 10px;
     }
 
     .card {
@@ -79,7 +77,7 @@
     }
 
     .dialog-view {
-      .messages-wrapper {
+      .list-wrapper {
         height: 90%;
       }
 
@@ -109,7 +107,7 @@
     .message {
       padding: 6px;
       border-radius: 10px;
-      min-width: 300px;
+      min-width: 286px;
       max-width: 400px;
 
       .avatar {
@@ -152,28 +150,32 @@
 
     .linked-dialog {
       width: 100%;
-      color: #000;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
 
       &:hover {
-
-        .dialog {
-          background-color: #123;
-          color: #fff;
-        }
+        text-decoration: none;
       }
     }
 
     .dialog {
-      width: 100%;
-      max-width: 420px;
-      margin-left: auto;
-      margin-right: auto;
       display: -webkit-flex;
       display: -ms-flex;
       display: flex;
       padding: 8px;
       border-radius: 4px;
       position: relative;
+      color: #000;
+
+      &.unread {
+        background-color: #f5f7fa;
+      }
+
+      &:hover {
+        background-color: #123;
+        color: #fff;
+      }
 
       .avatar {
         width: 60px;
@@ -193,6 +195,7 @@
         .title-text {
           .title {
             font-size: 20px;
+            font-weight: 500;
           }
 
           .text {
@@ -202,6 +205,18 @@
 
         .timestamp {
           font-size: 14px;
+          min-width: 110px;
+          text-align: right;
+        }
+
+        @media (max-width: 440px) {
+          flex-direction: column;
+          align-items: flex-start;
+
+          .timestamp {
+            margin-top: 6px;
+            width: 100%;
+          }
         }
       }
 
@@ -214,12 +229,39 @@
         align-items: center;
         width: 26px;
         height: 26px;
-        top: 0;
-        left: 0;
+        top: 2px;
+        left: 2px;
         background-color: $red;
         border-radius: 50%;
         color: #fff;
         font-size: 14px;
+      }
+
+      @media (max-width: 380px) {
+        .avatar {
+          width: 46px;
+          height: 46px;
+        }
+
+        .title-text {
+          .title {
+            font-size: 16px !important;
+          }
+
+          .text {
+            font-style: 14px !important;
+          }
+        }
+
+        .timestamp {
+          font-size: 12px !important;
+        }
+
+        .unread-count {
+          width: 20px;
+          height: 20px;
+          font-size: 10px;
+        }
       }
     }
   }

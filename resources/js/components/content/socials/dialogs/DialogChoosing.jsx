@@ -46,7 +46,7 @@ const DialogChoosing = ({ one, dialogs, hide, title, mess }) => {
               value={i}
               name="dialog"
             />
-            <Dialog dialog={dialog} />
+          <Dialog dialog={dialog} choosing />
           </label>
         ))}
       </Modal.Body>

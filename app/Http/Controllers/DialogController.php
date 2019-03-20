@@ -365,7 +365,7 @@ class DialogController extends Controller
         }
         $dialogs[$i]['last_message'] = array(
           'text' => $message['text'],
-          'timestamp' => $message['date'],
+          'timestamp' => $message['date'] + '000',
         );
       }
 
@@ -417,6 +417,9 @@ class DialogController extends Controller
      */
     public function show(Dialog $dialog)
     {
+      $dialog->unread_count = 0;
+      $dialog->save();
+
       return response()->json([
         'success' => true,
         'messages' => $dialog->messages()->sortBy('timestamp')->values(),

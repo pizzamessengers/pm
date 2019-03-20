@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import Dialogs from "./../dialogs/Dialogs";
 import Waiting from "./../../elements/Waiting";
 
-export default class MessengerMessages extends Component {
+export default class MessengerDialogs extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,10 +22,7 @@ export default class MessengerMessages extends Component {
           apiToken
       )
       .then(response => {
-        if (this.state.dialogs.length !== response.data.dialogs.length) {
-          this.setState({ dialogs: response.data.dialogs });
-        }
-        this.setState({ waiting: false });
+        this.setState({ dialogs: response.data.dialogs, waiting: false });
       });
     this.interval = setInterval(() => {
       axios
@@ -36,9 +33,7 @@ export default class MessengerMessages extends Component {
             apiToken
         )
         .then(response => {
-          if (this.state.dialogs.length !== response.data.dialogs.length) {
-            this.setState({ dialogs: response.data.dialogs });
-          }
+          this.setState({ dialogs: response.data.dialogs });
         });
     }, 5000);
   }
@@ -69,6 +64,6 @@ export default class MessengerMessages extends Component {
   render() {
     let { waiting, dialogs } = this.state;
     let { mess } = this.props;
-    return waiting ? <Waiting /> : <Dialogs dialogs={dialogs} linked={true} />;
+    return waiting ? <Waiting /> : <Dialogs dialogs={dialogs} />;
   }
 }

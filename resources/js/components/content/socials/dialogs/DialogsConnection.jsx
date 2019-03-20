@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import Dialogs from "./Dialogs";
+import DialogController from "./DialogController";
 import DialogChoosing from "./DialogChoosing";
 
 export default class DialogsConnection extends Component {
@@ -8,7 +8,7 @@ export default class DialogsConnection extends Component {
     this.state = {
       modal: {
         show: false,
-        dialogs: null
+        dialogs: []
       }
     };
     this.q = React.createRef();
@@ -51,11 +51,21 @@ export default class DialogsConnection extends Component {
       });
   };
 
+  deleteDialog = dialog => {
+    let mess = dialog.mess;
+    axios.delete("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
+    socials[mess].dialogList.splice(
+      socials[mess].dialogList.map(x => x.id).indexOf(dialog.id),
+      1
+    );
+    this.setState({ dialogs: socials[mess].dialogList });
+  };
+
   handleClose = () => {
     this.setState({
       modal: {
         show: false,
-        dialogs: null
+        dialogs: []
       }
     });
   };
@@ -79,10 +89,20 @@ export default class DialogsConnection extends Component {
           </form>
         </div>
         {socials[this.props.mess].dialogList ? (
-          <Dialogs
-            dialogs={socials[this.props.mess].dialogList}
-            withController={true}
-          />
+          <ul className="list">
+            {socials[this.props.mess].dialogList.map((dialog, i) => (
+              <li
+                key={i}
+                className="nav-item d-flex align-items-center my-1 w-100"
+              >
+                <DialogController
+                  deleteDialog={this.deleteDialog}
+                  dialog={dialog}
+                  mess={dialog.mess}
+                />
+              </li>
+            ))}
+          </ul>
         ) : null}
         {this.state.modal.show ? (
           <DialogChoosing

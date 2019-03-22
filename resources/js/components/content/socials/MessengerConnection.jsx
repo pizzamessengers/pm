@@ -16,18 +16,10 @@ const MessengerConnection = ({ mess, connect }) => {
     }
   };
 
-  let messengerNames = {
-    vk: 'вконтакте',
-    inst: 'инстаграм',
-    wapp: 'вотсапп',
-  }
-
   return (
-    <div className="d-flex">
-      <div className="d-flex flex-column justify-content-center align-items-center col-5">
-        Подключение {messengerNames[mess]}
-      </div>
-      <div className="d-flex flex-column justify-content-center align-items-center col-7">
+    <div className="messenger-connection">
+      <div className="title">Подключение</div>
+      <div className="connection">
         {rightComponentForConnection()}
       </div>
     </div>

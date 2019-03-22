@@ -1,0 +1,60 @@
+.messenger-connection {
+  width: 100%;
+  height: 100%;
+
+  .connection,
+  .instruction,
+  .operation,
+  .title,
+  .watching-choosing {
+    width: 100%;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .title {
+    height: 10%;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .connection {
+    height: 90%;
+    flex-direction: column;
+
+    .operation {
+      height: 40%;
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      .watching-choosing {
+        width: 140px;
+        height: 140px;
+        background-color: #7c5959;
+        color: #fff;
+        font-size: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
+
+        &:hover {
+          background-color: #774f4f;
+        }
+      }
+    }
+
+    .instruction {
+      height: 60%;
+      text-align: center;
+      font-size: 16px;
+
+      .text {
+        width: 70%;
+      }
+    }
+  }
+}

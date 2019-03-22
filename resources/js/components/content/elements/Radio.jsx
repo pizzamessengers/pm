@@ -7,6 +7,7 @@ const Radio = ({ checked, handleChange, name }) => (
     </label>
     <input
       type="radio"
+      className="d-none"
       onChange={e => {
         handleChange(e);
       }}

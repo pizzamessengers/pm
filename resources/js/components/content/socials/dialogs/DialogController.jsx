@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import LinkedDialog from "./LinkedDialog";
+import CheckBox from "./../../elements/CheckBox";
 
 export default class DialogController extends Component {
   constructor(props) {

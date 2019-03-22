@@ -28,35 +28,43 @@ export default class Menu extends Component {
   closeMenu = () => {
     this.menuItems.current.closeAll();
 
+    let time = this.menuItems.current.checkThatOpened() ? 300 : 0;
+
     setTimeout(() => {
       this.setState({ opened: false });
       $(".wobble").addClass("ripple");
       setTimeout(function() {
         $(".wobble").removeClass("ripple");
       }, 1000);
-    }, 300);
+    }, time);
   };
 
   render() {
+    let { opened } = this.state;
     return (
-      <div className="menu">
-        <div className="blob-nav">
-          <div className="wobble" />
-          <div className="wobble" />
-          <div className="toggle" onClick={this.toggleMenu}>
-            <FontAwesomeIcon className="icon" icon="pizza-slice" />
+      <Fragment>
+      <div className={opened ? "menu-fade show" : "menu-fade"} onClick={this.closeMenu}/>
+        <div className="menu">
+          <div className="blob-nav">
+            <div className="wobble" />
+            <div className="wobble" />
+            <div className="toggle" onClick={this.toggleMenu}>
+              <FontAwesomeIcon className="icon" icon="pizza-slice" />
+            </div>
+            <nav
+              className={
+                !opened
+                  ? "menu-item-wrap"
+                  : "menu-item-wrap slide-out"
+              }
+            >
+              <CloseMenu.Provider value={this.closeMenu}>
+                <MenuItems history={this.props.history} ref={this.menuItems} />
+              </CloseMenu.Provider>
+            </nav>
           </div>
-          <nav
-            className={
-              !this.state.opened ? "menu-item-wrap" : "menu-item-wrap slide-out"
-            }
-          >
-            <CloseMenu.Provider value={this.closeMenu}>
-              <MenuItems history={this.props.history} ref={this.menuItems} />
-            </CloseMenu.Provider>
-          </nav>
         </div>
-      </div>
+      </Fragment>
     );
   }
 }

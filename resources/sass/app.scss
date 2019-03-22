@@ -6,6 +6,7 @@
 @import 'waiting';
 @import 'modules_settings';
 @import 'radio_chkbox';
+@import 'messenger_connection';
 
 .navbar-laravel {
     background-color: #fff;
@@ -316,6 +317,7 @@
 }
 
 .btn-delete {
+  max-width: 90px;
   background-color: $delete;
   color: white;
   box-shadow: 2px -1px 6px $deleteHovered;

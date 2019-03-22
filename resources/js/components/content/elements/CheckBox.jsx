@@ -7,6 +7,7 @@ const CheckBox = ({ checked, handleChange, name, withOn }) => (
     </label>
     <input
       type="checkbox"
+      className="d-none"
       onChange={e => {
         handleChange(e);
       }}

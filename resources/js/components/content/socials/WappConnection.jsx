@@ -4,14 +4,54 @@ export default class Wapp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      connectionStage: !socials.wapp ? 0 : null
+      stage: 0
     };
     this.token = null;
     this.url = null;
     this.qr = null;
+    this.stages = [
+      <Fragment>
+        <div className="operation">
+          <a
+            target="_blank"
+            className="btn btn-primary"
+            href="https://app.chat-api.com"
+            onClick={() => {
+              this.setState({ connectionStage: 1 });
+            }}
+          >
+            Получить токен
+          </a>
+        </div>
+        <div className="instruction">
+          <div className="text">
+            Нужно получить токен
+          </div>
+        </div>
+      </Fragment>,
+      <Fragment>
+        <div className="operation">
+          <input id="url" type="text" placeholder="api url" />
+          <input id="token" type="text" placeholder="token" />
+          <button onClick={this.installWapp}>Зарегистрировать</button>
+        </div>
+        <div className="instruction">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, eum!
+        </div>
+      </Fragment>,
+      <Fragment>
+        <div className="operation">
+            <div className="watching-choosing" onClick={() => this.connect('all')}>all</div>
+            <div className="watching-choosing" onClick={() => this.connect('dialogs')}>dialogs</div>
+        </div>
+        <div className="instruction">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, eum!
+        </div>
+      </Fragment>
+    ];
   }
 
-  installWapp = e => {
+  installWapp = () => {
     e.preventDefault();
     this.token = $("#token").val();
     this.url = $("#url").val();
@@ -21,66 +61,30 @@ export default class Wapp extends Component {
           alert("просканируйте код");
           break;
         case "loading":
-          this.installWapp(e);
+          this.installWapp();
           break;
         case "authenticated":
-          this.setState({ connectionStage: 2 });
+          this.setState({ stage: 2 });
           break;
       }
     });
   };
 
+  connect = watching => {
+    if (this.token) {
+      this.props.connect(
+        "wapp",
+        {
+          url: this.url,
+          token: this.token
+        },
+        watching,
+      );
+    }
+  };
+
   render() {
-    let { connect, remove } = this.props;
-    let { connectionStage } = this.state;
-
-    let connectionStages = [
-      <a
-        target="_blank"
-        className="btn btn-primary"
-        href="https://app.chat-api.com"
-        onClick={() => {
-          this.setState({ connectionStage: 1 });
-        }}
-      >
-        Получить токен
-      </a>,
-      <div className="d-flex flex-column justify-content-center align-items-center">
-        <input id="url" type="text" placeholder="api url" />
-        <input id="token" type="text" placeholder="token" />
-        <button onClick={this.installWapp}>Зарегистрировать</button>
-      </div>,
-      <div>
-        <label htmlFor="all">
-          <input type="radio" value="all" name="watching" id="all" />
-          all
-        </label>
-        <label htmlFor="dialogs">
-          <input type="radio" value="dialogs" name="watching" id="dialogs" />
-          dialogs
-        </label>
-        <button
-          onClick={e => {
-            connect(
-              "wapp",
-              {
-                url: this.url,
-                token: this.token
-              },
-              $("input[name='watching']:checked").val(),
-              e
-            );
-          }}
-        >
-          Зарегистрировать
-        </button>
-      </div>
-    ];
-
-    return (
-      <div className="d-flex flex-column justify-content-center align-items-center">
-        {connectionStages[connectionStage]}
-      </div>
-    );
+    let { stage } = this.state;
+    return this.stages[stage];
   }
 }

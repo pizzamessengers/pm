@@ -47,9 +47,9 @@ class DialogController extends Controller
 
       if ($afterQuery)
       {
-        $vkChat = $dialogs['items'][0];
+        $vkChat = $dialogs->items[0];
         if (Dialog::where([
-          ['dialog_id', $vkChat['peer']['id']],
+          ['dialog_id', $vkChat->peer->id],
           ['messenger_id', $messenger->id]
         ])->first() !== null)
         {
@@ -60,13 +60,13 @@ class DialogController extends Controller
         }
 
         $profiles = json_decode(file_get_contents(
-          'https://api.vk.com/method/execute.convMembers?peer_id='.$vkChat['peer']['id'].'&access_token='.$messenger->token.'&v=5.92'
+          'https://api.vk.com/method/execute.convMembers?peer_id='.$vkChat->peer->id.'&access_token='.$messenger->token.'&v=5.92'
         ))->response->profiles;
 
         $dialogData = $this->dialogIdNamePhotoMembers($vkChat, $dialogs);
 
         $lastMessage = json_decode(file_get_contents(
-          'https://api.vk.com/method/execute.messageById?message_ids='.$vkChat['last_message_id'].'&access_token='.$messenger->token.'&v=5.92'
+          'https://api.vk.com/method/execute.messageById?message_ids='.$vkChat->last_message_id.'&access_token='.$messenger->token.'&v=5.92'
         ))->response->items[0];
 
         $lastMessageText = $lastMessage->text;
@@ -78,7 +78,7 @@ class DialogController extends Controller
         $dialog = Dialog::create([
           'name' => $dialogData['name'],
           'messenger_id' => $messenger->id,
-          'dialog_id' => (string) $vkChat['peer']['id'],
+          'dialog_id' => (string) $vkChat->peer->id,
           'last_message' => array(
             'text' => $lastMessageText,
             'timestamp' =>  $lastMessage->date.'000',
@@ -260,8 +260,7 @@ class DialogController extends Controller
       switch ($request->mess) {
         case 'vk':
           $messenger = $request->user()->vk();
-
-          $result = $request->q ?
+          $result = isset($request['q']) ?
             $this->processQueryVk($request->q, $messenger) :
             $this->addDialogsVk($request->dialogs, $messenger, false);
           break;
@@ -381,7 +380,7 @@ class DialogController extends Controller
       else
       {
         $name = $dialog->chat_settings->title;
-        $photo = $dialog->chat_settings->photo ?
+        $photo = property_exists($dialog->chat_settings, 'photo') ?
           $dialog->chat_settings->photo->photo_100 :
           'https://vk.com/images/camera_100.png';
         $membersCount = $dialog->chat_settings->members_count;

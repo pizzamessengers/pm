@@ -33,10 +33,14 @@ export default class MessengersSettings extends Component {
   };
 
   remove = mess => {
-    let { connectedMessengers } = this.state;
+    let { connectedMessengers } = this.state,
+        currentMess;
     connectedMessengers.splice(connectedMessengers.indexOf(mess), 1);
 
-    this.props.history.push("/app/settings/messenger");
+    if (connectedMessengers.length > 0) {
+      currentMess = connectedMessengers[0];
+      this.props.history.push("/app/settings/messenger/"+currentMess+"");
+    }
 
     this.setState({ connectedMessengers });
   };

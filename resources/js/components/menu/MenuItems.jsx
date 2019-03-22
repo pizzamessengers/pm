@@ -24,12 +24,17 @@ export default class MenuItems extends Component {
       }
     ];
 
-    this.menuItems = [
-      React.createRef(),
-      React.createRef(),
-      React.createRef(),
-      React.createRef()
-    ];
+    this.menuItems = [React.createRef(), React.createRef()];
+  }
+
+  checkThatOpened = () => {
+    for (var i = 0; i < this.menuItems.length; i++) {
+      if (this.menuItems[i].current.state.opened) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   closeAll = () => {
@@ -44,7 +49,9 @@ export default class MenuItems extends Component {
         {this.menuList.map((menuItem, i) => (
           <MenuItem
             closeAll={this.closeAll}
-            ref={this.menuItems[i]}
+            ref={
+              i === 0 ? this.menuItems[0] : i === 2 ? this.menuItems[1] : null
+            }
             key={i}
             drop={menuItem.drop}
             item={menuItem.item}

@@ -16,6 +16,7 @@ $highlight: #05abe0; //@highlight: #7a8999;
         margin: 0 8px;
         position: relative;
         z-index: 2;
+        min-width: 44px;
         width: 44px;
         height: 21px;
         border-radius: 3px;
@@ -129,10 +130,5 @@ $highlight: #05abe0; //@highlight: #7a8999;
         &.on > span.pip {
             transform: scale(1,1);
         }
-    }
-
-    input[type=checkbox],
-    input[type=radio] {
-        display: none;
     }
 }

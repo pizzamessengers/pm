@@ -17,8 +17,7 @@ export default class Social extends Component {
     this.url = React.createRef();
   }
 
-  connect = (mess, props, watching, e) => {
-    e.preventDefault();
+  connect = (mess, props, watching) => {
     let data = {
       name: mess,
       props: props,

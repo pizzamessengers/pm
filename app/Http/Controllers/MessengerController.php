@@ -85,7 +85,7 @@ class MessengerController extends Controller
                   $settings = $dialog->chat_settings;
 
                   $data['name'] = $settings->title;
-                  $data['photo'] = $settings->photo ?
+                  $data['photo'] = property_exists($settings, 'photo') ?
                     $settings->photo->photo_100 :
                     'https://vk.com/images/camera_100.png';
                   $data['members_count'] = $settings->members_count;

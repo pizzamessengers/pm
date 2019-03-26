@@ -39,10 +39,10 @@ export default class MessengersSettings extends Component {
 
     if (connectedMessengers.length > 0) {
       currentMess = connectedMessengers[0];
-      this.props.history.push("/app/settings/messenger/"+currentMess+"");
+      this.props.history.push("/app/settings/messenger/"+currentMess);
     }
 
-    this.setState({ connectedMessengers });
+    this.setState({ connectedMessengers, currentMess });
   };
 
   changeCurrentMess = currentMess => {

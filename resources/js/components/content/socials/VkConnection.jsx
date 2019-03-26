@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import Waiting from "./../elements/Waiting";
 
 export default class VkConnection extends Component {
   constructor(props) {
@@ -13,7 +14,7 @@ export default class VkConnection extends Component {
         <div className="operation">
           <a
             target="_blank"
-            className="btn btn-primary mb-3"
+            className="main-button"
             href="https://oauth.vk.com/authorize?client_id=6869374&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=messages,offline,video&response_type=token&v=5.92"
             onClick={() => this.setState({ stage: 1 })}
           >
@@ -29,8 +30,16 @@ export default class VkConnection extends Component {
       </Fragment>,
       <Fragment>
         <div className="operation">
-          <input type="text" placeholder="url" ref={this.urlInput} />
-          <button onClick={this.processUrlInput}>Далее</button>
+          <form
+            className="form"
+            onSubmit={e => {
+              e.preventDefault();
+              this.processUrlInput();
+            }}
+          >
+            <input type="text" placeholder="url" ref={this.urlInput} required />
+            <input type="submit" className="main-button" value="Далее" required />
+          </form>
         </div>
         <div className="instruction">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, eum!
@@ -38,25 +47,50 @@ export default class VkConnection extends Component {
       </Fragment>,
       <Fragment>
         <div className="operation">
-            <div className="watching-choosing" onClick={() => this.connect('all')}>all</div>
-            <div className="watching-choosing" onClick={() => this.connect('dialogs')}>dialogs</div>
+          <div
+            className="watching-choosing"
+            onClick={() => this.connect("all")}
+          >
+            all
+          </div>
+          <div
+            className="watching-choosing"
+            onClick={() => this.connect("dialogs")}
+          >
+            dialogs
+          </div>
         </div>
         <div className="instruction">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, eum!
         </div>
-      </Fragment>
+      </Fragment>,
+      <Waiting />
     ];
     this.token = null;
   }
 
+  componentDidMount() {
+    $(".progress-bar").css("width", "25%");
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.stage !== prevState.stage) {
+      $(".progress-bar").css(
+        "width",
+        (100 / this.stages.length) * (this.state.stage + 1) + "%"
+      );
+    }
+  }
+
   connect = watching => {
+    this.setState({ stage: 3 });
     if (this.token) {
       this.props.connect(
         "vk",
         {
           token: this.token
         },
-        watching,
+        watching
       );
     }
   };
@@ -66,10 +100,6 @@ export default class VkConnection extends Component {
     this.setState({ stage: 2 });
     this.token = url.substring(45, url.indexOf("&", 45));
   };
-
-  handleWatchingChoosing = () => {
-
-  }
 
   render() {
     let { stage } = this.state;

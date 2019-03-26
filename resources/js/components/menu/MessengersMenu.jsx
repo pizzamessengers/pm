@@ -1,24 +1,41 @@
 import React from "react";
 import MenuLink from "./MenuLink";
 
-const MessengersMenu = ({ item, opened }) => {
+const MessengersMenu = ({ opened }) => {
   let messengers = [
     {
       icon: ["fab", "vk"],
-      link: "socials/vk"
+      link: "socials/vk",
+      tooltip: {
+        direction: "right",
+        title: "VKontakte"
+      }
     },
     {
       icon: ["fab", "whatsapp"],
-      link: "socials/wapp"
+      link: "socials/wapp",
+      tooltip: {
+        direction: "right",
+        title: "Instagram"
+      }
     },
     {
       icon: ["fab", "instagram"],
-      link: "socials/inst"
+      link: "socials/inst",
+      tooltip: {
+        direction: "right",
+        title: "WhatsApp"
+      }
     }
   ];
 
   return messengers.map((messenger, i) => (
-    <MenuLink key={i} icon={messenger.icon} link={messenger.link} />
+    <MenuLink
+      key={i}
+      icon={messenger.icon}
+      link={messenger.link}
+      tooltip={messenger.tooltip}
+    />
   ));
 };
 

@@ -8,12 +8,16 @@ export default class Messages extends Component {
   }
 
   componentDidMount() {
+    console.log('mounted');
     let mw = $(this.messagesWrapper.current);
-    mw.scrollTop(mw[0].scrollHeight);
+    setTimeout(() => {mw.scrollTop(mw[0].scrollHeight)}, 50);
   }
 
   componentDidUpdate(prevProps) {
+    console.log('here');
     let mw = $(this.messagesWrapper.current);
+    console.log(mw.scrollTop());
+    console.log(mw[0].scrollHeight);
     //промотать вниз, если
     //1. нахожусь в самом низу и есть новые сообщения
     //2. до этого не было сообщений
@@ -38,8 +42,8 @@ export default class Messages extends Component {
               <Message
                 message={message}
                 same={
-                  i > 0
-                    ? message.author.avatar === messages[i - 1].author.avatar
+                  i > 0 && !message.from_me
+                    ? message.author.id === messages[i - 1].author.id
                     : false
                 }
               />

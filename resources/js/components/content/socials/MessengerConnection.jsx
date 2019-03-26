@@ -19,9 +19,15 @@ const MessengerConnection = ({ mess, connect }) => {
   return (
     <div className="messenger-connection">
       <div className="title">Подключение</div>
-      <div className="connection">
-        {rightComponentForConnection()}
+      <div className="progress-wrapper">
+        <div className="progress">
+          <div
+            className="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+          />
+        </div>
       </div>
+      <div className="connection">{rightComponentForConnection()}</div>
     </div>
   );
 };

@@ -101,8 +101,8 @@ class GetMessagesVk extends Command
       $dialog = $this->dialogId($message->peer_id, $messenger);
       $authorId = $this->authorId($message->from_id, $dialog->id, $profiles);
 
-      $newMessage = Message::create([
-        'message_id' => (string) $message->id,
+      $newMessage = Message::firstOrCreate([
+        'message_id' => $message->id,
         'dialog_id' => $dialog->id,
         'author_id' => $authorId,
         'text' => $message->text,
@@ -113,10 +113,17 @@ class GetMessagesVk extends Command
       if (!$message->out)
       {
         $dialog->unread_count++;
+      } else {
+        $dialog->unread_count = 0;
+      }
+
+      if (strlen($message->text) > 40)
+      {
+        $message->text = mb_substr($message->text, 0, 40, 'UTF-8').'...';
       }
 
       $dialog->last_message = array(
-        'text' => $newMessage->text,
+        'text' => $message->text,
         'timestamp' => $newMessage->timestamp,
       );
       $dialog->save();
@@ -130,14 +137,19 @@ class GetMessagesVk extends Command
     /**
      * Create attachment instance.
      *
-     * @param object $attachments
+     * @param array $attachments
      * @param int $messageId
      * @param Messenger $messenger
      */
-    private function attachments(object $attachments, int $messageId, Messenger $messenger)
+    private function attachments(array $attachments, int $messageId, Messenger $messenger)
     {
       foreach ($attachments as $attachment) {
         switch ($attachment->type) {
+          case 'audio_message':
+            $type = 'audio';
+            $name = null;
+            $url = $attachment->audio_message->link_mp3;
+            break;
           case 'doc':
             $preview = $attachment->doc->preview;
             switch (key($preview)) {
@@ -236,13 +248,21 @@ class GetMessagesVk extends Command
           $photo = $profile->photo_100;
           $membersCount = 2;
         }
-        else
+        else if ($chat->items[0]->peer->type === 'chat')
         {
           $name = $chat->items[0]->chat_settings->title;
-          $photo = $chat->items[0]->chat_settings->photo ?
+          $photo = property_exists($chat->items[0]->chat_settings, 'photo') ?
             $chat->items[0]->chat_settings->photo->photo_100 :
             'https://vk.com/images/camera_100.png';
           $membersCount = $chat->items[0]->chat_settings->members_count;
+        }
+        else if ($chat->items[0]->peer->type === 'group')
+        {
+          $name = $chat->groups[0]->name;
+          $photo = property_exists($chat->groups[0], 'photo_100') ?
+            $chat->groups[0]->photo_100 :
+            'https://vk.com/images/camera_100.png';
+          $membersCount = 2;
         }
 
         $lastMessage = json_decode(file_get_contents(
@@ -288,7 +308,7 @@ class GetMessagesVk extends Command
 
       if (count($authors) > 0) {
         foreach ($authors as $author) {
-          if ($author->dialogs()[0]->messenger()->name === 'inst')
+          if ($author->dialogs()[0]->messenger()->name === 'vk')
           {
             $authorId = $author->id;
             break;

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SubMenu from "./SubMenu";
+import CloseMenu from "./../../contexts/CloseMenu";
 
 export default class MenuItem extends Component {
   constructor() {
@@ -40,6 +41,7 @@ export default class MenuItem extends Component {
   };
 
   toggleMessages = () => {
+    this.context();
     $(".wrapper").toggleClass("showMessagesWindow");
   };
 
@@ -70,3 +72,5 @@ export default class MenuItem extends Component {
     );
   }
 }
+
+MenuItem.contextType = CloseMenu;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Message;
 use App\Dialog;
+use App\Author;
 use Illuminate\Http\Request;
 use VK\Client\VKApiClient;
 use InstagramAPI\Instagram;
@@ -202,18 +203,18 @@ class MessageController extends Controller
      */
     public function sendMessage(Request $request)
     {
-      $dialogId = Dialog::find($request->dialogId)->dialog_id;
+      $dialog = Dialog::find($request->dialogId);
       $text = $request->text;
 
       switch ($request->mess) {
         case 'vk':
           $vk = $request->user()->vk();
-          $this->sendVkMessage($vk, $dialogId, $text);
+          $this->sendVkMessage($vk, $dialog, $text);
           break;
 
         case 'inst':
           $inst = $request->user()->inst();
-          $this->sendInstMessage($inst, $dialogId, $text);
+          $this->sendInstMessage($inst, $dialog->dialog_id, $text);
           break;
 
         case 'wapp':
@@ -231,13 +232,48 @@ class MessageController extends Controller
      * Send message to the vk.
      *
      * @param Messenger $messenger
-     * @param string $dialogId
+     * @param Dialog $dialog
      * @param string $text
      * @return \Illuminate\Http\Response
      */
-    private function sendVkMessage(Messenger $messenger, string $dialogId, string $text)
+    private function sendVkMessage($messenger, Dialog $dialog, string $text)
     {
-      //
+      $response = json_decode(file_get_contents(
+        'https://api.vk.com/method/execute.sendMessage?peer_id='.$dialog->dialog_id.
+        '&message='.urlencode($text).'&attachments=&random_id='.random_int(0, 2000000000).
+        '&access_token='.$messenger->token.'&v=5.92'
+      ))->response;
+
+      $author = $response->author;
+
+      $authorId = Author::firstOrCreate([
+        'author_id' => $author->author_id,
+        'first_name' => $author->first_name,
+        'last_name' => $author->last_name,
+        'avatar' => $author->avatar,
+      ])->id;
+
+      $message = $response->message;
+
+      $newMessage = Message::create([
+        'message_id' => $message->message_id,
+        'dialog_id' => $dialog->id,
+        'author_id' => $authorId,
+        'text' => $message->text,
+        'from_me' => true,
+        'timestamp' => $message->timestamp.'000',
+      ]);
+
+      $dialog->last_message = array(
+        'text' => $message->text,
+        'timestamp' => $newMessage->timestamp,
+      );
+      $dialog->save();
+
+      return response()->json([
+        'success' => true,
+        'message' => $newMessage
+      ]);
     }
 
     /**

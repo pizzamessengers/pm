@@ -1,24 +1,41 @@
 import React from "react";
 import MenuLink from "./MenuLink";
 
-const SettingsMenu = ({ item, opened }) => {
+const SettingsMenu = ({ opened }) => {
   let settings = [
     {
       icon: ["fas", "tools"],
-      link: "settings/messenger"
+      link: "settings/messenger",
+      tooltip: {
+        direction: "left",
+        title: "Messengers Settings"
+      }
     },
     {
       icon: ["fas", "user"],
-      link: "settings/profile/user"
+      link: "settings/profile/user",
+      tooltip: {
+        direction: "left",
+        title: "Profile Settings"
+      }
     },
     {
       icon: ["fas", "question"],
-      link: "settings/support"
+      link: "settings/support",
+      tooltip: {
+        direction: "left",
+        title: "Support"
+      }
     }
   ];
 
   return settings.map((setting, i) => (
-    <MenuLink key={i} icon={setting.icon} link={setting.link} />
+    <MenuLink
+      key={i}
+      icon={setting.icon}
+      link={setting.link}
+      tooltip={setting.tooltip}
+    />
   ));
 };
 

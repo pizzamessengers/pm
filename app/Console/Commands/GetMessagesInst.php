@@ -87,7 +87,7 @@ class GetMessagesInst extends Command
         $threadId = $thread->getThreadId();
         if (($dialog = Dialog::where('dialog_id', $threadId)->where('messenger_id', $messenger->id)->first()) === null)
         {
-          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp + '000';
+          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp.'000';
           $lastMessageTimestamp = substr($thread->getLastPermanentItem()->getTimestamp(), 0, 13);
 
           //если время последнего сообщения раньше регистрации мессенджера
@@ -186,8 +186,7 @@ class GetMessagesInst extends Command
     {
       foreach ($thread->getItems() as $i=>$message)
       {
-        info(substr($message->getTimestamp(), 0, 13).' '.$messengerCreatedAt + '000');
-        if (substr($message->getTimestamp(), 0, 13) > ($messengerCreatedAt + '000'))
+        if (substr($message->getTimestamp(), 0, 13) > ($messengerCreatedAt.'000'))
         {
           $this->addMessage($message, $dialog, $inst);
 

@@ -53,7 +53,7 @@ const Dialog = ({ dialog, choosing }) => {
   };
 
   return (
-    <div className={dialog.unread_count !== 0 ? "dialog unread" : "dialog"}>
+    <div className={dialog.unread_count !== 0 ? "dialog unread "+dialog.mess : "dialog "+dialog.mess}>
       <img className="avatar" src={dialog.photo} />
       <div className="dialog-data">
         <div className="title-text">

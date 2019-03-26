@@ -1,15 +1,3 @@
-/* why not try uncommenting
-    /* one of these lovely colors? */
-$highlight: #05abe0; //@highlight: #7a8999;
-//@highlight: #e93cec;
-//@highlight: #55dd00;
-/* if you are experiencing the
-    /* radios and the button being
-    /* slightly misaligned (and moving
-    /* by 1px(ish)) then resize your browser.
-    /* Codepen's frames seem to be the
-    /* culprit */
-
 #root {
     label.chkbox {
         padding: 0;
@@ -87,7 +75,7 @@ $highlight: #05abe0; //@highlight: #7a8999;
         }
 
         &.on {
-            background-color: $highlight;
+            background-color: $firstColor;
 
             .toggle {
                 transform: translateX(20px);
@@ -114,7 +102,7 @@ $highlight: #05abe0; //@highlight: #7a8999;
             height: 14px;
             position: absolute;
             border-radius: 100%;
-            background: blue;
+            background: $firstColorHover;
             top: 3px;
             left: 3px;
             box-shadow: 0 2px 5px 1px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.4) inset;
@@ -124,7 +112,7 @@ $highlight: #05abe0; //@highlight: #7a8999;
         }
 
         &.on {
-            background-color: $highlight;
+            background-color: $firstColor;
         }
 
         &.on > span.pip {

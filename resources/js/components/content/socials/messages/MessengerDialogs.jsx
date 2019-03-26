@@ -49,7 +49,7 @@ export default class MessengerDialogs extends Component {
             apiToken
         )
         .then(response => {
-            this.setState({ dialogs: response.data.dialogs, waiting: false });
+          this.setState({ dialogs: response.data.dialogs, waiting: false });
         });
     }
   }
@@ -61,6 +61,16 @@ export default class MessengerDialogs extends Component {
   render() {
     let { waiting, dialogs } = this.state;
     let { mess } = this.props;
-    return waiting ? <Waiting /> : <Dialogs dialogs={dialogs} />;
+    return waiting ? (
+      <Waiting />
+    ) : dialogs.length > 0 ? (
+      <Dialogs dialogs={dialogs} />
+    ) : (
+      <div className="no-messages-wrapper">
+        <div className="no-messages">
+          В этом окне будут отображаться диалоги данного мессенджера
+        </div>
+      </div>
+    );
   }
 }

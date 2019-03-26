@@ -15,7 +15,8 @@ export default class MenuLink extends Component {
   };
 
   render() {
-    let { icon, link } = this.props;
+    let { icon, link, tooltip } = this.props;
+    /*data-toggle="tooltip" data-placement={tooltip.direction} title={tooltip.title}*/
 
     return (
       <Link

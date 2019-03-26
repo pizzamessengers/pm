@@ -7,38 +7,8 @@ const ModulesList = ({
   currentModule,
   changeCurrentModule
 }) => {
-  let onMouseEnterHandler = e => {
-    if (!$(e.target).hasClass("active")) {
-      $(e.target)
-        .css("animation", "modules-list-item-animation-enter 0.2s ease-out")
-        .css(
-          "-webkit-animation",
-          "modules-list-item-animation-enter 0.2s ease-out"
-        );
-    }
-  };
-
-  let onMouseLeaveHandler = e => {
-    if (!$(e.target).hasClass("active")) {
-      $(e.target)
-        .css("animation", "modules-list-item-animation-leave 0.2s ease-out")
-        .css(
-          "-webkit-animation",
-          "modules-list-item-animation-leave 0.2s ease-out"
-        );
-    }
-  };
-
   let onClickHandler = e => {
     if (!$(e.target).hasClass("active")) {
-      $(".modules-list-item.active")
-        .removeClass("active")
-        .css("animation", "modules-list-item-animation-leave 0.2s ease-out")
-        .css(
-          "-webkit-animation",
-          "modules-list-item-animation-leave 0.2s ease-out"
-        );
-      $(e.target).addClass("active");
       changeCurrentModule($(e.target).attr("module"));
     }
   };
@@ -65,11 +35,9 @@ const ModulesList = ({
             <div
               className={
                 module === currentModule
-                  ? "modules-list-item active"
-                  : "modules-list-item"
+                  ? "modules-list-item active " + module
+                  : "modules-list-item " + module
               }
-              onMouseEnter={e => onMouseEnterHandler(e)}
-              onMouseLeave={e => onMouseLeaveHandler(e)}
               onClick={e => onClickHandler(e)}
               module={module}
             >

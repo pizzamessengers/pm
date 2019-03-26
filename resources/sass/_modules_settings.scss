@@ -24,20 +24,27 @@
       justify-content: center;
       width: 100px;
       height: 50px;
-      box-shadow: inset -0.2px 0.2px 12px $secondColor;
       border-radius: 2px;
       transition: 0.3s;
-      color: $secondColor;
-      background: linear-gradient(38deg, $bg-color, $bg-color, $bg-color, $bg-color, $bg-color, $bg-color, $secondColor);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      opacity: 0.6;
 
-      &:hover {
-        color: #fff;
-        background: linear-gradient(38deg, $bg-color, $secondColor, $secondColor, $secondColor, $secondColor, $secondColor, $secondColor);
+      &.vk {
+        background: $vk;
       }
 
-      &.active {
-        color: #fff;
-        background: linear-gradient(38deg, $bg-color, $secondColor, $secondColor, $secondColor, $secondColor, $secondColor, $secondColor);
+      &.wapp {
+        background: $wapp;
+      }
+
+      &.inst {
+        background: $inst;
+      }
+
+      &:hover, &.active {
+        opacity: 1;
       }
     }
   }
@@ -46,10 +53,9 @@
     width: 100%;
     height: calc(80% - 50px);
     box-sizing: border-box;
-    border: 2px solid $borderColor;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    box-shadow: 2px 2px 6px $borderColor, -2px 0 6px $borderColor;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 
     .settings-wrapper {
       height: 85%;
@@ -60,10 +66,9 @@
         display: flex;
         align-items: center;
         height: 60px;
-        border-bottom: 2px solid $borderColor;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 
         .setting-name {
-          border-right: 2px solid $borderColor;
           font-size: 16px;
           font-weight: 500;
         }

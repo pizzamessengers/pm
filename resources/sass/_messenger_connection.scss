@@ -6,7 +6,8 @@
   .instruction,
   .operation,
   .title,
-  .watching-choosing {
+  .watching-choosing,
+  .form {
     width: 100%;
     display: -webkit-flex;
     display: -ms-flex;
@@ -21,16 +22,28 @@
     font-weight: 500;
   }
 
+  .progress-wrapper {
+    height: 8%;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+
+    .progress {
+      height: 8px;
+      box-shadow: 0.5px 0.5px 8px $firstColorShadow;
+
+      .progress-bar {
+        background-color: $firstColor;
+      }
+    }
+  }
+
   .connection {
-    height: 90%;
+    height: 82%;
     flex-direction: column;
 
     .operation {
       height: 40%;
-
-      input[type="radio"] {
-        display: none;
-      }
 
       .watching-choosing {
         width: 140px;
@@ -43,6 +56,16 @@
 
         &:hover {
           background-color: #774f4f;
+        }
+      }
+
+      .form {
+        height: 100%;
+        flex-direction: column;
+
+        input[type="text"], input[type="password"] {
+          width: 240px;
+          height: 50px;
         }
       }
     }

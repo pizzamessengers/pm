@@ -17,6 +17,16 @@ export default class Social extends Component {
     this.url = React.createRef();
   }
 
+  componentDidMount() {
+    $(".card-header").addClass(this.props.mess);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.mess !== prevProps.mess) {
+      $(".card-header").removeClass(prevProps.mess).addClass(this.props.mess);
+    }
+  }
+
   connect = (mess, props, watching) => {
     let data = {
       name: mess,

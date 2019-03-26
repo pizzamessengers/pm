@@ -36,8 +36,14 @@ export default class MessagesWindow extends Component {
       <div className="messagesWindow">
         {waiting ? (
           <Waiting />
-        ) : (
+        ) : dialogs.length > 0 ? (
           <Dialogs dialogs={dialogs} fromMessagesWindow={true} />
+        ) : (
+          <div className="no-messages-wrapper">
+            <div className="no-messages">
+              В это окне будут отображаться диалоги со всех мессенджеров
+            </div>
+          </div>
         )}
       </div>
     );

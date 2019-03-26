@@ -42,22 +42,16 @@ class Dialog extends Model
     public function messages()
     {
       return $this->hasMany('App\Message')
-                  ->get(['id', 'dialog_id', 'author_id', 'from_me', 'text', 'timestamp'])
+                  ->get(['id', 'author_id', 'from_me', 'text', 'timestamp'])
                   ->values()
                   ->each(function(Message $message) {
                     $message->attachments = $message->attachments();
-                    $dialog = $message->dialog();
-                    $message->dialog = [
-                      'id' => $dialog->id,
-                      'name' => $dialog->name,
-                    ];
                     $author = $message->author();
                     $message->author = [
+                      'id' => $author->id,
                       'name' => $author->first_name.' '.$author->last_name,
                       'avatar' => $author->avatar,
                     ];
-                    $message->mess = $dialog->messenger()->name;
-                    unset($message->dialog_id);
                     unset($message->author_id);
                     unset($message->id);
                   });

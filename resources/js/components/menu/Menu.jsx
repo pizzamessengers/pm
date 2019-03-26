@@ -26,9 +26,7 @@ export default class Menu extends Component {
   };
 
   closeMenu = () => {
-    this.menuItems.current.closeAll();
-
-    let time = this.menuItems.current.checkThatOpened() ? 300 : 0;
+    let time = this.menuItems.current.closeAll();
 
     setTimeout(() => {
       this.setState({ opened: false });

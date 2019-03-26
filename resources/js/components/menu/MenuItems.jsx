@@ -27,20 +27,15 @@ export default class MenuItems extends Component {
     this.menuItems = [React.createRef(), React.createRef()];
   }
 
-  checkThatOpened = () => {
-    for (var i = 0; i < this.menuItems.length; i++) {
-      if (this.menuItems[i].current.state.opened) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   closeAll = () => {
     for (var i = 0; i < this.menuItems.length; i++) {
-      this.menuItems[i].current.close();
+      if (this.menuItems[i].current.state.opened) {
+        this.menuItems[i].current.close();
+        return 300;
+      }
     }
+    
+    return 0;
   };
 
   render() {

@@ -84,11 +84,13 @@ class GetMessagesInst extends Command
     {
       foreach ($threads as $i=>$thread)
       {
+        $lastItem = $thread->getLastPermanentItem();
         $threadId = $thread->getThreadId();
+
         if (($dialog = Dialog::where('dialog_id', $threadId)->where('messenger_id', $messenger->id)->first()) === null)
         {
           $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp.'000';
-          $lastMessageTimestamp = substr($thread->getLastPermanentItem()->getTimestamp(), 0, 13);
+          $lastMessageTimestamp = substr($lastItem->getTimestamp(), 0, 13);
 
           //если время последнего сообщения раньше регистрации мессенджера
           if ($lastMessageTimestamp <= $messengerCreatedAt) break;
@@ -103,7 +105,7 @@ class GetMessagesInst extends Command
             else continue;
           }
 
-          $lastMessageText = $thread->getLastPermanentItem()->getText();
+          $lastMessageText = $lastItem->getText();
           if ($lastMessageText === null)
           {
             $lastMessageText = '';
@@ -124,9 +126,10 @@ class GetMessagesInst extends Command
             'dialog_id' => $threadId,
             'name' => $thread->getThreadTitle(),
             'last_message' => array(
-              'id' => $thread->getLastPermanentItem()->getItemId(),
+              'id' => $lastItem->getItemId(),
               'text' => $lastMessageText,
               'timestamp' => $lastMessageTimestamp,
+              'with_attachments' => $lastItem->getItemType() !== 'text'
             ),
             'members_count' => count($thread->getUsers()) + 1,
             'photo' => $photo,
@@ -139,11 +142,11 @@ class GetMessagesInst extends Command
         else
         {
           if ($dialog->updating === false) continue;
-          if ($thread->getLastPermanentItem()->getItemId() === $dialog->last_message['id']) break;
+          if ($lastItem->getItemId() === $dialog->last_message['id']) break;
           $thread = $inst->direct->getThread($threadId)->getThread();
           $this->addMessages($thread, $dialog, $inst);
 
-          $lastMessageText = $thread->getLastPermanentItem()->getText();
+          $lastMessageText = $lastItem->getText();
           if ($lastMessageText === null)
           {
             $lastMessageText = '';
@@ -154,9 +157,10 @@ class GetMessagesInst extends Command
           }
 
           $dialog->last_message = array(
-            'id' => $thread->getLastPermanentItem()->getItemId(),
+            'id' => $lastItem->getItemId(),
             'text' => $lastMessageText,
-            'timestamp' => substr($thread->getLastPermanentItem()->getTimestamp(), 0, 13),
+            'timestamp' => substr($lastItem->getTimestamp(), 0, 13),
+            'with_attachments' => $lastItem->getItemType() !== 'text'
           );
           $dialog->save();
         }

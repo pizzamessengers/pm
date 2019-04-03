@@ -82,6 +82,7 @@ class DialogController extends Controller
           'last_message' => array(
             'text' => $lastMessageText,
             'timestamp' =>  $lastMessage->date.'000',
+            'with_attachments' => count($lastMessage->attachments) > 0,
           ),
           'members_count' => $dialogData['members_count'],
           'photo' => $dialogData['photo'],
@@ -188,8 +189,9 @@ class DialogController extends Controller
       }
 
       $profiles = $thread->getUsers();
+      $lastItem = $thread->getLastPermanentItem();
 
-      $lastMessageText = $thread->getLastPermanentItem()->getText();
+      $lastMessageText = $lastItem->getText();
       if ($lastMessageText === null)
       {
         $lastMessageText = '';
@@ -210,9 +212,10 @@ class DialogController extends Controller
         'messenger_id' => $messenger->id,
         'dialog_id' => $thread->getThreadId(),
         'last_message' => array(
-          'id' => $thread->getLastPermanentItem()->getItemId(),
+          'id' => $lastItem->getItemId(),
           'text' => $lastMessageText,
-          'timestamp' => $thread->getLastPermanentItem()->getTimestamp(),
+          'timestamp' => $lastItem->getTimestamp(),
+          'with_attachments' => $lastItem->getItemType() !== 'text'
         ),
         'members_count' => count($thread->getUsers()) + 1,
         'photo' => $photo,
@@ -351,6 +354,7 @@ class DialogController extends Controller
         $dialogs[$i]['last_message'] = array(
           'text' => $message->text,
           'timestamp' => $message->date.'000',
+          'with_attachments' => count($message->attachments) > 0,
         );
       }
 

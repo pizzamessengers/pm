@@ -108,6 +108,7 @@ class MessengerController extends Controller
                   'last_message' => array(
                     'text' => $lastMessageText,
                     'timestamp' => $lastMessage->date.'000',
+                    'with_attachments' => count($lastMessage->attachments) > 0,
                   ),
                   'members_count' => $data['members_count'],
                 ));

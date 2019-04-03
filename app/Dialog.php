@@ -53,7 +53,6 @@ class Dialog extends Model
                       'avatar' => $author->avatar,
                     ];
                     unset($message->author_id);
-                    unset($message->id);
                   });
     }
 

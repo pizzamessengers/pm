@@ -32,6 +32,7 @@ class Controller extends BaseController
             'updating' => $vk->updating,
             'watching' => $vk->watching,
             'dialogList' => $vk->dialogs()->get(['id', 'name', 'updating', 'photo', 'members_count', 'last_message', 'unread_count']),
+            'token' => $vk->token,
           ] : null,
           'inst' => $inst !== null ? [
             'id' => $inst->id,

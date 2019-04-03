@@ -11,11 +11,6 @@ export default class ProfileSettings extends Component {
     };
   }
 
-  componentWillMount() {
-    let currentModule = this.props.location.pathname.substr(22);
-    if (currentModule !== "") this.setState({ currentModule });
-  }
-
   changeCurrentModule = currentModule => {
     this.setState({ currentModule });
   };

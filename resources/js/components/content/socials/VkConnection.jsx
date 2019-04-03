@@ -15,7 +15,7 @@ export default class VkConnection extends Component {
           <a
             target="_blank"
             className="main-button"
-            href="https://oauth.vk.com/authorize?client_id=6869374&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=messages,offline,video&response_type=token&v=5.92"
+            href="https://oauth.vk.com/authorize?client_id=6869374&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=messages,offline,video,photos,docs&response_type=token&v=5.92"
             onClick={() => this.setState({ stage: 1 })}
           >
             Получить токен

@@ -11,9 +11,7 @@ export default class MessengerDialogs extends Component {
     };
 
     this.interval;
-  }
 
-  componentWillMount() {
     axios
       .get(
         "api/v1/messengers/" +

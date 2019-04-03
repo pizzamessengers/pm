@@ -1,35 +1,67 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import timestamp from "./../../../../functions/timestamp";
 import Message from "./Message";
 
 export default class Messages extends Component {
   constructor(props) {
     super(props);
+    this.lastTimestamp = 0;
     this.messagesWrapper = React.createRef();
+    this.mw;
+    this.timestamp = timestamp;
   }
 
   componentDidMount() {
-    console.log('mounted');
-    let mw = $(this.messagesWrapper.current);
-    setTimeout(() => {mw.scrollTop(mw[0].scrollHeight)}, 50);
+    this.mw = $(this.messagesWrapper.current);
+    this.scrollToBot();
+  }
+
+  scrollToBot = () => {
+    this.mw.scrollTop(this.mw[0].scrollHeight);
+  };
+
+  shouldComponentUpdate() {
+    this.lastTimestamp = 0;
+    return true;
   }
 
   componentDidUpdate(prevProps) {
-    console.log('here');
-    let mw = $(this.messagesWrapper.current);
-    console.log(mw.scrollTop());
-    console.log(mw[0].scrollHeight);
     //промотать вниз, если
     //1. нахожусь в самом низу и есть новые сообщения
     //2. до этого не было сообщений
     //3. я отправил сообщение
     if (
-      (this.props.messages !== prevProps.messages &&
-        mw.scrollTop() === mw[0].scrollHeight) ||
-      prevProps.messages.length === 0
-      // TODO: пункт 3 выше
+      (this.props.messages.length !== prevProps.messages.length &&
+        Math.floor(this.mw.scrollTop()) ===
+          Math.floor(
+            this.mw[0].scrollHeight -
+              $(this.mw).height() -
+              $(this.mw)
+                .children("ul")
+                .children("li")
+                .eq(-1)
+                .height()
+          )) ||
+      prevProps.messages.length === 0 ||
+      this.props.messages[this.props.messages.length - 1].author == null
     )
-      mw.scrollTop(mw[0].scrollHeight);
+      this.scrollToBot();
   }
+
+  onLoadHandler = () => {
+    this.scrollToBot();
+  };
+
+  listTimestamp = timestamp => {
+    if (this.lastTimestamp === 0 || timestamp - this.lastTimestamp > 3600000) {
+      this.lastTimestamp = timestamp;
+      return (
+        <div className="list-timestamp">{this.timestamp(+timestamp, true)}</div>
+      );
+    }
+
+    return null;
+  };
 
   render() {
     let { messages } = this.props;
@@ -38,16 +70,20 @@ export default class Messages extends Component {
       <div className="list-wrapper" ref={this.messagesWrapper}>
         <ul className="list navbar-nav">
           {messages.map((message, i) => (
-            <li key={i}>
-              <Message
-                message={message}
-                same={
-                  i > 0 && !message.from_me
-                    ? message.author.id === messages[i - 1].author.id
-                    : false
-                }
-              />
-            </li>
+            <Fragment key={i}>
+              {this.listTimestamp(message.timestamp)}
+              <li>
+                <Message
+                  message={message}
+                  same={
+                    i > 0 && !message.from_me
+                      ? message.author.id === messages[i - 1].author.id
+                      : false
+                  }
+                  onLoadAtta={this.onLoadHandler}
+                />
+              </li>
+            </Fragment>
           ))}
         </ul>
       </div>

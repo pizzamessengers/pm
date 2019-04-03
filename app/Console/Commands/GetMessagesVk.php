@@ -61,12 +61,12 @@ class GetMessagesVk extends Command
           $response = json_decode(file_get_contents(
             'https://api.vk.com/method/execute.lpHistory?ts='.$lp['ts'].'&pts='.$lp['pts'].'&access_token='.$messenger->token.'&v=5.92'
           ))->response;
-
           $messages = $response->messages;
 
           if ($messages->count > 0)
           {
-            $profiles = $response->profiles;
+            $profiles = property_exists($response, 'profiles') ? $response->profiles : [];
+            $groups = property_exists($response, 'groups') ? $response->groups : [];
             foreach ($messages->items as $message)
             {
               if ($watching !== Messenger::find($messenger->id)->watching) break;
@@ -79,7 +79,7 @@ class GetMessagesVk extends Command
               }
               else if ($dialog->updating === false) continue;
 
-              $this->addMessage($message, $profiles, $messenger);
+              $this->addMessage($message, $profiles, $groups, $messenger);
             }
 
             $lp['pts'] = $response->new_pts;
@@ -94,12 +94,13 @@ class GetMessagesVk extends Command
      *
      * @param object data about message $message
      * @param array array of profiles from response $profiles
+     * @param array array of groups from response $groups
      * @param Messenger $messenger
      */
-    private function addMessage(object $message, array $profiles, Messenger $messenger)
+    private function addMessage(object $message, array $profiles, array $groups, Messenger $messenger)
     {
       $dialog = $this->dialogId($message->peer_id, $messenger);
-      $authorId = $this->authorId($message->from_id, $dialog->id, $profiles);
+      $authorId = $this->authorId($message->from_id, $dialog->id, $profiles, $groups);
 
       $newMessage = Message::firstOrCreate([
         'message_id' => $message->id,
@@ -125,6 +126,7 @@ class GetMessagesVk extends Command
       $dialog->last_message = array(
         'text' => $message->text,
         'timestamp' => $newMessage->timestamp,
+        'with_attachments' => count($message->attachments) > 0,
       );
       $dialog->save();
 
@@ -151,7 +153,10 @@ class GetMessagesVk extends Command
             $url = $attachment->audio_message->link_mp3;
             break;
           case 'doc':
-            $preview = $attachment->doc->preview;
+            $type = 'doc';
+            $name = $attachment->doc->title;
+            $url = $attachment->doc->url;
+            /*$preview = $attachment->doc->preview;
             switch (key($preview)) {
               case 'audio_msg':
                 $type = 'audio';
@@ -163,13 +168,13 @@ class GetMessagesVk extends Command
                 $name = null;
                 $url = $preview->photo->sizes[0]->src;
                 break;
-            }
+            }*/
             break;
           case 'photo':
             $type = 'image';
             $name = null;
             foreach ($attachment->photo->sizes as $size) {
-              if ($size->type === 'm')
+              if ($size->type === 'x')
               {
                 $url = $size->url;
                 break;
@@ -210,7 +215,10 @@ class GetMessagesVk extends Command
             break;
         }
 
-        Attachment::create([
+        if (!isset($type))
+          continue;
+
+        Attachment::firstOrCreate([
           'type' => $type,
           'message_id' => $messageId,
           'url' => $url,
@@ -281,6 +289,7 @@ class GetMessagesVk extends Command
           'last_message' => array(
             'text' => $lastMessage->text,
             'timestamp' => $lastMessage->date.'000',
+            'with_attachments' => count($lastMessage->attachments) > 0,
           ),
           'members_count' => $membersCount,
           'photo' => $photo,
@@ -297,14 +306,17 @@ class GetMessagesVk extends Command
      * @param int id of message author from response $fromId
      * @param int $dialog
      * @param array profiles from lp response $profiles
+     * @param array groups from lp response $groups
      * @return int author id
      */
-    private function authorId(int $fromId, int $dialogId, array $profiles)
+    private function authorId(int $fromId, int $dialogId, array $profiles, array $groups)
     {
       $authors = Author::where(
         'author_id',
         $fromId
       )->get();
+
+      $authorId = null;
 
       if (count($authors) > 0) {
         foreach ($authors as $author) {
@@ -320,15 +332,31 @@ class GetMessagesVk extends Command
       {
         foreach ($profiles as $profile)
         {
-          if ($profile->id === $fromId) break;
+          if ($profile->id === $fromId)
+          {
+            $authorId = Author::create([
+              'author_id' => $profile->id,
+              'first_name' => $profile->first_name,
+              'last_name' => $profile->last_name,
+              'avatar' => $profile->photo_100,
+            ])->id;
+            break;
+          }
         }
 
-        $authorId = Author::create([
-          'author_id' => $profile->id,
-          'first_name' => $profile->first_name,
-          'last_name' => $profile->last_name,
-          'avatar' => $profile->photo_100,
-        ])->id;
+        foreach ($groups as $group)
+        {
+          if ('-'.$group->id == $fromId)
+          {
+            $authorId = Author::create([
+              'author_id' => $fromId,
+              'first_name' => $group->name,
+              'last_name' => '',
+              'avatar' => $group->photo_100,
+            ])->id;
+            break;
+          }
+        }
       }
 
       if (DB::table('author_dialog')->where([

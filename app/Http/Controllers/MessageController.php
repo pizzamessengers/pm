@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Message;
 use App\Dialog;
 use App\Author;
+use App\Attachment;
 use Illuminate\Http\Request;
 use VK\Client\VKApiClient;
 use InstagramAPI\Instagram;
 use InstagramAPI\Response\DirectInboxResponse;
+use UploadedFile;
 
 class MessageController extends Controller
 {
@@ -205,11 +207,12 @@ class MessageController extends Controller
     {
       $dialog = Dialog::find($request->dialogId);
       $text = $request->text;
+      $attachments = $request->attachments;
 
       switch ($request->mess) {
         case 'vk':
           $vk = $request->user()->vk();
-          $this->sendVkMessage($vk, $dialog, $text);
+          $this->sendVkMessage($vk, $dialog, $text, $attachments);
           break;
 
         case 'inst':
@@ -233,16 +236,27 @@ class MessageController extends Controller
      *
      * @param Messenger $messenger
      * @param Dialog $dialog
-     * @param string $text
+     * @param $text
+     * @param array $attachments
      * @return \Illuminate\Http\Response
      */
-    private function sendVkMessage($messenger, Dialog $dialog, string $text)
+    private function sendVkMessage($messenger, Dialog $dialog, $text, array $attachments)
     {
+      info($attachments);
+      $photos = implode('|@|', $attachments['photos']);
+      $servers = implode('|@|', $attachments['servers']);
+      $hashes = implode('|@|', $attachments['hashes']);
+      $docs = implode('|@|', $attachments['docs']);
+      $videos = implode('|@|', $attachments['videos']);
+
       $response = json_decode(file_get_contents(
         'https://api.vk.com/method/execute.sendMessage?peer_id='.$dialog->dialog_id.
-        '&message='.urlencode($text).'&attachments=&random_id='.random_int(0, 2000000000).
-        '&access_token='.$messenger->token.'&v=5.92'
+        '&message='.urlencode($text).'&photos='.$photos.'&servers='.$servers.
+        '&hashes='.$hashes.'&docs='.$docs.'&videos='.$videos.
+        '&random_id='.random_int(0, 2000000000).'&access_token='.$messenger->token.'&v=5.92'
       ))->response;
+
+      info(json_encode($response));
 
       $author = $response->author;
 
@@ -264,9 +278,19 @@ class MessageController extends Controller
         'timestamp' => $message->timestamp.'000',
       ]);
 
+      foreach ($message->attachments as $attachment) {
+        Attachment::create([
+          'type' => $attachment->type,
+          'message_id' => $newMessage->id,
+          'url' => $attachment->url,
+          'name' => $attachment->name,
+        ]);
+      }
+
       $dialog->last_message = array(
         'text' => $message->text,
         'timestamp' => $newMessage->timestamp,
+        'with_attachments' => count($message->attachments) > 0,
       );
       $dialog->save();
 

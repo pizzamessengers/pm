@@ -1,10 +1,13 @@
 import React from "react";
 import Attachments from "./attachments/Attachments";
 
-const MessageFromMe = ({ message }) => (
+const MessageFromMe = ({ message, onLoadAtta }) => (
   <div className="message d-flex flex-row-reverse float-right justify-content-between">
     <div className="message-body d-flex flex-column align-items-end">
-      {message.attachments.length > 0 && message.text.length === 0 ? null : (
+      {(message.attachments.length > 0 && message.text.length === 0) ||
+      (message.attachments.length === 1 &&
+        message.attachments[0].type === "link" &&
+        message.text === message.attachments[0].url) ? null : (
         <div
           className={
             message.attachments.length === 1
@@ -14,13 +17,21 @@ const MessageFromMe = ({ message }) => (
               : "text from-me"
           }
         >
-          {message.text}
+          <pre>{message.text}</pre>
         </div>
       )}
-      <Attachments
-        attachments={message.attachments}
-        withCaption={message.text.length > 0 && message.attachments.length === 1}
-      />
+      {message.attachments.length > 0 ? (
+        <Attachments
+          attachments={message.attachments}
+          withCaption={
+            message.text.length > 0 &&
+            message.attachments.length === 1 &&
+            message.attachments[0].type !== "link"
+          }
+          onLoadAtta={onLoadAtta}
+          messageId={message.id}
+        />
+      ) : null}
     </div>
   </div>
 );

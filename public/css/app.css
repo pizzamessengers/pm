@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Nunito);@keyframes bounce {
+@keyframes bounce {
   50% {
     -webkit-transform: scale(1.1);
             transform: scale(1.1);
@@ -70,6 +70,34 @@
 
   100% {
     -webkit-transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@-webkit-keyframes loading {
+  0% {
+    left: -30px;
+  }
+
+  50% {
+    left: 100%;
+  }
+
+  100% {
+    left: -30px;
+  }
+}
+
+@keyframes loading {
+  0% {
+    left: -30px;
+  }
+
+  50% {
+    left: 100%;
+  }
+
+  100% {
+    left: -30px;
   }
 }
 
@@ -12135,22 +12163,22 @@ a.text-dark:focus {
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-.app,
-#root {
+#root,
+.app {
   height: 100vh;
   overflow: hidden;
   font-family: Roboto;
   color: #123;
 }
 
-.app input[type="text"],
-.app input[type="password"],
-.app .main-button,
-.app textarea,
 #root input[type="text"],
 #root input[type="password"],
 #root .main-button,
-#root textarea {
+#root textarea,
+.app input[type="text"],
+.app input[type="password"],
+.app .main-button,
+.app textarea {
   border: 0;
   border-radius: 20px;
   background-color: transparent;
@@ -12161,21 +12189,27 @@ a.text-dark:focus {
   color: #123;
 }
 
-.app input[type="text"]:focus,
-.app input[type="password"]:focus,
-.app .main-button:focus,
-.app textarea:focus,
 #root input[type="text"]:focus,
 #root input[type="password"]:focus,
 #root .main-button:focus,
-#root textarea:focus {
+#root textarea:focus,
+.app input[type="text"]:focus,
+.app input[type="password"]:focus,
+.app .main-button:focus,
+.app textarea:focus {
   outline: none;
   -webkit-box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
           box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
 }
 
-.app .main-button,
-#root .main-button {
+#root pre,
+.app pre {
+  margin: 0;
+  font-family: Roboto;
+}
+
+#root .main-button,
+.app .main-button {
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -12192,8 +12226,8 @@ a.text-dark:focus {
   padding: 11px 22px;
 }
 
-.app .main-button:hover,
-#root .main-button:hover {
+#root .main-button:hover,
+.app .main-button:hover {
   -webkit-box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
           box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
   text-decoration: none;
@@ -12203,17 +12237,17 @@ a.text-dark:focus {
   height: 100%;
 }
 
-.wrapper .messagesWindow,
-.wrapper .content {
+.wrapper .content,
+.wrapper .messagesWindow {
   width: 100%;
   -webkit-transition: 0.5s;
   transition: 0.5s;
 }
 
 .wrapper .messagesWindow {
-  height: 90%;
+  height: 88%;
   position: absolute;
-  bottom: 0;
+  bottom: 2%;
   left: -100%;
   background-color: #f8fafc;
   z-index: 99;
@@ -12290,9 +12324,15 @@ a.text-dark:focus {
   height: 90%;
 }
 
-.wrapper .content .dialog-view .send-message-wrapper {
-  height: 10%;
+.wrapper .content .dialog-view .card-footer {
   width: 100%;
+  height: 10%;
+  padding: 0 6px;
+}
+
+.wrapper .content .dialog-view .card-footer .send-message-wrapper {
+  width: 100%;
+  height: 100%;
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -12303,15 +12343,17 @@ a.text-dark:focus {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  padding: 0;
 }
 
-.wrapper .content .dialog-view .send-message {
-  width: 80%;
-  height: 100%;
+@media (min-width: 480px) {
+  .wrapper .content .dialog-view .card-footer .send-message-wrapper {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
-.wrapper .content .dialog-view .send-message form {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message {
   width: 100%;
   height: 100%;
   display: -ms-flex;
@@ -12329,32 +12371,33 @@ a.text-dark:focus {
   padding: 0 6px;
 }
 
-.wrapper .content .dialog-view .send-message form label {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message label {
   margin: 0;
   cursor: pointer;
 }
 
-.wrapper .content .dialog-view .send-message form label .icon {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message label .icon {
   width: 30px;
   height: 30px;
   color: #b6d6ff;
 }
 
-.wrapper .content .dialog-view .send-message form label .icon:hover {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message label .icon:hover {
   color: #428ef0;
 }
 
-.wrapper .content .dialog-view .send-message form textarea {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message textarea {
   width: 88%;
   height: 80%;
   margin: 0 !important;
   background-color: #fff !important;
   padding-right: 50px !important;
   padding-top: 12px !important;
+  padding-bottom: 12px !important;
   resize: none;
 }
 
-.wrapper .content .dialog-view .send-message form button {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message button {
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -12377,22 +12420,115 @@ a.text-dark:focus {
   transition: 0.3s;
 }
 
-.wrapper .content .dialog-view .send-message form button.allow-send {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message button:focus {
+  outline: none;
+}
+
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message button.allow-send {
   cursor: pointer;
   right: 18px;
   opacity: 1;
 }
 
-.wrapper .content .dialog-view .send-message form button .icon {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message button .icon {
   width: 26px;
   height: 26px;
   color: #b6d6ff;
 }
 
-.wrapper .content .dialog-view .send-message form button:hover .icon {
+.wrapper .content .dialog-view .card-footer .send-message-wrapper .send-message button:hover .icon {
   color: #428ef0;
   -webkit-animation: bounce 1s cubic-bezier(0, 0.42, 0.42, 1);
           animation: bounce 1s cubic-bezier(0, 0.42, 0.42, 1);
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper {
+  width: 95%;
+  margin: 0 auto;
+}
+
+@media (min-width: 480px) {
+  .wrapper .content .dialog-view .card-footer .attachment-list-wrapper {
+    width: 75%;
+  }
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading {
+  width: 100%;
+  height: 16px;
+  margin: 5px 0;
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .progress-name {
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .progress-name .progress-wrapper {
+  width: 100px;
+  height: 16px;
+  background-color: #b6d6ff;
+  border-radius: 6px;
+  margin-right: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 380px) {
+  .wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .progress-name .progress-wrapper {
+    width: 120px;
+  }
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .progress-name .progress-wrapper .progress {
+  width: 0;
+  height: 16px;
+  background-color: #428ef0;
+  border-radius: 6px;
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .progress-name .progress-wrapper .progress.loading {
+  width: 30px;
+  position: absolute;
+  left: -30px;
+  -webkit-animation: loading 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
+          animation: loading 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .progress-name .progress-wrapper .progress.loaded {
+  width: 100%;
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .remove {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  color: #b6d6ff;
+}
+
+.wrapper .content .dialog-view .card-footer .attachment-list-wrapper .attachment-list .attachment-downloading .remove:hover {
+  color: #428ef0;
 }
 
 .wrapper .list-wrapper {
@@ -12406,9 +12542,24 @@ a.text-dark:focus {
   padding: 0 6px;
 }
 
+.wrapper .list .list-timestamp {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.3);
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
 .wrapper .list .message {
   padding: 6px;
-  max-width: 400px;
+  max-width: 100%;
+}
+
+@media (min-width: 444px) {
+  .wrapper .list .message {
+    max-width: 400px;
+  }
 }
 
 .wrapper .list .message .avatar {
@@ -12418,7 +12569,12 @@ a.text-dark:focus {
   border-radius: 50%;
 }
 
+.wrapper .list .message .body-author {
+  width: calc(100% - 50px);
+}
+
 .wrapper .list .message .message-body {
+  width: 100%;
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -12436,39 +12592,183 @@ a.text-dark:focus {
   margin-left: 50px;
 }
 
-.wrapper .list .message .text {
+.wrapper .list .message .message-body .text {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   border: 1.2px solid #eeeeee;
   border-radius: 20px;
   padding: 8px 14px;
-  width: auto;
 }
 
-.wrapper .list .message .text.from-me {
+.wrapper .list .message .message-body .text pre {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.wrapper .list .message .message-body .text.from-me {
   background-color: #eeeeee;
 }
 
-.wrapper .list .message .text.with-attachment {
+.wrapper .list .message .message-body .text.with-attachment {
   width: 100%;
   padding-bottom: 2px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-.wrapper .list .message .text.with-attachments {
+.wrapper .list .message .message-body .text.with-attachments {
   margin-bottom: 8px;
 }
 
-.wrapper .list .message .attachment img {
+.wrapper .list .message .message-body .my-carousel {
+  position: relative;
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  min-height: 120px;
+}
+
+.wrapper .list .message .message-body .my-carousel .counter {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 14px;
+  background-color: rgba(182, 214, 255, 0.4);
+  color: #fff;
+  padding: 3px 6px;
+  z-index: 50;
+}
+
+.wrapper .list .message .message-body .my-carousel .carousel-indicators {
+  z-index: 49;
+}
+
+.wrapper .list .message .message-body .my-carousel .carousel-indicators li {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background-color: #b6d6ff;
+}
+
+.wrapper .list .message .message-body .my-carousel .carousel-indicators li:hover {
+  background-color: #7fb7ff;
+}
+
+.wrapper .list .message .message-body .my-carousel .carousel-indicators li.active {
+  background-color: #428ef0;
+}
+
+.wrapper .list .message .message-body .my-carousel .carousel-control-next,
+.wrapper .list .message .message-body .my-carousel .carousel-control-prev {
+  cursor: pointer;
+  z-index: 49;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .wrapper .list .message .message-body .my-carousel .carousel-control-next,
+  .wrapper .list .message .message-body .my-carousel .carousel-control-prev {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+}
+
+.wrapper .list .message .message-body .my-carousel .carousel-control-next:hover .carousel-control-next-icon,
+.wrapper .list .message .message-body .my-carousel .carousel-control-next:hover .carousel-control-prev-icon,
+.wrapper .list .message .message-body .my-carousel .carousel-control-prev:hover .carousel-control-next-icon,
+.wrapper .list .message .message-body .my-carousel .carousel-control-prev:hover .carousel-control-prev-icon {
+  color: #428ef0;
+  opacity: 0.9;
+}
+
+.wrapper .list .message .message-body .my-carousel .carousel-control-next .carousel-control-next-icon,
+.wrapper .list .message .message-body .my-carousel .carousel-control-next .carousel-control-prev-icon,
+.wrapper .list .message .message-body .my-carousel .carousel-control-prev .carousel-control-next-icon,
+.wrapper .list .message .message-body .my-carousel .carousel-control-prev .carousel-control-prev-icon {
+  width: 24px;
+  height: 24px;
+  background-image: none;
+  color: #b6d6ff;
+  opacity: 0.6;
+}
+
+.wrapper .list .message .message-body .my-carousel .my-carousel-inner {
+  width: auto;
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-transition: -webkit-transform 1s;
+  transition: -webkit-transform 1s;
+  transition: transform 1s;
+  transition: transform 1s, -webkit-transform 1s;
+  z-index: 48;
+}
+
+.wrapper .list .message .message-body .my-carousel .my-carousel-inner .my-carousel-item {
+  min-width: 100%;
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.wrapper .list .message .message-body .attachment img {
   max-width: 100%;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }
 
-.wrapper .list .message .attachment img.withoutCaption {
+.wrapper .list .message .message-body .attachment img.withoutCaption {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
+}
+
+.wrapper .list .message .message-body .attachment .doc {
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  text-align: center;
+}
+
+.wrapper .list .message .message-body .attachment .doc .doc-icon {
+  height: 40px;
+  width: 40px;
+  color: #b6d6ff;
+  margin-bottom: 2px;
+}
+
+.wrapper .list .message .message-body .attachment .doc .doc-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #7fb7ff;
+}
+
+.wrapper .list .message .message-body .attachment .doc:hover .doc-icon {
+  color: #428ef0;
+}
+
+.wrapper .list .message .message-body .attachment .doc:hover .doc-name {
+  text-decoration: none;
+  color: #428ef0;
 }
 
 .wrapper .list .linked-dialog {
@@ -12535,7 +12835,7 @@ a.text-dark:focus {
 }
 
 .wrapper .list .dialog .dialog-data .title-text {
-  width: 100%;
+  width: calc(100% - 110px);
 }
 
 .wrapper .list .dialog .dialog-data .title-text .title {
@@ -12545,6 +12845,10 @@ a.text-dark:focus {
 
 .wrapper .list .dialog .dialog-data .title-text .text {
   font-style: 16px;
+}
+
+.wrapper .list .dialog .dialog-data .title-text .attachment-exist {
+  color: #7fb7ff;
 }
 
 .wrapper .list .dialog .dialog-data .timestamp {
@@ -12562,6 +12866,10 @@ a.text-dark:focus {
     -webkit-box-align: start;
         -ms-flex-align: start;
             align-items: flex-start;
+  }
+
+  .wrapper .list .dialog .dialog-data .title-text {
+    width: 100%;
   }
 
   .wrapper .list .dialog .dialog-data .timestamp {
@@ -12657,7 +12965,7 @@ a.text-dark:focus {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 0;
   position: absolute;
   right: -10px;
 }

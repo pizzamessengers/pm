@@ -11,9 +11,7 @@ export default class MessagesWindow extends Component {
     };
 
     this.interval;
-  }
 
-  componentWillMount() {
     axios.get("api/v1/user/getDialogs?api_token=" + apiToken).then(response => {
       this.setState({ dialogs: response.data.dialogs, waiting: false });
     });

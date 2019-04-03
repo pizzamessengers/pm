@@ -61,6 +61,20 @@
     }
 }
 
+@keyframes loading {
+    0% {
+        left: -30px;
+    }
+
+    50% {
+        left: 100%;
+    }
+
+    100% {
+        left: -30px;
+    }
+}
+
 // Waiting
 @keyframes fade_in_out {
     0% {

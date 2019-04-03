@@ -1,17 +1,20 @@
 import React from "react";
 import Attachments from "./attachments/Attachments";
 
-const MessageNotFromMe = ({ message, same }) => (
+const MessageNotFromMe = ({ message, same, onLoadAtta }) => (
   <div className="message d-flex float-left">
     {!same ? <img className="avatar" src={message.author.avatar} /> : null}
-    <div>
+    <div className="body-author">
       {!same ? (
         <div className="authorName">
           <b>{message.author.name}</b>
         </div>
       ) : null}
       <div className={same ? "message-body not-from-me-same" : "message-body"}>
-        {message.attachments.length > 0 && message.text.length === 0 ? null : (
+        {(message.attachments.length > 0 && message.text.length === 0) ||
+        (message.text.length === 0 &&
+          message.attachments.length === 1 &&
+          message.attachments[0].type === "link") ? null : (
           <div
             className={
               message.attachments.length === 1
@@ -21,13 +24,21 @@ const MessageNotFromMe = ({ message, same }) => (
                 : "text"
             }
           >
-            {message.text}
+            <pre>{message.text}</pre>
           </div>
         )}
-        <Attachments
-          attachments={message.attachments}
-          withCaption={message.text.length > 0 && message.attachments.length === 1}
-        />
+        {message.attachments.length > 0 ? (
+          <Attachments
+            attachments={message.attachments}
+            withCaption={
+              message.text.length > 0 &&
+              message.attachments.length === 1 &&
+              message.attachments[0].type !== "link"
+            }
+            onLoadAtta={onLoadAtta}
+            messageId={message.id}
+          />
+        ) : null}
       </div>
     </div>
   </div>

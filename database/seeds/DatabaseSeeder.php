@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
       'name' => 'admin',
       'email' => '1@q',
       'password' => Hash::make('1'),
+      'lang' => 'ru'
     ]);
     /*DB::table('messengers')->insert([
       'user_id' => 10000000,

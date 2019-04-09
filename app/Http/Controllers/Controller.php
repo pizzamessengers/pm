@@ -25,6 +25,7 @@ class Controller extends BaseController
       $wapp = $user->wapp();
       return view('app', [
         'apiToken' => $user->api_token,
+        'lang' => $user->lang,
         'userName' => $user->name,
         'socials' => [
           'vk' => $vk !== null ? [

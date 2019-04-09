@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import translate from "./../../../../functions/translate";
 import AttachmentList from "./AttachmentList";
 
-export default class sendMessage extends Component {
+export default class SendMessage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,31 +12,35 @@ export default class sendMessage extends Component {
     this.text = React.createRef();
     this.files = React.createRef();
 
-    if (this.props.mess === "vk") {
-      this.attachments = {
-        photos: [],
-        servers: [],
-        hashes: [],
-        docs: [],
-        videos: []
-      };
-      //urls for attachments
-      axios
-        .get(
-          "https://api.vk.com/method/execute.getAttaUrls?peer_id=" +
-            this.props.dialogId +
-            "&access_token=" +
-            socials[this.props.mess].token +
-            "&v=5.92"
-        )
-        .then(response => {
-          let r = response.data.response;
-          this.photoUrl = r.photoUrl;
-          this.docUrl = r.docUrl;
-          this.videoUrl = r.videoUrl;
-          this.owner_id = r.owner_id;
-          this.attachments.videos.push(r.owner_id);
-        });
+    switch (this.props.mess) {
+      case "vk":
+        this.attachments = {
+          photos: [],
+          servers: [],
+          hashes: [],
+          docs: [],
+          videos: []
+        };
+        //urls for attachments
+        axios
+          .get(
+            "https://api.vk.com/method/execute.getAttaUrls?peer_id=" +
+              this.props.dialogId +
+              "&access_token=" +
+              socials[this.props.mess].token +
+              "&v=5.92"
+          )
+          .then(response => {
+            let r = response.data.response;
+            this.photoUrl = r.photoUrl;
+            this.docUrl = r.docUrl;
+            this.videoUrl = r.videoUrl;
+            this.owner_id = r.owner_id;
+            this.attachments.videos.push(r.owner_id);
+          });
+        break;
+      case "inst":
+        this.attachments = [];
     }
   }
 
@@ -137,18 +142,25 @@ export default class sendMessage extends Component {
     if (!data.error) {
       this.showSendButton();
 
-      if (data.photo) {
-        this.attachments.photos.push(data.photo);
-        this.attachments.servers.push(data.server);
-        this.attachments.hashes.push(data.hash);
-      } else if (data.video_id) {
-        this.attachments.videos.push(data.video_id);
-      } else if (data.file) {
-        this.attachments.docs.push(data.file);
+      switch (this.props.mess) {
+        case "vk":
+          if (data.photo) {
+            this.attachments.photos.push(data.photo);
+            this.attachments.servers.push(data.server);
+            this.attachments.hashes.push(data.hash);
+          } else if (data.video_id) {
+            this.attachments.videos.push(data.video_id);
+          } else if (data.file) {
+            this.attachments.docs.push(data.file);
+          }
+          break;
+        case "inst":
+          this.attachments.push(data);
+          break;
       }
     } else {
       this.removeAtta(i);
-      alert("недопустимый тип файла");
+      alert(translate("attachments.error.invalid-type"));
     }
   };
 
@@ -183,13 +195,22 @@ export default class sendMessage extends Component {
 
   refresh = () => {
     this.text.current.value = "";
-    this.attachments = {
-      photos: [],
-      servers: [],
-      hashes: [],
-      docs: [],
-      videos: [this.owner_id]
-    };
+    switch (this.props.mess) {
+      case "vk":
+        this.attachments = {
+          photos: [],
+          servers: [],
+          hashes: [],
+          docs: [],
+          videos: [this.owner_id]
+        };
+        break;
+      case "inst":
+      case "wapp":
+        this.attachments = [];
+        break;
+    }
+
     this.hideSendButton();
     this.setState({ attachments: [] }, () => {
       this.trimALW(0);
@@ -197,6 +218,15 @@ export default class sendMessage extends Component {
       this.trimFooter();
       this.trimList();
     });
+  };
+
+  acceptions = () => {
+    switch (this.props.mess) {
+      case "vk":
+        return "image/*, video/*, text/*";
+      case "inst":
+        return "image/jpeg"; // TODO: , video/*
+    }
   };
 
   render() {
@@ -208,6 +238,7 @@ export default class sendMessage extends Component {
               ref={this.files}
               multiple
               type="file"
+              accept={this.acceptions()}
               id="file"
               className="d-none"
               onChange={this.handleChangeFiles}
@@ -220,7 +251,7 @@ export default class sendMessage extends Component {
             </label>
             <textarea
               ref={this.text}
-              placeholder="текст сообщения"
+              placeholder={translate("message.text")}
               onChange={this.handleChangeText}
             />
             <button type="submit">

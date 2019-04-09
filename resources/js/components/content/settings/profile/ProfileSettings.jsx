@@ -28,7 +28,9 @@ export default class ProfileSettings extends Component {
         />
         <Route
           path={"/app/settings/profile/:module(user||payment)"}
-          component={ProfileModuleSettings}
+          render={() => (
+            <ProfileModuleSettings refresh={() => this.forceUpdate()} />
+          )}
         />
       </div>
     );

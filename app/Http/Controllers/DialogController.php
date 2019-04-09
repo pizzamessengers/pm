@@ -6,6 +6,7 @@ use DB;
 use App\Author;
 use App\Dialog;
 use App\Messenger;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Jobs\StoreAuthors;
 use InstagramAPI\Instagram;
@@ -55,7 +56,7 @@ class DialogController extends Controller
         {
           return array(
             'success' => false,
-            'message' => 'Диалог уже добавлен',
+            'message' => 'dialog.error.added',
           );
         }
 
@@ -103,7 +104,7 @@ class DialogController extends Controller
           {
             return array(
               'success' => false,
-              'message' => 'Диалог уже добавлен',
+              'message' => 'dialog.error.added',
             );
           }
 
@@ -163,7 +164,7 @@ class DialogController extends Controller
         {
           return array(
             'success' => false,
-            'message' => 'пользователь '.$user.' не найден'
+            'message' => 'all.error.user.'$user
           );
         }
         array_push($userIds, $userId);
@@ -175,7 +176,7 @@ class DialogController extends Controller
       {
         return array(
           'success' => false,
-          'message' => 'диалог с этими пользователями не найден'
+          'message' => 'dialog.error.users'
         );
       }
 
@@ -184,7 +185,7 @@ class DialogController extends Controller
       {
         return array(
           'success' => false,
-          'message' => 'Диалог уже добавлен',
+          'message' => 'dialog.error.added',
         );
       }
 
@@ -260,10 +261,25 @@ class DialogController extends Controller
      */
     public function addDialogs(Request $request)
     {
+      if (Validator::make($request->all(), [
+        'mess' => [
+          'required',
+          Rule::in(['vk', 'inst', 'wapp']),
+        ],
+        'q' => [
+          'string',
+        ],
+      ])->fails()) {
+        return response()->json([
+          'success' => false,
+          'message' => 'all.error.hack',
+        ]);
+      };
+
       switch ($request->mess) {
         case 'vk':
           $messenger = $request->user()->vk();
-          $result = isset($request['q']) ?
+          $result = isset($request->q) ?
             $this->processQueryVk($request->q, $messenger) :
             $this->addDialogsVk($request->dialogs, $messenger, false);
           break;
@@ -292,7 +308,7 @@ class DialogController extends Controller
       {
         return array(
           'success' => false,
-          'message' => 'нет диалога с похожим названием',
+          'message' => 'dialog.error.query',
         );
       }
       else if ($count > 1)
@@ -404,7 +420,7 @@ class DialogController extends Controller
      * @param  \App\Dialog $dialog
      * @return \Illuminate\Http\Response
      */
-    public function show(Dialog $dialog)
+    public function getMessages(Dialog $dialog)
     {
       $dialog->unread_count = 0;
       $dialog->save();

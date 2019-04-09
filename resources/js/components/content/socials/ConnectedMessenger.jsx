@@ -1,6 +1,6 @@
 import React from "react";
 import DialogsConnection from "./dialogs/DialogsConnection";
-import MessengerDialogs from "./messages/MessengerDialogs";
+import MessengerDialogs from "./dialogs/MessengerDialogs";
 
 const ConnectedMessenger = ({ mess, watching }) =>
   watching === "dialogs" ? (

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import translate from "./../functions/translate";
 import Waiting from "./content/elements/Waiting";
 import Dialogs from "./content/socials/dialogs/Dialogs";
 
@@ -12,12 +13,14 @@ export default class MessagesWindow extends Component {
 
     this.interval;
 
-    axios.get("api/v1/user/getDialogs?api_token=" + apiToken).then(response => {
-      this.setState({ dialogs: response.data.dialogs, waiting: false });
-    });
+    axios
+      .get("api/v1/users/getDialogs?api_token=" + apiToken)
+      .then(response => {
+        this.setState({ dialogs: response.data.dialogs, waiting: false });
+      });
     this.interval = setInterval(() => {
       axios
-        .get("api/v1/user/getDialogs?api_token=" + apiToken)
+        .get("api/v1/users/getDialogs?api_token=" + apiToken)
         .then(response => {
           this.setState({ dialogs: response.data.dialogs });
         });
@@ -38,9 +41,7 @@ export default class MessagesWindow extends Component {
           <Dialogs dialogs={dialogs} fromMessagesWindow={true} />
         ) : (
           <div className="no-messages-wrapper">
-            <div className="no-messages">
-              В это окне будут отображаться диалоги со всех мессенджеров
-            </div>
+            <div className="no-messages">{translate("all.info.dialogs")}</div>
           </div>
         )}
       </div>

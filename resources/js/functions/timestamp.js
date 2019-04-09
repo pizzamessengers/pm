@@ -1,12 +1,25 @@
+import translate from "./translate";
+
 const timestamp = (time, fullTime = false) => {
   let rightDecl = count => {
     let num = count % 10;
-    if (num === 1) {
-      return "у";
-    } else if (num > 1 && num <= 4) {
-      return "ы";
-    } else {
-      return "";
+    switch (lang) {
+      case "ru":
+        if (num === 1) {
+          return "у";
+        } else if (num > 1 && num <= 4) {
+          return "ы";
+        } else {
+          return "";
+        }
+        break;
+      case "en":
+        if (num === 1) {
+          return "";
+        } else {
+          return "s";
+        }
+        break;
     }
   };
 
@@ -18,10 +31,24 @@ const timestamp = (time, fullTime = false) => {
 
   if (diff < 60000) {
     let count = Math.floor(diff / 1000);
-    return count + " " + "секунд" + rightDecl(count) + " назад";
+    return (
+      count +
+      " " +
+      translate("time.second") +
+      rightDecl(count) +
+      " " +
+      translate("time.ago")
+    );
   } else if (diff < 3600000) {
     let count = Math.floor(diff / 60000);
-    return count + " " + "минут" + rightDecl(count) + " назад";
+    return (
+      count +
+      " " +
+      translate("time.minute") +
+      rightDecl(count) +
+      " " +
+      translate("time.second")
+    );
   } else if (diff < d - startToday) {
     var options = {
       timezone: "UTC+1",
@@ -29,7 +56,11 @@ const timestamp = (time, fullTime = false) => {
       minute: "numeric"
     };
 
-    return "сегодня, " + new Date(lmt).toLocaleString("ru", options);
+    return (
+      translate("time.today") +
+      ", " +
+      new Date(lmt).toLocaleString(lang, options)
+    );
   } else if (diff < d - startYest) {
     var options = {
       timezone: "UTC",
@@ -37,7 +68,11 @@ const timestamp = (time, fullTime = false) => {
       minute: "numeric"
     };
 
-    return "вчера, " + new Date(lmt).toLocaleString("ru", options);
+    return (
+      translate("time.yesterday") +
+      ", " +
+      new Date(lmt).toLocaleString(lang, options)
+    );
   } else {
     var options = !fullTime
       ? {
@@ -53,7 +88,7 @@ const timestamp = (time, fullTime = false) => {
           minute: "numeric"
         };
 
-    return new Date(lmt).toLocaleString("ru", options);
+    return new Date(lmt).toLocaleString(lang, options);
   }
 };
 

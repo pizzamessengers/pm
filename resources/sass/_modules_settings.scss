@@ -1,87 +1,136 @@
 .modules-settings {
-  width: 90%;
-  max-width: 960px;
-  height: 80vh;
-  padding: 0;
+    width: 90%;
+    max-width: 960px;
+    height: 80vh;
+    padding: 0;
 
-  .modules-list {
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 50px;
-
-    a {
-      text-decoration: none;
-    }
-
-    .modules-list-item {
-      display: -webkit-flex;
-      display: -ms-flex;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100px;
-      height: 50px;
-      border-radius: 2px;
-      transition: 0.3s;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 500;
-      opacity: 0.6;
-
-      &.vk {
-        background: $vk;
-      }
-
-      &.wapp {
-        background: $wapp;
-      }
-
-      &.inst {
-        background: $inst;
-      }
-
-      &:hover, &.active {
-        opacity: 1;
-      }
-    }
-  }
-
-  .module-settings {
-    width: 100%;
-    height: calc(80% - 50px);
-    box-sizing: border-box;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-
-    .settings-wrapper {
-      height: 85%;
-
-      .module-setting {
+    .modules-list {
         display: -webkit-flex;
         display: -ms-flex;
         display: flex;
         align-items: center;
-        height: 60px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        height: 50px;
 
-        .setting-name {
-          font-size: 16px;
-          font-weight: 500;
+        a {
+            text-decoration: none;
         }
-      }
+
+        .modules-list-item {
+            display: -webkit-flex;
+            display: -ms-flex;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 50px;
+            border-radius: 2px;
+            transition: 0.3s;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.6;
+
+            &.vk {
+                background: $vk;
+            }
+
+            &.wapp {
+                background: $wapp;
+            }
+
+            &.inst {
+                background: $inst;
+            }
+
+            &.payment,
+            &.user {
+                background: $firstColor;
+            }
+
+            &.active,
+            &:hover {
+                opacity: 1;
+            }
+        }
     }
 
-    .btn-delete-wrapper {
-      height: 15%;
-      display: -webkit-flex;
-      display: -ms-flex;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .module-settings {
+        width: 100%;
+        height: calc(80% - 50px);
+        box-sizing: border-box;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+
+        .settings-wrapper {
+            height: 85%;
+
+            .module-setting {
+                display: -webkit-flex;
+                display: -ms-flex;
+                display: flex;
+                align-items: center;
+                height: 60px;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+
+                .setting-name {
+                    font-size: 16px;
+                    font-weight: 500;
+                }
+            }
+        }
+
+        .btn-delete-wrapper {
+            height: 15%;
+            display: -webkit-flex;
+            display: -ms-flex;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     }
-  }
+
+    .lang-panel-wrapper {
+        .dropdown-toggle {
+            cursor: pointer;
+            background-color: transparent;
+            border: 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+
+            &:focus {
+                border: 0;
+                outline: none;
+                box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            &:after {
+                margin-left: 30px;
+            }
+        }
+
+        .dropdown-menu {
+            min-width: 0;
+            max-width: 80px !important;
+            padding: 10px 0;
+
+            .dropdown-item {
+                padding: 0 11px;
+                cursor: pointer;
+            }
+        }
+
+        .lang-name {
+            font-weight: 500;
+            color: #123;
+        }
+
+        .flag {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+    }
 }

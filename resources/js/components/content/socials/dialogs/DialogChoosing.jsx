@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
+import translate from "./../../../../functions/translate";
 import Dialog from "./Dialog";
 
 const DialogChoosing = ({ one, dialogs, hide, title, mess }) => {
@@ -15,7 +16,7 @@ const DialogChoosing = ({ one, dialogs, hide, title, mess }) => {
     };
     axios.post("api/v1/dialogs?api_token=" + apiToken, data).then(response => {
       if (!response.data.success) {
-        alert(response.data.message);
+        alert(translate(response.data.message));
       } else {
         response.data.dialogList.forEach(dialog => {
           socials[mess].dialogList.push({
@@ -46,13 +47,13 @@ const DialogChoosing = ({ one, dialogs, hide, title, mess }) => {
               value={i}
               name="dialog"
             />
-          <Dialog dialog={dialog} choosing />
+            <Dialog dialog={dialog} choosing />
           </label>
         ))}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={accept}>
-          Подтвердить
+          {translate("all.next")}
         </Button>
       </Modal.Footer>
     </Modal>

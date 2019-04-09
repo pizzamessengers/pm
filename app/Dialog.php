@@ -65,6 +65,14 @@ class Dialog extends Model
     }
 
     /**
+     * Get the user for the dialog.
+     */
+    public function user()
+    {
+        return $this->messenger()->belongsTo('App\User')->first();
+    }
+
+    /**
      * Get the authors for the dialog.
      */
     public function authors()

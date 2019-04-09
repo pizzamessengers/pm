@@ -1,5 +1,5 @@
 import React from "react";
-
+import translate from './../../../functions/translate';
 import VkConnection from "./VkConnection";
 import InstConnection from "./InstConnection";
 import WappConnection from "./WappConnection";
@@ -18,7 +18,7 @@ const MessengerConnection = ({ mess, connect }) => {
 
   return (
     <div className="messenger-connection">
-      <div className="title">Подключение</div>
+      <div className="title">{translate("connection.all.connection")}</div>
       <div className="progress-wrapper">
         <div className="progress">
           <div

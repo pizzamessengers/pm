@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Validator;
+use Illuminate\Validation\Rule;
 use App\Messenger;
 use App\Dialog;
 use App\Message;
@@ -42,6 +44,22 @@ class MessengerController extends Controller
      */
       public function addMessenger(Request $request)
       {
+        if (Validator::make($request->all(), [
+          'name' => [
+            'required',
+            Rule::in(['vk', 'inst', 'wapp']),
+          ],
+          'watching' => [
+            'required',
+            Rule::in(['all', 'dialogs']),
+          ],
+        ])->fails()) {
+          return response()->json([
+            'success' => false,
+            'message' => 'all.error.hack',
+          ]);
+        };
+
         $messengerData = [
           'name' => $request->name,
           'watching' => $request->watching,
@@ -56,6 +74,17 @@ class MessengerController extends Controller
 
         switch ($request->name) {
           case 'vk':
+            if (Validator::make($request->all(), [
+              'props.token' => [
+                'required'
+              ]
+            ])->fails()) {
+              return response()->json([
+                'success' => false,
+                'message' => 'messenger.error.url',
+              ]);
+            };
+
             $token = $request->props['token'];
             $messengerData['token'] = $token;
 
@@ -119,6 +148,20 @@ class MessengerController extends Controller
 
             break;
           case 'inst':
+            if (Validator::make($request->all(), [
+              'props.login' => [
+                'required'
+              ],
+              'props.password' => [
+                'required'
+              ],
+            ])->fails()) {
+              return response()->json([
+                'success' => false,
+                'message' => 'messenger.error.login-password',
+              ]);
+            };
+
             $login = $request->props['login'];
             $password = $request->props['password'];
 
@@ -128,19 +171,19 @@ class MessengerController extends Controller
             } catch (\Exception $e) {
                 if ($e instanceof InvalidArgumentException)
                 {
-                  $message = 'Проверьте логин и пароль';
+                  $message = 'messenger.error.login-password';
                 }
                 elseif ($e instanceof InvalidUserException)
                 {
-                  $message = 'Такого пользователя не существует :(';
+                  $message = 'all.error.user.'.$login;
                 }
                 elseif ($e instanceof IncorrectPasswordException || $e instanceof ForcedPasswordResetException)
                 {
-                  $message = 'Неправильный пароль';
+                  $message = 'messenger.error.password';
                 }
                 else
                 {
-                  $message = 'Что-то пошло не так';
+                  $message = 'all.error.smth';
                 }
 
                 $response['success'] = false;
@@ -159,6 +202,20 @@ class MessengerController extends Controller
 
             break;
           case 'wapp':
+            if (Validator::make($request->all(), [
+              'props.token' => [
+                'required|string'
+              ],
+              'props.url' => [
+                'required|string'
+              ],
+            ])->fails()) {
+              return response()->json([
+                'success' => false,
+                'message' => 'messenger.error.login-url',
+              ]);
+            };
+
             $messengerData['token'] = $request->props['token'];
             $messengerData['url'] = $request->props['url'];
             $messengerData['instance'] = substr($messengerData['url'], -6, 5);
@@ -253,7 +310,7 @@ class MessengerController extends Controller
 
       return response()->json([
         'success' => true,
-      ], 200);;
+      ], 200);
     }
 
     /**
@@ -275,11 +332,23 @@ class MessengerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Messenger  $messenger
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function deleteMessenger(Request $request)
     {
+        if (Validator::make($request->all(), [
+          'name' => [
+              'required',
+              Rule::in(['vk', 'inst', 'wapp']),
+          ],
+        ])->fails()) {
+          return response()->json([
+            'success' => false,
+            'message' => 'all.error.hack',
+          ]);
+        };
+
         $messenger = $request->user()->{$request->name}();
         $messenger->dialogs()->get()->each(function($dialog)
         {

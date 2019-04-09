@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import translate from "./../../../../functions/translate";
 import LinkedDialog from "./LinkedDialog";
 import CheckBox from "./../../elements/CheckBox";
 
@@ -33,11 +34,9 @@ export default class DialogController extends Component {
           className="btn btn-delete col-3"
           onClick={() => deleteDialog(dialog)}
         >
-          удалить
+          {translate("all.delete")}
         </button>
       </Fragment>
     );
   }
 }
-
-DialogController;

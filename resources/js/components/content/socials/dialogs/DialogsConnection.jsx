@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import translate from "./../../../../functions/translate";
 import DialogController from "./DialogController";
 import DialogChoosing from "./DialogChoosing";
 
@@ -26,7 +27,14 @@ export default class DialogsConnection extends Component {
       )
       .then(response => {
         if (!response.data.success) {
-          alert(response.data.message);
+          let props = {};
+          if (response.data.message.substr(0, 14) === "all.error.user") {
+            response.data.message = "response.data.message";
+            props = {
+              user: response.data.message.substr(15)
+            };
+          }
+          alert(translate(response.data.message, props));
         } else {
           if (response.data.needChoose) {
             this.setState({
@@ -76,16 +84,16 @@ export default class DialogsConnection extends Component {
       <Fragment>
         <div className="d-flex flex-row">
           <div className="d-flex flex-column justify-content-center align-items-center col-5">
-            Подключить диалог
+            {translate("dialog.connect")}
           </div>
           <form
             onSubmit={e => this.createDialog(e)}
             className="d-flex flex-column justify-content-center align-items-center col-7"
           >
             <div className="f-flex justify-content-center align-items-center mb-2">
-              <input type="text" placeholder="Запрос" ref={this.q} />
+              <input type="text" placeholder={translate("all.query")} ref={this.q} />
             </div>
-            <input type="submit" value="Подключить" />
+            <input type="submit" value={translate("connection.all.connect")} />
           </form>
         </div>
         {socials[this.props.mess].dialogList ? (
@@ -109,7 +117,7 @@ export default class DialogsConnection extends Component {
             one={true}
             dialogs={dialogs}
             hide={this.handleClose}
-            title="Выберете нужный диалог"
+            title={translate("dialog.choose-dialog")}
             mess={this.props.mess}
           />
         ) : null}

@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import translate from "./../../../../functions/translate";
 import CheckBox from "./../../elements/CheckBox";
 
 export default class MessengerSettings extends Component {
@@ -51,12 +52,22 @@ export default class MessengerSettings extends Component {
   };
 
   remove = mess => {
-    socials[mess] = null;
-    let data = {
-      name: mess
-    };
-    axios.delete("api/v1/messengers?api_token=" + apiToken, { data });
-    this.props.remove(mess);
+    if (/vk||inst||wapp/.test(mess)) {
+      let data = {
+        name: mess
+      };
+      axios
+        .delete("api/v1/messengers?api_token=" + apiToken, { data })
+        .then(response => {
+          if (!response.data.success) alert(translate(response.data.message));
+          else {
+            socials[mess] = null;
+            this.props.remove(mess);
+          }
+        });
+    } else {
+      alert(translate("all.error.hack"));
+    }
   };
 
   render() {
@@ -66,7 +77,9 @@ export default class MessengerSettings extends Component {
       <div className="module-settings">
         <div className="settings-wrapper d-flex flex-column">
           <div className="module-setting">
-            <div className="col-7 setting-name">Обновления мессенджера</div>
+            <div className="col-7 setting-name">
+              {translate("settings.updating")}
+            </div>
             <div className="d-flex justify-content-center col-5">
               <CheckBox
                 checked={updating}
@@ -77,15 +90,19 @@ export default class MessengerSettings extends Component {
             </div>
           </div>
           <div className="module-setting">
-            <div className="col-7 setting-name">Режим работы</div>
+            <div className="col-7 setting-name">
+              {translate("settings.mode")}
+            </div>
             <div className="d-flex justify-content-center col-5">
-              <div className="label">all</div>
+              <div className="label">{translate("messenger.watching.all")}</div>
               <CheckBox
-                checked={watching === 'dialogs'}
+                checked={watching === "dialogs"}
                 handleChange={e => this.toggleWatching(e)}
                 name="toggleWatching"
               />
-            <div className="label">dialogs</div>
+              <div className="label">
+                {translate("messenger.watching.dialogs")}
+              </div>
             </div>
           </div>
         </div>
@@ -95,7 +112,7 @@ export default class MessengerSettings extends Component {
             onClick={() => this.remove(mess)}
             type="submit"
           >
-            Удалить
+            {translate("all.delete")}
           </button>
         </div>
       </div>

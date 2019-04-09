@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Message;
+use App\Messenger;
 use App\Dialog;
 use App\Author;
 use App\Attachment;
@@ -48,19 +49,20 @@ class MessageController extends Controller
     /**
      * Processing whatsapp webhook.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function wapp()
+    public function wapp(Request $request)
     {
-      $data = json_decode(file_get_contents('php://input'), true);
-      $messenger = Messenger::where('instance', $data['instanceId'])->first();
+      //$data = json_decode(file_get_contents('php://input'), true);
+      $messenger = Messenger::where('instance', $request->instanceId)->first();
       if ($messenger->updating === false) return;
       $watching = $messenger->watching;
 
-      foreach($data['messages'] as $message)
+      foreach($request->messages as $message)
       {
         // если watching поменяется во время выполнения запроса, то сообщения создавать не нужно
-        if ($watching !== Messenger::where('instance', $data['instanceId'])->first()->watching) break;
+        if ($watching !== Messenger::where('instance', $request->instanceId)->first()->watching) break;
 
         if (($dialog = Dialog::where([
           ['dialog_id', $message['chatId']],
@@ -205,6 +207,20 @@ class MessageController extends Controller
      */
     public function sendMessage(Request $request)
     {
+      if (Validator::make($request->all(), [
+        'dialogId' => [
+          'required',
+        ],
+        'attacments' => [
+          'required_without_all:text'
+        ]
+      ])->fails()) {
+        return response()->json([
+          'success' => false,
+          'message' => 'all.error.hack',
+        ]);
+      };
+
       $dialog = Dialog::find($request->dialogId);
       $text = $request->text;
       $attachments = $request->attachments;
@@ -217,7 +233,7 @@ class MessageController extends Controller
 
         case 'inst':
           $inst = $request->user()->inst();
-          $this->sendInstMessage($inst, $dialog->dialog_id, $text);
+          $this->sendInstMessage($inst, $dialog->dialog_id, $text, $attachments);
           break;
 
         case 'wapp':
@@ -240,9 +256,8 @@ class MessageController extends Controller
      * @param array $attachments
      * @return \Illuminate\Http\Response
      */
-    private function sendVkMessage($messenger, Dialog $dialog, $text, array $attachments)
+    private function sendVkMessage(Messenger $messenger, Dialog $dialog, $text, array $attachments)
     {
-      info($attachments);
       $photos = implode('|@|', $attachments['photos']);
       $servers = implode('|@|', $attachments['servers']);
       $hashes = implode('|@|', $attachments['hashes']);
@@ -255,8 +270,6 @@ class MessageController extends Controller
         '&hashes='.$hashes.'&docs='.$docs.'&videos='.$videos.
         '&random_id='.random_int(0, 2000000000).'&access_token='.$messenger->token.'&v=5.92'
       ))->response;
-
-      info(json_encode($response));
 
       $author = $response->author;
 
@@ -305,10 +318,11 @@ class MessageController extends Controller
      *
      * @param Messenger $messenger
      * @param string $dialogId
-     * @param string $text
+     * @param $text
+     * @param array $attachments
      * @return \Illuminate\Http\Response
      */
-    private function sendInstMessage(Messenger $messenger, string $dialogId, string $text)
+    private function sendInstMessage(Messenger $messenger, string $dialogId, $text, array $attachments)
     {
       $inst = new Instagram(false, false);
 
@@ -319,10 +333,36 @@ class MessageController extends Controller
           exit(0);
       }
 
-      $inst->direct->sendText(
-        array('thread' => $dialogId),
-        $ext
-      );
+      $direct =  $inst->direct;
+
+      info(isset($text));
+
+      if (isset($text))
+      {
+        $direct->sendText(
+          array('thread' => $dialogId),
+          $text
+        );
+      }
+
+      info($attachments);
+      set_time_limit(120);
+      foreach ($attachments as $attachment) {
+        switch ($attachment['type']) {
+          case 'image':
+            return $direct->sendPhoto(
+              array('thread' => $dialogId),
+              $attachment['path']
+            );
+            break;
+          case 'video':
+            return $direct->sendVideo(
+              array('thread' => $dialogId),
+              $attachment['path']
+            );
+            break;
+        }
+      }
     }
 
     /**

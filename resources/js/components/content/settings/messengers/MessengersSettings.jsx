@@ -1,5 +1,6 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Switch, Route } from "react-router-dom";
+import translate from "./../../../../functions/translate";
 import ModulesList from "./../ModulesList";
 import MessengerSettings from "./MessengerSettings";
 
@@ -21,7 +22,6 @@ export default class MessengersSettings extends Component {
     }
 
     if (currentMess === "" && connectedMessengers[0]) {
-      console.log();
       currentMess = connectedMessengers[0];
       this.props.history.push("/app/settings/messenger/" + currentMess);
     }
@@ -38,11 +38,11 @@ export default class MessengersSettings extends Component {
       currentMess;
     connectedMessengers.splice(connectedMessengers.indexOf(mess), 1);
 
-    if (connectedMessengers[0]) {
+    if (connectedMessengers.length > 0) {
       currentMess = connectedMessengers[0];
       this.props.history.push("/app/settings/messenger/" + currentMess);
     } else {
-      currentMess = '';
+      currentMess = "";
       this.props.history.push("/app/settings/messenger");
     }
 
@@ -55,27 +55,33 @@ export default class MessengersSettings extends Component {
 
   render() {
     let { connectedMessengers, currentMess } = this.state;
-    if (this.props.location.pathname.substr(24) === "" && currentMess !== "")
-      this.props.history.push("/app/settings/messenger/" + currentMess);
 
     return (
       <div className="container modules-settings">
-        <ModulesList
-          modules={connectedMessengers}
-          setting={"messenger"}
-          currentModule={currentMess}
-          changeCurrentModule={this.changeCurrentMess}
-        />
-        <Route
-          path={"/app/settings/messenger/:mess(" + this.rightRoutes() + ")"}
-          render={browser => (
-            <MessengerSettings
-              currentMess={currentMess}
-              match={browser.match}
-              remove={this.remove}
+        {connectedMessengers.length > 0 ? (
+          <Fragment>
+            <ModulesList
+              modules={connectedMessengers}
+              setting={"messenger"}
+              currentModule={currentMess}
+              changeCurrentModule={this.changeCurrentMess}
             />
-          )}
-        />
+            <Route
+              path={"/app/settings/messenger/:mess(" + this.rightRoutes() + ")"}
+              render={browser => (
+                <MessengerSettings
+                  currentMess={currentMess}
+                  match={browser.match}
+                  remove={this.remove}
+                />
+              )}
+            />{" "}
+          </Fragment>
+        ) : (
+          <div className="w-100 h-100 d-flex align-items-center justify-content-center">
+            {translate("settings.no-messengers")}
+          </div>
+        )}
       </div>
     );
   }

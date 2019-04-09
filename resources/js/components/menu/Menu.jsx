@@ -41,7 +41,10 @@ export default class Menu extends Component {
     let { opened } = this.state;
     return (
       <Fragment>
-      <div className={opened ? "menu-fade show" : "menu-fade"} onClick={this.closeMenu}/>
+        <div
+          className={opened ? "menu-fade show" : "menu-fade"}
+          onClick={this.closeMenu}
+        />
         <div className="menu">
           <div className="blob-nav">
             <div className="wobble" />
@@ -51,9 +54,7 @@ export default class Menu extends Component {
             </div>
             <nav
               className={
-                !opened
-                  ? "menu-item-wrap"
-                  : "menu-item-wrap slide-out"
+                !opened ? "menu-item-wrap" : "menu-item-wrap slide-out"
               }
             >
               <CloseMenu.Provider value={this.closeMenu}>

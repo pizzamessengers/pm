@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import translate from "./../../../functions/translate";
 import MessengerConnection from "./MessengerConnection";
 import ConnectedMessenger from "./ConnectedMessenger";
 import DialogChoosing from "./dialogs/DialogChoosing";
@@ -23,17 +24,19 @@ export default class Social extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.mess !== prevProps.mess) {
-      $(".card-header").removeClass(prevProps.mess).addClass(this.props.mess);
+      $(".card-header")
+        .removeClass(prevProps.mess)
+        .addClass(this.props.mess);
     }
   }
 
-  connect = (mess, props, watching) => {
+  connect = async (mess, props, watching) => {
     let data = {
       name: mess,
       props: props,
       watching: watching
     };
-    axios
+    await axios
       .post("api/v1/messengers?api_token=" + apiToken, data)
       .then(response => {
         if (response.data.success) {
@@ -45,10 +48,7 @@ export default class Social extends Component {
               dialogList: []
             };
 
-            this.setState({
-              watching: watching,
-              updating: true
-            });
+            this.setState({ watching });
           } else {
             this.setState({
               modal: {
@@ -58,7 +58,15 @@ export default class Social extends Component {
             });
           }
         } else {
-          alert(response.data.message);
+          let props = {};
+          if (response.data.message.substr(0, 14) === "all.error.user") {
+            props = {
+              user: response.data.message.substr(15)
+            };
+            response.data.message = "all.error.user";
+          }
+          alert(translate(response.data.message, props));
+          throw new Error(response.data.message);
         }
       });
   };
@@ -75,15 +83,10 @@ export default class Social extends Component {
   render() {
     let { mess } = this.props;
     let { watching, modal } = this.state;
-    let messengerNames = {
-      vk: "ВКонтакте",
-      inst: "Инстаграм",
-      wapp: "Вотсапп"
-    };
 
     return (
       <Fragment>
-        <div className="card-header">{messengerNames[mess]}</div>
+        <div className="card-header">{translate("modules." + mess)}</div>
         <div className="card-body">
           {socials[mess] ? (
             <ConnectedMessenger mess={mess} watching={watching} />
@@ -97,7 +100,7 @@ export default class Social extends Component {
             one={false}
             dialogs={modal.dialogs}
             hide={this.handleClose}
-            title="Выберете диалоги"
+            title={translate("dialog.choose-dialogs")}
             mess={mess}
           />
         ) : null}

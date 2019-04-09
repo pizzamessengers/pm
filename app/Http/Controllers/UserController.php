@@ -19,6 +19,23 @@ class UserController extends Controller
     }
 
     /**
+     * Change language.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function changeLanguage(Request $request)
+    {
+        $user = $request->user();
+        $user->lang = $request->lang;
+        $user->save();
+
+        return response()->json([
+          'success' => true,
+        ], 200);
+    }
+
+    /**
      * Display the dialogs for the user.
      *
      * @param Request $request

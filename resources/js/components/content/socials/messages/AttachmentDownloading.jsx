@@ -13,52 +13,76 @@ export default class AttachmentDownloading extends Component {
   }
 
   componentDidMount() {
-    let { attachment, mess, handleLoaded, photoUrl, docUrl, videoUrl, id } = this.props;
-    let data = new FormData();
-    if (mess === "vk") {
-      let type = attachment.type.substr(0, attachment.type.indexOf("/"));
-      switch (type) {
-        case "image":
-          data.append("photo", attachment);
-          axios
-            .post(photoUrl, data, {
-              headers: {
-                "Content-Type": "multipart/form-data"
-              }
-            })
-            .then(response => {
-              this.setState({ loaded: true });
-              handleLoaded(response.data, id);
-            });
-          break;
-        case "video":
-          data.append("video_file", attachment);
-          axios
-            .post(videoUrl, data, {
-              headers: {
-                "Content-Type": "multipart/form-data"
-              }
-            })
-            .then(response => {
-              this.setState({ loaded: true });
-              handleLoaded(response.data, id);
-            });
-          break;
-        case "audio":
-          break;
-        default:
-          data.append("file", attachment);
-          axios
-            .post(docUrl, data, {
-              headers: {
-                "Content-Type": "multipart/form-data"
-              }
-            })
-            .then(response => {
-              this.setState({ loaded: true });
-              handleLoaded(response.data, id);
-            });
-      }
+    let { attachment, mess, handleLoaded, id } = this.props;
+    let type = attachment.type.substr(0, attachment.type.indexOf("/"));
+    let result;
+
+    switch (mess) {
+      case "vk":
+        let data = new FormData();
+        let { photoUrl, docUrl, videoUrl } = this.props;
+        switch (type) {
+          case "image":
+            data.append("photo", attachment);
+            axios
+              .post(photoUrl, data, {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
+              })
+              .then(response => {
+                this.setState({ loaded: true });
+                handleLoaded(response.data, id);
+              });
+            break;
+          case "video":
+            data.append("video_file", attachment);
+            axios
+              .post(videoUrl, data, {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
+              })
+              .then(response => {
+                this.setState({ loaded: true });
+                handleLoaded(response.data, id);
+              });
+            break;
+          case "audio":
+            break;
+          default:
+            data.append("file", attachment);
+            axios
+              .post(docUrl, data, {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
+              })
+              .then(response => {
+                this.setState({ loaded: true });
+                handleLoaded(response.data, id);
+              });
+        }
+        break;
+      case "inst":
+        if (type === "image"/* || type === "video"*/) {
+          handleLoaded(
+            {
+              type: type,
+              path: attachment.path
+            },
+            id
+          );
+        } else
+          handleLoaded(
+            {
+              error: "error"
+            },
+            id
+          );
+
+        this.setState({ loaded: true });
+        break;
     }
   }
 

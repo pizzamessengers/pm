@@ -1,4 +1,5 @@
 import React from "react";
+import translate from "./../../../../functions/translate";
 import timestamp from "./../../../../functions/timestamp";
 
 const Dialog = ({ dialog, choosing }) => {
@@ -17,7 +18,7 @@ const Dialog = ({ dialog, choosing }) => {
           {choosing ? <div>{dialog.members_count}</div> : null}
           <div className="text">{dialog.last_message.text}</div>
           <div className="attachment-exist">
-            {dialog.last_message.with_attachments ? "Файл" : null}
+            {dialog.last_message.with_attachments ? translate("attachments.file") : null}
           </div>
         </div>
         <div className="timestamp">

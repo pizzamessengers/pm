@@ -476,9 +476,11 @@
 
                     .carousel-control-next,
                     .carousel-control-prev {
+                        width: auto;
                         cursor: pointer;
                         z-index: 49;
                         display: none;
+                        justify-content: flex-start;
                         @media (min-width: 768px) {
                             display: flex;
                         }
@@ -499,6 +501,14 @@
                             color: $firstColor;
                             opacity: 0.6;
                         }
+                    }
+
+                    .carousel-control-next {
+                        padding-right: 12px;
+                    }
+
+                    .carousel-control-prev {
+                        padding-left: 12px;
                     }
 
                     .my-carousel-inner {

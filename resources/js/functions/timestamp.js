@@ -47,7 +47,7 @@ const timestamp = (time, fullTime = false) => {
       translate("time.minute") +
       rightDecl(count) +
       " " +
-      translate("time.second")
+      translate("time.ago")
     );
   } else if (diff < d - startToday) {
     var options = {

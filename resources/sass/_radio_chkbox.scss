@@ -120,3 +120,46 @@
         }
     }
 }
+
+.form-check-input {
+    display: none;
+
+    &:checked {
+        &~.form-check-label {
+            //box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
+            &:after {
+                content: "\1F5F8";
+                color: $firstColorHover;
+                position: absolute;
+                top: 2.2px;
+                left: -20px;
+            }
+        }
+    }
+}
+
+.form-check-label {
+    cursor: pointer;
+    position: relative;
+    margin-left: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+
+    &:before {
+        content: '';
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+        position: absolute;
+        top: 2.2px;
+        left: -24px;
+    }
+
+    &:hover {
+      &:before {
+          box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4);
+      }
+    }
+}

@@ -1,0 +1,60 @@
+.player {
+    width: 100%;
+
+    .controls {
+        width: 100%;
+        padding: 10px 6px;
+        border-radius: 8px;
+        box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+        display: -webkit-flex;
+        display: -ms-flex;
+        display: flex;
+        align-items: center;
+
+        .control {
+            background-color: transparent;
+            border: 0;
+            color: $firstColor;
+            display: -webkit-flex;
+            display: -ms-flex;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+
+            &:hover {
+                color: $firstColorHover;
+            }
+
+            &:focus {
+              outline: none;
+            }
+
+            &.play-pause {
+                svg {
+                    width: 22px;
+                    height: 22px;
+                }
+            }
+        }
+
+        .progress {
+            width: calc(100% - 30px);
+            height: 10px;
+            background-color: $firstColor;
+            cursor: pointer;
+            position: relative;
+            overflow: visible !important;
+
+            .timing {
+              position: absolute;
+              top: -18px;
+              transform: translateX(-50%);
+            }
+
+            .progress-bar {
+              border-radius: 0.25rem;
+              background-color: $firstColorHover;
+            }
+        }
+    }
+}

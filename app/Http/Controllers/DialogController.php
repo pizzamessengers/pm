@@ -164,7 +164,7 @@ class DialogController extends Controller
         {
           return array(
             'success' => false,
-            'message' => 'all.error.user.'$user
+            'message' => 'all.error.user.'.$user
           );
         }
         array_push($userIds, $userId);

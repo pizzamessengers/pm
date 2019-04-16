@@ -6,6 +6,7 @@
 @import 'modules_settings';
 @import 'radio_chkbox';
 @import 'messenger_connection';
+@import 'player';
 
 .navbar-laravel {
     background-color: #fff;
@@ -376,7 +377,7 @@
 
         .message {
             padding: 6px;
-            max-width: 100%;
+            max-width: calc(100% - 12px);
             @media (min-width: 444px) {
                 max-width: 400px;
             }
@@ -511,6 +512,7 @@
 
                         .my-carousel-item {
                             min-width: 100%;
+                            max-width: 100%;
                             display: -webkit-flex;
                             display: -ms-flex;
                             display: flex;
@@ -520,6 +522,9 @@
                 }
 
                 .attachment {
+                    width: 100%;
+                    padding: 0 2px;
+
                     img {
                         max-width: 100%;
                         border-bottom-left-radius: 20px;

@@ -8,6 +8,15 @@ export default class UserSettings extends Component {
     this.state = {};
   }
 
+  copyToken = e => {
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val($(e.target).text()).select();
+    document.execCommand("copy");
+    $temp.remove();
+    alert(translate("all.token-copied"));
+  };
+
   render() {
     return (
       <div className="settings-wrapper h-100 d-flex flex-column">
@@ -21,9 +30,15 @@ export default class UserSettings extends Component {
           <div className="col-7 setting-name">{translate("settings.user")}</div>
           <div className="d-flex justify-content-center col-5">{userName}</div>
         </div>
-        <div className="module-setting">
-          <div className="col-7 setting-name">API Token</div>
-          <div className="d-flex justify-content-center col-5">{apiToken}</div>
+        <div className="module-setting flex-column py-2 py-md-0 flex-md-row">
+          <div className="col-md-7 text-center text-md-left setting-name">API Token</div>
+          <div
+            className="d-flex justify-content-center col-md-5"
+            style={{ cursor: "pointer" }}
+            onClick={e => this.copyToken(e)}
+          >
+            {apiToken}
+          </div>
         </div>
       </div>
     );

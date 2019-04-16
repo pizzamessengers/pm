@@ -68,7 +68,7 @@ export default class Attachments extends Component {
     let { attachments, withCaption, onLoadAtta, messageId } = this.props;
     let { currentSlide } = this.state;
     return attachments.length > 1 ? (
-      <Swipe onSwipeLeft={this.next} onSwipeRight={this.prev}>
+      <Swipe className="w-100" onSwipeLeft={this.next} onSwipeRight={this.prev}>
         <div className="attachments my-carousel" ref={this.carousel}>
           {/*<div className="counter">
           {currentSlide + 1}/{attachments.length}

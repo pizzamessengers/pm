@@ -16,6 +16,7 @@ const translate = (message, props = {}) => {
         next: "Далее",
         delete: "Удалить",
         query: "Запрос",
+        "token-copied": "Токен скопирован",
         info: {
           dialogs: "В это окне будут отображаться диалоги со всех мессенджеров",
           "dialog-list":
@@ -133,6 +134,7 @@ const translate = (message, props = {}) => {
         next: "Next",
         delete: "Delete",
         query: "Query",
+        "token-copied": "Token copied",
         info: {
           dialogs:
             "Dialogs from all instant messengers will be displayed in this window",

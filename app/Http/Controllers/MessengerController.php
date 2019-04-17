@@ -88,7 +88,9 @@ class MessengerController extends Controller
             $token = $request->props['token'];
             $messengerData['token'] = $token;
 
-            $lp = json_decode(file_get_contents('https://api.vk.com/method/execute.lp?access_token='.$token.'&v=5.92'))->response;
+            $lp = json_decode(file_get_contents('https://api.vk.com/method/execute.lp?dialogs='.
+            ($messengerData['watching'] === 'dialogs').'&access_token='.$token.'&v=5.92'))->response;
+
             $messengerData['lp'] = array(
               'ts' => $lp->ts,
               'pts' => $lp->pts,
@@ -96,11 +98,9 @@ class MessengerController extends Controller
 
             if ($messengerData['watching'] === 'dialogs')
             {
-              $vkRes = json_decode(file_get_contents('https://api.vk.com/method/execute.conv?access_token='.$token.'&v=5.92'))->response;
+              $profiles = $lp->convs->profiles;
 
-              $profiles = $vkRes->profiles;
-
-              foreach ($vkRes->items as $item) {
+              foreach ($lp->convs->items as $item) {
                 $dialog = $item->conversation;
                 $lastMessage = $item->last_message;
 
@@ -297,9 +297,14 @@ class MessengerController extends Controller
         $messenger->dialogs()->get()->each(
           function(Dialog $dialog)
           {
-            /*$dialog-messages()->each(function(Message $message) {
-              $message->delete();
-            });*/
+            $dialog->authors()->each(function($author)
+            {
+              if (count($author->dialogs()) === 1)
+              {
+                $author->delete();
+              }
+            });
+            
             $dialog->delete();
           }
         );
@@ -352,14 +357,6 @@ class MessengerController extends Controller
         $messenger = $request->user()->{$request->name}();
         $messenger->dialogs()->get()->each(function($dialog)
         {
-          $dialog->authors()->each(function($author)
-          {
-            if (count($author->dialogs()) === 1)
-            {
-              $author->delete();
-            }
-          });
-
           $dialog->delete();
         });
 

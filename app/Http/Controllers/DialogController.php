@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Validator;
+use Illuminate\Validation\Rule;
 use App\Author;
 use App\Dialog;
 use App\Messenger;
@@ -60,15 +62,14 @@ class DialogController extends Controller
           );
         }
 
-        $profiles = json_decode(file_get_contents(
-          'https://api.vk.com/method/execute.convMembers?peer_id='.$vkChat->peer->id.'&access_token='.$messenger->token.'&v=5.92'
-        ))->response->profiles;
+        $profiles_lastMessage = json_decode(file_get_contents(
+          'https://api.vk.com/method/execute.proflm?peer_id='.$vkChat->peer->id.'&message_ids='.$vkChat->last_message_id.
+          '&access_token='.$messenger->token.'&v=5.92'
+        ))->response;
 
+        $profiles = $profiles_lastMessage->profiles;
+        $lastMessage = $profiles_lastMessage->last_message;
         $dialogData = $this->dialogIdNamePhotoMembers($vkChat, $dialogs);
-
-        $lastMessage = json_decode(file_get_contents(
-          'https://api.vk.com/method/execute.messageById?message_ids='.$vkChat->last_message_id.'&access_token='.$messenger->token.'&v=5.92'
-        ))->response->items[0];
 
         $lastMessageText = $lastMessage->text;
         if (strlen($lastMessageText) > 40)
@@ -242,7 +243,7 @@ class DialogController extends Controller
     public function processQueryVk(string $q, Messenger $messenger)
     {
       $vkRes = json_decode(file_get_contents(
-        'https://api.vk.com/method/execute.searchConv?q='.$q.'&access_token='.$messenger->token.'&v=5.92'
+        'https://api.vk.com/method/execute.searchConv?q='.urlencode($q).'&access_token='.$messenger->token.'&v=5.92'
       ))->response;
 
       if (($count = $vkRes->count) !== 1)

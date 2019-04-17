@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import translate from "./../../../functions/translate";
 import MessengerConnection from "./MessengerConnection";
-import ConnectedMessenger from "./ConnectedMessenger";
+import MessengerDialogs from "./dialogs/MessengerDialogs";
 import DialogChoosing from "./dialogs/DialogChoosing";
 
 export default class Social extends Component {
@@ -89,7 +89,7 @@ export default class Social extends Component {
         <div className="card-header">{translate("modules." + mess)}</div>
         <div className="card-body">
           {socials[mess] ? (
-            <ConnectedMessenger mess={mess} watching={watching} />
+            <MessengerDialogs mess={mess} />
           ) : (
             <MessengerConnection mess={mess} connect={this.connect} />
           )}

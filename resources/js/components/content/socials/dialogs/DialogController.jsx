@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import translate from "./../../../../functions/translate";
 import LinkedDialog from "./LinkedDialog";
 import CheckBox from "./../../elements/CheckBox";
@@ -11,9 +11,9 @@ export default class DialogController extends Component {
     };
   }
 
-  toggleUpdating = dialog => {
-    dialog.updating = !dialog.updating;
-    this.setState({ updating: dialog.updating });
+  toggleUpdating = e => {
+    let { dialog } = this.props;
+    this.setState({ updating: !this.state.updating });
     axios.put("api/v1/dialogs/" + dialog.id + "?api_token=" + apiToken);
   };
 
@@ -22,21 +22,23 @@ export default class DialogController extends Component {
     let { dialog, deleteDialog, mess } = this.props;
 
     return (
-      <Fragment>
+      <div className="d-md-flex align-items-center justify-content-around">
         <LinkedDialog dialog={dialog} mess={mess} />
-        <CheckBox
-          checked={updating}
-          handleChange={e => this.toggleUpdating(e)}
-          name={dialog.id}
-          withOn
-        />
-        <button
-          className="btn btn-delete col-3"
-          onClick={() => deleteDialog(dialog)}
-        >
-          {translate("all.delete")}
-        </button>
-      </Fragment>
+        <div className="d-flex align-items-center justify-content-center pt-2 pb-3 py-md-0 px-md-3">
+          <CheckBox
+            checked={updating}
+            handleChange={this.toggleUpdating}
+            name={dialog.id}
+            withOn
+          />
+          <button
+            className="btn btn-delete col-3"
+            onClick={() => deleteDialog(dialog.id)}
+          >
+            {translate("all.delete")}
+          </button>
+        </div>
+      </div>
     );
   }
 }

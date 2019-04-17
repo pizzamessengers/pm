@@ -2,19 +2,19 @@ import translate from "./translate";
 
 const timestamp = (time, fullTime = false) => {
   let rightDecl = count => {
-    let num = count % 10;
     switch (lang) {
       case "ru":
-        if (num === 1) {
+        let num = count % 10;
+        if (num === 1 && count !== 11) {
           return "у";
-        } else if (num > 1 && num <= 4) {
+        } else if (num > 1 && num <= 4 && count !== 12 && count !== 13 && count !== 14) {
           return "ы";
         } else {
           return "";
         }
         break;
       case "en":
-        if (num === 1) {
+        if (count === 1) {
           return "";
         } else {
           return "s";

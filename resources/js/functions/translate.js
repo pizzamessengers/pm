@@ -40,6 +40,9 @@ const translate = (message, props = {}) => {
             dialogs: "dialogs Этот режим то-то то-то.. (написать в словаре)"
           }
         },
+        dialogs: {
+          ok: 'Подключено'
+        },
         error: {
           watching: "Необходимо выбрать режим работы сервиса"
         },
@@ -157,6 +160,9 @@ const translate = (message, props = {}) => {
             all: "all Этот режим то-то то-то.. (написать в словаре)",
             dialogs: "dialogs Этот режим то-то то-то.. (написать в словаре)"
           }
+        },
+        dialogs: {
+          ok: 'Connected'
         },
         error: {
           watching: "You must select the service mode"

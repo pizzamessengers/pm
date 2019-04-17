@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import translate from "./../../../../functions/translate";
 import CheckBox from "./../../elements/CheckBox";
+import DialogsConnection from "./../../socials/dialogs/DialogsConnection";
 
 export default class MessengerSettings extends Component {
   constructor(props) {
@@ -36,12 +37,8 @@ export default class MessengerSettings extends Component {
     let watching;
     if (this.state.watching === "all") {
       watching = "dialogs";
-      this.mess.dialogList = [];
     } else {
       watching = "all";
-      this.mess.dialogList.forEach(function(item) {
-        item.updating = false;
-      });
     }
     this.setState({ watching });
     this.mess.watching = watching;
@@ -75,35 +72,44 @@ export default class MessengerSettings extends Component {
     let mess = this.props.currentMess;
     return (
       <div className="module-settings">
-        <div className="settings-wrapper d-flex flex-column">
-          <div className="module-setting">
-            <div className="col-7 setting-name">
-              {translate("settings.updating")}
-            </div>
-            <div className="d-flex justify-content-center col-5">
-              <CheckBox
-                checked={updating}
-                handleChange={e => this.toggleUpdating(e)}
-                name="toggleUpdating"
-                withOn
-              />
-            </div>
-          </div>
-          <div className="module-setting">
-            <div className="col-7 setting-name">
-              {translate("settings.mode")}
-            </div>
-            <div className="d-flex justify-content-center col-5">
-              <div className="label">{translate("messenger.watching.all")}</div>
-              <CheckBox
-                checked={watching === "dialogs"}
-                handleChange={e => this.toggleWatching(e)}
-                name="toggleWatching"
-              />
-              <div className="label">
-                {translate("messenger.watching.dialogs")}
+        <div className="settings-wrapper">
+          <div className="settings d-flex flex-column">
+            <div className="module-setting">
+              <div className="col-7 setting-name">
+                {translate("settings.updating")}
+              </div>
+              <div className="d-flex justify-content-center col-5">
+                <CheckBox
+                  checked={updating}
+                  handleChange={e => this.toggleUpdating(e)}
+                  name="toggleUpdating"
+                  withOn
+                />
               </div>
             </div>
+            <div className="module-setting">
+              <div className="col-7 setting-name">
+                {translate("settings.mode")}
+              </div>
+              <div className="d-flex justify-content-center col-5">
+                <div className="label">
+                  {translate("messenger.watching.all")}
+                </div>
+                <CheckBox
+                  checked={watching === "dialogs"}
+                  handleChange={e => this.toggleWatching(e)}
+                  name="toggleWatching"
+                />
+                <div className="label">
+                  {translate("messenger.watching.dialogs")}
+                </div>
+              </div>
+            </div>
+            {this.state.watching === "dialogs" ? (
+              <div className="module-setting">
+                <DialogsConnection mess={mess} />
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="btn-delete-wrapper">

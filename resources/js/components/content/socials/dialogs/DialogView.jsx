@@ -72,13 +72,10 @@ export default class DialogView extends Component {
   }
 
   name = () => {
+    console.log(this.state.messages);
     return this.props.location.state
       ? this.props.location.state.name
-      : socials[this.mess].dialogList.map(dialog => {
-          if (dialog.id == this.dialogId) {
-            return dialog.name;
-          }
-        });
+      : '';
   };
 
   addMessage = (text, attachments) => {

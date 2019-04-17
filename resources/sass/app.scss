@@ -531,49 +531,56 @@
                     }
                 }
 
-                .attachment {
+                .attachments {
                     width: 100%;
-                    padding: 0 2px;
 
-                    img {
-                        max-width: 100%;
-                        border-bottom-left-radius: 20px;
-                        border-bottom-right-radius: 20px;
-
-                        &.withoutCaption {
-                            border-top-left-radius: 20px;
-                            border-top-right-radius: 20px;
-                        }
+                    .my-carousel-item .attachment {
+                        padding: 0 2px;
                     }
 
-                    .doc {
-                        display: -webkit-flex;
-                        display: -ms-flex;
-                        display: flex;
-                        flex-direction: column;
-                        text-align: center;
+                    .attachment {
+                        width: 100%;
 
-                        .doc-icon {
-                            height: 40px;
-                            width: 40px;
-                            color: $firstColor;
-                            margin-bottom: 2px;
+                        img {
+                            max-width: 100%;
+                            border-bottom-left-radius: 20px;
+                            border-bottom-right-radius: 20px;
+
+                            &.withoutCaption {
+                                border-top-left-radius: 20px;
+                                border-top-right-radius: 20px;
+                            }
                         }
 
-                        .doc-name {
-                            font-size: 15px;
-                            font-weight: 500;
-                            color: $firstColorShadow;
-                        }
+                        .doc {
+                            display: -webkit-flex;
+                            display: -ms-flex;
+                            display: flex;
+                            flex-direction: column;
+                            text-align: center;
 
-                        &:hover {
                             .doc-icon {
-                                color: $firstColorHover;
+                                height: 40px;
+                                width: 40px;
+                                color: $firstColor;
+                                margin-bottom: 2px;
                             }
 
                             .doc-name {
-                                text-decoration: none;
-                                color: $firstColorHover;
+                                font-size: 15px;
+                                font-weight: 500;
+                                color: $firstColorShadow;
+                            }
+
+                            &:hover {
+                                .doc-icon {
+                                    color: $firstColorHover;
+                                }
+
+                                .doc-name {
+                                    text-decoration: none;
+                                    color: $firstColorHover;
+                                }
                             }
                         }
                     }

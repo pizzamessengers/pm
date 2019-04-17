@@ -245,38 +245,37 @@ class GetMessagesVk extends Command
           'https://api.vk.com/method/execute.convById?peer_ids='.$dialogId.'&access_token='.$messenger->token.'&v=5.92'
         ))->response;
 
-        if ($chat->items[0]->peer->type === 'user')
+        if ($chat->type === 'user')
         {
           foreach ($chat->profiles as $profile)
           {
-            if ($profile->id === $chat->items[0]->peer->id) break;
+            if ($profile->id === $chat->id) break;
           }
 
           $name = $profile->first_name.' '.$profile->last_name;
           $photo = $profile->photo_100;
           $membersCount = 2;
         }
-        else if ($chat->items[0]->peer->type === 'chat')
+        else if ($chat->type === 'chat')
         {
-          $name = $chat->items[0]->chat_settings->title;
-          $photo = property_exists($chat->items[0]->chat_settings, 'photo') ?
-            $chat->items[0]->chat_settings->photo->photo_100 :
+          $set = $chat->settings;
+          $name = $set->title;
+          $photo = property_exists($set, 'photo') ?
+            $set->photo->photo_100 :
             'https://vk.com/images/camera_100.png';
-          $membersCount = $chat->items[0]->chat_settings->members_count;
+          $membersCount = $set->members_count;
         }
-        else if ($chat->items[0]->peer->type === 'group')
+        else if ($chat->type === 'group')
         {
-          $name = $chat->groups[0]->name;
-          $photo = property_exists($chat->groups[0], 'photo_100') ?
-            $chat->groups[0]->photo_100 :
+          $group = $chat->group;
+          $name = $group->name;
+          $photo = property_exists($group, 'photo_100') ?
+            $group->photo_100 :
             'https://vk.com/images/camera_100.png';
           $membersCount = 2;
         }
 
-        $lastMessage = json_decode(file_get_contents(
-          'https://api.vk.com/method/execute.messageById?message_ids='.$chat->items[0]->last_message_id.'&access_token='.$messenger->token.'&v=5.92'
-        ))->response->items[0];
-
+        $lastMessage = $chat->last_message;
         if (strlen($lastMessage->text) > 40)
         {
           $lastMessage->text = mb_substr($lastMessage->text, 0, 40, 'UTF-8').'...';

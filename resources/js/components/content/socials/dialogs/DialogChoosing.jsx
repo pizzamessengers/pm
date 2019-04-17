@@ -17,17 +17,6 @@ const DialogChoosing = ({ one, dialogs, hide, title, mess }) => {
     axios.post("api/v1/dialogs?api_token=" + apiToken, data).then(response => {
       if (!response.data.success) {
         alert(translate(response.data.message));
-      } else {
-        response.data.dialogList.forEach(dialog => {
-          socials[mess].dialogList.push({
-            id: dialog.id,
-            name: dialog.name,
-            last_message: dialog.last_message,
-            members_count: dialog.members_count,
-            photo: dialog.photo,
-            updating: true
-          });
-        });
       }
       hide();
     });

@@ -4,7 +4,7 @@ import Dialog from "./Dialog";
 
 const LinkedDialog = ({ dialog, mess, fromMessagesWindow }) => (
   <Link
-    className="linked-dialog"
+    className="linked-dialog d-block"
     to={{
       pathname: "/app/socials/" + mess + "/dialog/" + dialog.id,
       state: { name: dialog.name }

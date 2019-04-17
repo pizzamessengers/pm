@@ -57,13 +57,26 @@ export default class MessengerDialogs extends Component {
     clearInterval(this.interval);
   }
 
+  deleteDialog = dialog => {
+    axios.delete("api/v1/dialogs/" + dialog + "?api_token=" + apiToken);
+    let { dialogs } = this.state;
+    dialogs.splice(dialogs.map(x => x.id).indexOf(dialog), 1);
+    this.setState({ dialogs });
+  };
+
   render() {
     let { waiting, dialogs } = this.state;
     let { mess } = this.props;
+    let messenger = socials[mess];
     return waiting ? (
       <Waiting />
     ) : dialogs.length > 0 ? (
-      <Dialogs dialogs={dialogs} />
+      <Dialogs
+        dialogs={dialogs}
+        withController={messenger.watching === "dialogs" ? true : false}
+        deleteDialog={this.deleteDialog}
+        mess={mess}
+      />
     ) : (
       <div className="no-messages-wrapper">
         <div className="no-messages">{translate("all.info.dialog-list")}</div>

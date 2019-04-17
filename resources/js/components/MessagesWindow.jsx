@@ -38,7 +38,7 @@ export default class MessagesWindow extends Component {
         {waiting ? (
           <Waiting />
         ) : dialogs.length > 0 ? (
-          <Dialogs dialogs={dialogs} fromMessagesWindow={true} />
+          <Dialogs dialogs={dialogs} fromMessagesWindow />
         ) : (
           <div className="no-messages-wrapper">
             <div className="no-messages">{translate("all.info.dialogs")}</div>

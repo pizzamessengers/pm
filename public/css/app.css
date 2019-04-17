@@ -11900,9 +11900,14 @@ a.text-dark:focus {
 
 .modules-settings .module-settings .settings-wrapper {
   height: 85%;
+  overflow-y: auto;
 }
 
-.modules-settings .module-settings .settings-wrapper .module-setting {
+.modules-settings .module-settings .settings-wrapper .settings {
+  height: auto;
+}
+
+.modules-settings .module-settings .settings-wrapper .settings .module-setting {
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -11910,14 +11915,28 @@ a.text-dark:focus {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  height: 60px;
+  padding: 20px 0;
   -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
-.modules-settings .module-settings .settings-wrapper .module-setting .setting-name {
+.modules-settings .module-settings .settings-wrapper .settings .module-setting .setting-name {
   font-size: 16px;
   font-weight: 500;
+}
+
+.modules-settings .module-settings .settings-wrapper .settings .module-setting .dialogs-connection {
+  width: 100%;
+}
+
+.modules-settings .module-settings .settings-wrapper .settings .module-setting .dialogs-connection input[type="text"] {
+  height: 40px;
+  margin: 0 !important;
+}
+
+.modules-settings .module-settings .settings-wrapper .settings .module-setting .dialogs-connection input[type="submit"] {
+  padding: 9px 18px;
+  margin: 0 !important;
 }
 
 .modules-settings .module-settings .btn-delete-wrapper {
@@ -13020,23 +13039,30 @@ a.text-dark:focus {
           justify-content: center;
 }
 
-.wrapper .list .message .message-body .attachment {
+.wrapper .list .message .message-body .attachments {
   width: 100%;
+}
+
+.wrapper .list .message .message-body .attachments .my-carousel-item .attachment {
   padding: 0 2px;
 }
 
-.wrapper .list .message .message-body .attachment img {
+.wrapper .list .message .message-body .attachments .attachment {
+  width: 100%;
+}
+
+.wrapper .list .message .message-body .attachments .attachment img {
   max-width: 100%;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }
 
-.wrapper .list .message .message-body .attachment img.withoutCaption {
+.wrapper .list .message .message-body .attachments .attachment img.withoutCaption {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
 
-.wrapper .list .message .message-body .attachment .doc {
+.wrapper .list .message .message-body .attachments .attachment .doc {
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -13048,24 +13074,24 @@ a.text-dark:focus {
   text-align: center;
 }
 
-.wrapper .list .message .message-body .attachment .doc .doc-icon {
+.wrapper .list .message .message-body .attachments .attachment .doc .doc-icon {
   height: 40px;
   width: 40px;
   color: #b6d6ff;
   margin-bottom: 2px;
 }
 
-.wrapper .list .message .message-body .attachment .doc .doc-name {
+.wrapper .list .message .message-body .attachments .attachment .doc .doc-name {
   font-size: 15px;
   font-weight: 500;
   color: #7fb7ff;
 }
 
-.wrapper .list .message .message-body .attachment .doc:hover .doc-icon {
+.wrapper .list .message .message-body .attachments .attachment .doc:hover .doc-icon {
   color: #428ef0;
 }
 
-.wrapper .list .message .message-body .attachment .doc:hover .doc-name {
+.wrapper .list .message .message-body .attachments .attachment .doc:hover .doc-name {
   text-decoration: none;
   color: #428ef0;
 }

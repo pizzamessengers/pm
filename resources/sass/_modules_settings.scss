@@ -65,18 +65,37 @@
 
         .settings-wrapper {
             height: 85%;
+            overflow-y: auto;
 
-            .module-setting {
-                display: -webkit-flex;
-                display: -ms-flex;
-                display: flex;
-                align-items: center;
-                height: 60px;
-                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+            .settings {
+                height: auto;
 
-                .setting-name {
-                    font-size: 16px;
-                    font-weight: 500;
+                .module-setting {
+                    display: -webkit-flex;
+                    display: -ms-flex;
+                    display: flex;
+                    align-items: center;
+                    padding: 20px 0;
+                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+
+                    .setting-name {
+                        font-size: 16px;
+                        font-weight: 500;
+                    }
+
+                    .dialogs-connection {
+                        width: 100%;
+
+                        input[type="text"] {
+                            height: 40px;
+                            margin: 0 !important;
+                        }
+
+                        input[type="submit"] {
+                            padding: 9px 18px;
+                            margin: 0 !important;
+                        }
+                    }
                 }
             }
         }

@@ -3,7 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 import translate from "./../../../../functions/translate";
 import Dialog from "./Dialog";
 
-const DialogChoosing = ({ one, dialogs, hide, title, mess }) => {
+const DialogChoosing = ({ handleAccept, one, dialogs, hide, title, mess }) => {
   let accept = () => {
     let dialogList = [];
     $('input[name="dialog"]:checked').each(function() {
@@ -17,7 +17,7 @@ const DialogChoosing = ({ one, dialogs, hide, title, mess }) => {
     axios.post("api/v1/dialogs?api_token=" + apiToken, data).then(response => {
       if (!response.data.success) {
         alert(translate(response.data.message));
-      }
+      } else handleAccept();
       hide();
     });
   };

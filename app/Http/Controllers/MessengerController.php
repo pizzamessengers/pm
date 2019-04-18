@@ -99,7 +99,7 @@ class MessengerController extends Controller
             if ($messengerData['watching'] === 'dialogs')
             {
               $profiles = $lp->convs->profiles;
-
+              info(json_encode($lp->convs->items));
               foreach ($lp->convs->items as $item) {
                 $dialog = $item->conversation;
                 $lastMessage = $item->last_message;
@@ -131,7 +131,7 @@ class MessengerController extends Controller
                 }
 
                 array_push($dialogs, array(
-                  'id' => $dialog->peer->id,
+                  'dialog_id' => $dialog->peer->id,
                   'name' => $data['name'],
                   'photo' => $data['photo'],
                   'last_message' => array(
@@ -141,9 +141,9 @@ class MessengerController extends Controller
                   ),
                   'members_count' => $data['members_count'],
                 ));
-
-                $response += array('dialogs' => $dialogs);
               }
+
+              $response += array('dialogs' => $dialogs);
             }
 
             break;
@@ -304,7 +304,7 @@ class MessengerController extends Controller
                 $author->delete();
               }
             });
-            
+
             $dialog->delete();
           }
         );

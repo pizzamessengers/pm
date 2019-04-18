@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import ModulesList from "./../ModulesList";
-import ProfileModuleSettings from "./ProfileModuleSettings";
+import UserSettings from "./UserSettings";
+import Payment from "./Payment";
 
 export default class ProfileSettings extends Component {
   constructor(props) {
@@ -26,12 +27,15 @@ export default class ProfileSettings extends Component {
           currentModule={currentModule}
           changeCurrentModule={this.changeCurrentModule}
         />
-        <Route
-          path={"/app/settings/profile/:module(user||payment)"}
-          render={() => (
-            <ProfileModuleSettings refresh={() => this.forceUpdate()} />
-          )}
-        />
+        <div className="module-settings">
+          <Switch>
+            <Route
+              path={"/app/settings/profile/user"}
+              render={() => <UserSettings refresh={() => this.forceUpdate()} />}
+            />
+            <Route path={"/app/settings/profile/payment"} component={Payment} />
+          </Switch>
+        </div>
       </div>
     );
   }

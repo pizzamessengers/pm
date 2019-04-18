@@ -7,6 +7,8 @@ use App\Messenger;
 use App\Dialog;
 use App\Author;
 use App\Attachment;
+use Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use VK\Client\VKApiClient;
 use InstagramAPI\Instagram;
@@ -211,9 +213,9 @@ class MessageController extends Controller
         'dialogId' => [
           'required',
         ],
-        'attacments' => [
+        /*'attacments' => [
           'required_without_all:text'
-        ]
+        ]*/
       ])->fails()) {
         return response()->json([
           'success' => false,

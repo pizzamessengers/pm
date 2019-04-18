@@ -282,7 +282,7 @@ class DialogController extends Controller
           $messenger = $request->user()->vk();
           $result = isset($request->q) ?
             $this->processQueryVk($request->q, $messenger) :
-            $this->addDialogsVk($request->dialogs, $messenger, false);
+            $this->addDialogsVk((object) $request->dialogs, $messenger, false);
           break;
         case 'inst':
           $result = $this->addDialogsInst($request);

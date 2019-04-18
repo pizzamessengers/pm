@@ -45,11 +45,16 @@ export default class Social extends Component {
               id: response.data.messengerId,
               updating: true,
               watching: watching,
-              dialogList: []
             };
 
             this.setState({ watching });
           } else {
+            socials[mess] = {
+              id: response.data.messengerId,
+              updating: true,
+              watching: watching,
+            };
+
             this.setState({
               modal: {
                 show: true,
@@ -70,6 +75,10 @@ export default class Social extends Component {
         }
       });
   };
+
+  accept = () => {
+    this.setState({ watching: 'dialogs' });
+  }
 
   handleClose = () => {
     this.setState({
@@ -97,6 +106,7 @@ export default class Social extends Component {
 
         {modal.show ? (
           <DialogChoosing
+            handleAccept={this.accept}
             one={false}
             dialogs={modal.dialogs}
             hide={this.handleClose}

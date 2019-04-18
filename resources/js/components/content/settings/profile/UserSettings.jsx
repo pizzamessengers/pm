@@ -19,25 +19,35 @@ export default class UserSettings extends Component {
 
   render() {
     return (
-      <div className="settings-wrapper h-100 d-flex flex-column">
-        <div className="module-setting">
-          <div className="col-7 setting-name">{translate("settings.lang")}</div>
-          <div className="d-flex justify-content-center col-5">
-            <LangChoosing refresh={this.props.refresh} />
+      <div className="settings-wrapper">
+        <div className="settings d-flex flex-column">
+          <div className="module-setting">
+            <div className="col-7 setting-name">
+              {translate("settings.lang")}
+            </div>
+            <div className="d-flex justify-content-center col-5">
+              <LangChoosing refresh={this.props.refresh} />
+            </div>
           </div>
-        </div>
-        <div className="module-setting">
-          <div className="col-7 setting-name">{translate("settings.user")}</div>
-          <div className="d-flex justify-content-center col-5">{userName}</div>
-        </div>
-        <div className="module-setting flex-column py-2 py-md-0 flex-md-row">
-          <div className="col-md-7 text-center text-md-left setting-name">API Token</div>
-          <div
-            className="d-flex justify-content-center col-md-5"
-            style={{ cursor: "pointer" }}
-            onClick={e => this.copyToken(e)}
-          >
-            {apiToken}
+          <div className="module-setting">
+            <div className="col-7 setting-name">
+              {translate("settings.user")}
+            </div>
+            <div className="d-flex justify-content-center col-5">
+              {userName}
+            </div>
+          </div>
+          <div className="module-setting flex-column flex-md-row">
+            <div className="col-md-7 text-center text-md-left setting-name">
+              API Token
+            </div>
+            <div
+              className="d-flex justify-content-center col-md-5"
+              style={{ cursor: "pointer" }}
+              onClick={e => this.copyToken(e)}
+            >
+              {apiToken}
+            </div>
           </div>
         </div>
       </div>

@@ -78,7 +78,7 @@ export default class MessengersSettings extends Component {
             />{" "}
           </Fragment>
         ) : (
-          <div className="w-100 h-100 d-flex align-items-center justify-content-center">
+          <div className="w-75 mx-auto h-100 d-flex align-items-center justify-content-center text-center">
             {translate("settings.no-messengers")}
           </div>
         )}

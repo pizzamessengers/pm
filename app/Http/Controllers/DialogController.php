@@ -216,7 +216,7 @@ class DialogController extends Controller
         'last_message' => array(
           'id' => $lastItem->getItemId(),
           'text' => $lastMessageText,
-          'timestamp' => $lastItem->getTimestamp(),
+          'timestamp' => substr($lastItem->getTimestamp(), 0, 13),
           'with_attachments' => $lastItem->getItemType() !== 'text'
         ),
         'members_count' => count($thread->getUsers()) + 1,

@@ -204,10 +204,10 @@ class MessengerController extends Controller
           case 'wapp':
             if (Validator::make($request->all(), [
               'props.token' => [
-                'required|string'
+                'required'
               ],
               'props.url' => [
-                'required|string'
+                'required'
               ],
             ])->fails()) {
               return response()->json([
@@ -221,8 +221,9 @@ class MessengerController extends Controller
             $messengerData['instance'] = substr($messengerData['url'], -6, 5);
 
             $url = $messengerData['url'].'webhook?token='.$messengerData['token'];
+            $token = $request->user()->api_token;
             $data = json_encode([
-              'webhookUrl' => 'http://localhost:8000/messages/wapp',
+              'webhookUrl' => 'http://localhost:8000/api/v1/messages/wapp?api_token='.$token,
             ]);
             $options = stream_context_create(['https' => [
               'method'  => 'POST',

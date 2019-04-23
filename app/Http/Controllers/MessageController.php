@@ -14,6 +14,7 @@ use VK\Client\VKApiClient;
 use InstagramAPI\Instagram;
 use InstagramAPI\Response\DirectInboxResponse;
 use UploadedFile;
+use DB;
 
 class MessageController extends Controller
 {
@@ -56,7 +57,6 @@ class MessageController extends Controller
      */
     public function wapp(Request $request)
     {
-      //$data = json_decode(file_get_contents('php://input'), true);
       $messenger = Messenger::where('instance', $request->instanceId)->first();
       if ($messenger->updating === false) return;
       $watching = $messenger->watching;
@@ -97,9 +97,9 @@ class MessageController extends Controller
         $text = $message['caption'] !== null ? $message['caption'] : '';
       }
 
-      $id = explode('_', $message->id)['2'];
-      $dialogId = $this->dialogId($message['chatId'], $messenger);
-      $authorId = $this->authorId($message['author'], $dialogId);
+      $id = explode('_', $message['id'])['2'];
+      $dialogId = $this->dialogId($message, $text, $messenger);
+      $authorId = $this->authorId($message['author'], $message['senderName'], $dialogId);
 
       $newMessage = Message::create([
         'message_id' => $id,
@@ -107,10 +107,10 @@ class MessageController extends Controller
         'text' => $text,
         'author_id' => $authorId,
         'from_me' => $message['fromMe'],
-        'timestamp' => $message['time'] + '000',
+        'timestamp' => $message['time'].'000',
       ]);
 
-      if ($message->type !== 'chat')
+      if ($message['type'] !== 'chat')
       {
         $this->attachments($message, $newMessage->id);
       }
@@ -119,19 +119,41 @@ class MessageController extends Controller
     /**
      * Get dialog id if exist or create new dialog.
      *
-     * @param string $dialogId
+     * @param array $message
+     * @param string $text
      * @param Messenger $messenger
      * @return int dialog id $dialogId
      */
-    private function dialogId(string $dialogId, Messenger $messenger)
+    private function dialogId(array $message, string $text, Messenger $messenger)
     {
-      $dialog = Dialog::firstOrCreate([
-        'messenger_id' => $messenger->id,
-        'dialog_id' => (string) $dialogId,
-        'name' => substr($dialogId, 0, strlen($dialogId)-5),
-      ]);
-
-      // TODO: если в разных мессенджерах будут совпадать id разных диалогов, то сделать доп. проверку
+      if (($dialog = Dialog::where([
+        ['messenger_id', $messenger->id],
+        ['dialog_id', (string) $message['chatId']],
+      ])->first()) === null)
+      {
+        $dialog = Dialog::create([
+          'messenger_id' => $messenger->id,
+          'dialog_id' => (string) $message['chatId'],
+          'name' => $message['chatName'],
+          'last_message' => array(
+            'text' => $text,
+            'timestamp' => $message['time'].'000',
+            'with_attachments' => $message['type'] !== 'chat',
+          ),
+          'members_count' => 0,
+          'photo' => 'https://vk.com/images/camera_100.png',
+          'unread_count' => 0,
+        ]);
+      }
+      else
+      {
+        $dialog->last_message = array(
+          'text' => $text,
+          'timestamp' => $message['time'].'000',
+          'with_attachments' => $message['type'] !== 'chat',
+        );
+        $dialog->save();
+      }
 
       return $dialog->id;
     }
@@ -139,34 +161,37 @@ class MessageController extends Controller
     /**
      * Get author id if exist or create new author.
      *
-     * @param int $userId
+     * @param string $userId
      * @param int $dialogId
-     * @param Instagram $inst
+     * @param string $name
      * @return int authorId
      */
-    private function authorId(int $userId, int $dialogId)
+    private function authorId(string $userId, string $name, int $dialogId)
     {
-      $authorId = Author::where(
+      $authors = Author::where(
         'author_id',
         $userId
-      )->value('id');
+      )->get();
 
-      /*if (count($author_ids) > 1) {
-        // TODO: если в разных мессенджерах будут совпадать id разных авторов, то сделать доп. проверку
+      $authorId = null;
+
+      if (count($authors) > 0) {
+        foreach ($authors as $author) {
+          if ($author->dialogs()[0]->messenger()->name === 'vk')
+          {
+            $authorId = $author->id;
+            break;
+          }
+        }
       }
-      else */
-      if ($authorId === null)
-      {
-        $profile = $inst->people->getInfoById($userId)->getUser();
-        $name = explode(' ', $profile->getFullName());
-        $firstName = $name[0];
-        $lastName = $name[1];
 
+      if (empty($authorId))
+      {
         $authorId = Author::create([
           'author_id' => $userId,
-          'first_name' => $firstName,
-          'last_name' => $lastName,
-          'avatar' => $profile->getProfilePicUrl(),
+          'first_name' => $name,
+          'last_name' => '',
+          'avatar' => 'https://vk.com/images/camera_100.png',
         ])->id;
       }
 
@@ -239,8 +264,7 @@ class MessageController extends Controller
           break;
 
         case 'wapp':
-          $wapp = $request->user()->wapp();
-          $this->sendWappMessage($wapp, $dialogId, $text);
+          $this->sendWappMessage($request, $dialog, $text, $attachments);
           break;
       }
 
@@ -370,18 +394,21 @@ class MessageController extends Controller
     /**
      * Send message to the wapp.
      *
-     * @param Messenger $messenger
-     * @param string $dialogId
+     * @param Request $request
+     * @param Dialog $dialog
      * @param string $text
+     * @param array $attachments
      * @return \Illuminate\Http\Response
      */
-    private function sendWappMessage(Messenger $messenger, string $dialogId, string $text)
+    private function sendWappMessage(Request $request, Dialog $dialog, string $text, array $attachments)
     {
-      $phone = substr($dialogId, 0, strlen($dialogId)-5);
-
-      $url = $messenger->url.'message?token='.$messenger->token;
-      $data = json_encode([
-        'phone' => $phone,
+      $wapp = $request->user()->wapp();
+      $url = $wapp->url.'message?token='.$wapp->token;
+      $data = property_exists($request, 'phone') ? json_encode([
+        'phone' => $request->phone,
+        'body' => $text,
+      ]) : json_encode([
+        'chatId' => $dialog->dialog_id,
         'body' => $text,
       ]);
       $options = stream_context_create(['https' => [
@@ -390,6 +417,10 @@ class MessageController extends Controller
         'content' => $data
       ]]);
       file_get_contents($url, false, $options);
+
+      foreach ($attachments as $attachment) {
+        // code...
+      }
     }
 
     /**

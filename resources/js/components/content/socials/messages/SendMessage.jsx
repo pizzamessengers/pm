@@ -40,6 +40,7 @@ export default class SendMessage extends Component {
           });
         break;
       case "inst":
+      case "wapp":
         this.attachments = [];
     }
   }

@@ -13160,7 +13160,7 @@ a.text-dark:focus {
 }
 
 .wrapper .list .dialog .dialog-data .title-text {
-  width: calc(100% - 110px);
+  width: calc(100% - 116px);
 }
 
 .wrapper .list .dialog .dialog-data .title-text .title {
@@ -13178,7 +13178,7 @@ a.text-dark:focus {
 
 .wrapper .list .dialog .dialog-data .timestamp {
   font-size: 14px;
-  min-width: 110px;
+  min-width: 116px;
   text-align: right;
 }
 

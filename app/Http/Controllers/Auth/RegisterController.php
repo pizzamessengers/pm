@@ -104,7 +104,7 @@ class RegisterController extends Controller
             'name' => $request['name'],
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
-            'lang' => $request->server('HTTP_ACCEPT_LANGUAGE')
+            'lang' => substr($request->server('HTTP_ACCEPT_LANGUAGE'), 0, 2)
         ]);
     }
 }

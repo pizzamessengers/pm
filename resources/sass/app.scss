@@ -643,7 +643,7 @@
                 align-items: center;
 
                 .title-text {
-                    width: calc(100% - 110px);
+                    width: calc(100% - 116px);
 
                     .title {
                         font-size: 20px;
@@ -661,7 +661,7 @@
 
                 .timestamp {
                     font-size: 14px;
-                    min-width: 110px;
+                    min-width: 116px;
                     text-align: right;
                 }
                 @media (max-width: 440px) {

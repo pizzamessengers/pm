@@ -18,7 +18,8 @@ const translate = (message, props = {}) => {
         query: "Запрос",
         "token-copied": "Токен скопирован",
         info: {
-          dialogs: "В это окне будут отображаться диалоги со всех мессенджеров",
+          dialogs:
+            "В этом окне будут отображаться диалоги со всех мессенджеров",
           "dialog-list":
             "В этом окне будут отображаться диалоги данного мессенджера"
         },
@@ -41,7 +42,7 @@ const translate = (message, props = {}) => {
           }
         },
         dialogs: {
-          ok: 'Подключено'
+          ok: "Подключено"
         },
         error: {
           watching: "Необходимо выбрать режим работы сервиса"
@@ -162,7 +163,7 @@ const translate = (message, props = {}) => {
           }
         },
         dialogs: {
-          ok: 'Connected'
+          ok: "Connected"
         },
         error: {
           watching: "You must select the service mode"

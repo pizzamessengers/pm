@@ -361,8 +361,6 @@ class MessageController extends Controller
 
       $direct =  $inst->direct;
 
-      info(isset($text));
-
       if (isset($text))
       {
         $direct->sendText(
@@ -371,23 +369,26 @@ class MessageController extends Controller
         );
       }
 
-      info($attachments);
       set_time_limit(120);
-      foreach ($attachments as $attachment) {
-        switch ($attachment['type']) {
-          case 'image':
-            return $direct->sendPhoto(
-              array('thread' => $dialogId),
-              $attachment['path']
-            );
-            break;
-          case 'video':
-            return $direct->sendVideo(
-              array('thread' => $dialogId),
-              $attachment['path']
-            );
-            break;
+      try {
+        foreach ($attachments as $attachment) {
+          switch ($attachment['type']) {
+            case 'image':
+              $direct->sendPhoto(
+                array('thread' => $dialogId),
+                $attachment['path']
+              );
+              break;
+            case 'video':
+              $direct->sendVideo(
+                array('thread' => $dialogId),
+                $attachment['path']
+              );
+              break;
+          }
         }
+      } catch(Exception $e) {
+        info($e);
       }
     }
 
@@ -404,14 +405,23 @@ class MessageController extends Controller
     {
       $wapp = $request->user()->wapp();
       $url = $wapp->url.'message?token='.$wapp->token;
-      $data = property_exists($request, 'phone') ? json_encode([
-        'phone' => $request->phone,
-        'body' => $text,
-      ]) : json_encode([
-        'chatId' => $dialog->dialog_id,
-        'body' => $text,
-      ]);
-      $options = stream_context_create(['https' => [
+      $data;
+
+      if (property_exists($request, 'phone'))
+      {
+        $data = json_encode([
+          'phone' => $request->phone,
+          'body' => $text,
+        ]);
+      }
+      else {
+        $data = json_encode([
+         'chatId' => $dialog->dialog_id,
+         'body' => $text,
+       ]);
+      }
+
+      $options = stream_context_create(['http' => [
         'method'  => 'POST',
         'header'  => 'Content-type: application/json',
         'content' => $data

@@ -7,34 +7,25 @@ export default class DialogView extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      name: this.props.location.state ? this.props.location.state.name : "",
       waiting: true,
       messages: []
     };
 
     this.dialogId = this.props.match.params.dialogId;
     this.mess = this.props.match.params.messenger;
-    this.interval;
+    this.needCheck = false;
 
     axios
       .get("api/v1/dialogs/" + this.dialogId + "?api_token=" + apiToken)
       .then(response => {
-        this.setState({ messages: response.data.messages, waiting: false });
-      });
-    this.interval = setInterval(() => {
-      axios
-        .get("api/v1/dialogs/" + this.dialogId + "?api_token=" + apiToken)
-        .then(response => {
-          let sm = this.state.messages,
-            rm = response.data.messages;
-          if (
-            rm.length > sm.length ||
-            (sm.length > 0 &&
-              sm[sm.length - 1].timestamp !== rm[rm.length - 1].timestamp)
-          ) {
-            this.setState({ messages: response.data.messages });
-          }
+        this.setState({
+          name: response.data.dialogName,
+          messages: response.data.messages,
+          waiting: false
         });
-    }, 5000);
+      });
+    this.listenChannel();
   }
 
   componentDidMount() {
@@ -44,37 +35,51 @@ export default class DialogView extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.match.params.dialogId !== prevProps.match.params.dialogId) {
       this.setState({ waiting: true });
+
+      Echo.leaveChannel(`messages.${this.dialogId}`);
+
       this.dialogId = this.props.match.params.dialogId;
       this.mess = this.props.match.params.messenger;
-      clearInterval(this.interval);
       $(".card-header")
         .removeClass(prevProps.match.params.messenger)
         .addClass(this.mess);
 
-      axios
-        .get("api/v1/dialogs/" + this.dialogId + "?api_token=" + apiToken)
-        .then(response => {
-          if (this.state.messages.length !== response.data.messages.length) {
-            this.setState({ messages: response.data.messages });
-          }
-          this.setState({ waiting: false });
-        });
-      this.interval = setInterval(() => {
-        axios
-          .get("api/v1/dialogs/" + this.dialogId + "?api_token=" + apiToken)
-          .then(response => {
-            if (this.state.messages.length !== response.data.messages.length) {
-              this.setState({ messages: response.data.messages });
-            }
-          });
-      }, 5000);
+      this.listenChannel();
     }
   }
 
-  name = () => {
-    return this.props.location.state
-      ? this.props.location.state.name
-      : '';
+  listenChannel = () => {
+    Echo.private(`messages.${this.dialogId}`).listen(".messages.created", e => {
+      let { messages } = this.state;
+      if (!this.needCheck) {
+        messages = messages.concat(e.messages);
+      } else {
+        let exists;
+        for (var i = 0; i < e.messages.length; i++) {
+          exists = false;
+
+          if (e.messages[i].from_me) {
+            for (var j = 1; j <= 50; j++) {
+              if (
+                e.messages[i].text === messages[messages.length - j].text &&
+                e.messages[i].attacments ===
+                  messages[messages.length - j].attacments
+              ) {
+                exists = true;
+                break;
+              }
+            }
+
+            if (exists) continue;
+          }
+
+          messages.push(e.messages[i]);
+        }
+
+        this.needCheck = false;
+      }
+      this.setState({ messages });
+    });
   };
 
   addMessage = (text, attachments) => {
@@ -94,6 +99,8 @@ export default class DialogView extends Component {
       });
     });
 
+    this.needCheck = true;
+
     messages.push({
       from_me: 1,
       text: text,
@@ -103,14 +110,14 @@ export default class DialogView extends Component {
   };
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    Echo.leaveChannel(`messages.${this.dialogId}`);
   }
 
   render() {
     let { waiting, messages } = this.state;
     return (
       <Fragment>
-        <div className="card-header">{this.name()}</div>
+        <div className="card-header">{this.state.name}</div>
 
         <div className="card-body dialog-view">
           {waiting ? <Waiting /> : <Messages messages={messages} />}

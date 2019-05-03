@@ -56,11 +56,11 @@ export default class VkConnection extends Component {
           <div className="instruction">
             <div className="step">
               <div className="text">{translate("connection.vk.2.1")}</div>
-              <img src="http://localhost:8000/storage/connectionInstructions/vk_2_1.png" />
+              <img src={window.location.origin + "/storage/connectionInstructions/vk_2_1.png"} />
             </div>
             <div className="step">
               <div className="text">{translate("connection.vk.2.2")}</div>
-              <img src="http://localhost:8000/storage/connectionInstructions/vk_2_2.png" />
+              <img src={window.location.origin + "/storage/connectionInstructions/vk_2_2.png"} />
             </div>
           </div>
         </div>

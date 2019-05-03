@@ -13,3 +13,4 @@ yarn-error.log
 .env
 .phpunit.result.cache
 vk_token.txt
+laravel-echo-server.json

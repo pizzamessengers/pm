@@ -24,6 +24,7 @@ const translate = (message, props = {}) => {
             "В этом окне будут отображаться диалоги данного мессенджера"
         },
         error: {
+          connection: "Нестабильное интернет соединение",
           hack: "FU",
           user: "Пользователь " + props.user + " не существует",
           smth:
@@ -146,6 +147,7 @@ const translate = (message, props = {}) => {
             "The dialogs of this messenger will be displayed in this window"
         },
         error: {
+          connection: "Unstable internet connection",
           hack: "FU",
           user: "User " + props.user + " is not found",
           smth: "Something went wrong :( Try again or write in support"

@@ -14,6 +14,7 @@ use App\Message;
 use App\Author;
 use Illuminate\Support\Carbon;
 use DB;
+use App\Events\MessagesCreated;
 
 class GetMessagesInst extends Command
 {
@@ -89,7 +90,7 @@ class GetMessagesInst extends Command
 
         if (($dialog = Dialog::where('dialog_id', $threadId)->where('messenger_id', $messenger->id)->first()) === null)
         {
-          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp;
+          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp.'000';
           $lastMessageTimestamp = substr($lastItem->getTimestamp(), 0, 13);
 
           //если время последнего сообщения раньше регистрации мессенджера
@@ -188,11 +189,12 @@ class GetMessagesInst extends Command
       int $messengerCreatedAt
     )
     {
+      $messages = array();
       foreach ($thread->getItems() as $i=>$message)
       {
         if (substr($message->getTimestamp(), 0, 13) > $messengerCreatedAt)
         {
-          $this->addMessage($message, $dialog, $inst);
+          array_push($messages, $this->addMessage($message, $dialog, $inst));
 
           if ($i === 19)
           {
@@ -202,6 +204,8 @@ class GetMessagesInst extends Command
         }
         else break;
       }
+
+      event(new MessagesCreated($messages));
     }
 
     /**
@@ -217,13 +221,14 @@ class GetMessagesInst extends Command
       Instagram $inst
     )
     {
+      $messages = array();
       $lastMessageId = $dialog->last_message['id'];
 
       foreach ($thread->getItems() as $i=>$message)
       {
         if ($message->getItemId() !== $lastMessageId)
         {
-          $this->addMessage($message, $dialog, $inst);
+          array_push($messages, $this->addMessage($message, $dialog, $inst));
 
           if ($i === 19)
           {
@@ -233,6 +238,8 @@ class GetMessagesInst extends Command
         }
         else break;
       }
+
+      event(new MessagesCreated($messages));
     }
 
     /**
@@ -241,6 +248,7 @@ class GetMessagesInst extends Command
      * @param DirectThreadItem $message
      * @param Dialog $dialog
      * @param Instagram $inst
+     * @return Message
      */
     private function addMessage(DirectThreadItem $message, Dialog $dialog, Instagram $inst)
     {
@@ -267,6 +275,8 @@ class GetMessagesInst extends Command
       {
         $this->attachments($message, $newMessage->id);
       }
+
+      return $newMessage;
     }
 
     /**

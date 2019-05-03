@@ -25,14 +25,20 @@ import App from "./components/App.jsx";
 /**
  * FontAwesome
  */
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { fab } from '@fortawesome/free-brands-svg-icons';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { fab } from "@fortawesome/free-brands-svg-icons";
 
 library.add(fab);
 library.add(fas);
 
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = window.location.origin;
+
+/**
+ * Right height
+ */
+let vh = window.innerHeight * 0.01;
+document.documentElement.style.setProperty("--vh", `${vh}px`);
 
 const Index = () => {
   /**

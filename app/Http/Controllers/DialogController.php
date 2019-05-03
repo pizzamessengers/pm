@@ -428,6 +428,7 @@ class DialogController extends Controller
 
       return response()->json([
         'success' => true,
+        'dialogName' => $dialog->name,
         'messages' => $dialog->messages()->sortBy('timestamp')->values(),
       ]);
     }
@@ -463,18 +464,8 @@ class DialogController extends Controller
      */
     public function deleteDialog(Dialog $dialog)
     {
-      $dialog->authors()->each(function($author) {
-                          if (count($author->dialogs()) === 1)
-                          {
-                            $author->delete();
-                          }
-                        });
-
-      $dialog->messages()->each(function($message) {
-                            $message->delete();
-                          });
-
       $dialog->delete();
+
       return response()->json([
         'success' => true,
       ]);

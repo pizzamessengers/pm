@@ -9,9 +9,11 @@ export default class Messages extends Component {
     this.messagesWrapper = React.createRef();
     this.mw;
     this.timestamp = timestamp;
+    this.messCount = 0; //нужно для componentDidUpdate. prevProps не работает
   }
 
   componentDidMount() {
+    this.messCount = this.props.messages.length;
     this.mw = $(this.messagesWrapper.current);
     this.scrollToBot();
   }
@@ -25,27 +27,31 @@ export default class Messages extends Component {
     return true;
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     //промотать вниз, если
     //1. нахожусь в самом низу и есть новые сообщения
     //2. до этого не было сообщений
     //3. я отправил сообщение
+    let height = 0;
+    for (let i = 1; i <= this.props.messages.length - this.messCount; i++) {
+      height += $(this.mw)
+        .children("ul")
+        .children("li")
+        .eq(-i)
+        .height();
+    }
     if (
-      (this.props.messages.length !== prevProps.messages.length &&
+      (this.props.messages.length !== this.messCount &&
         Math.floor(this.mw.scrollTop()) ===
-          Math.floor(
-            this.mw[0].scrollHeight -
-              $(this.mw).height() -
-              $(this.mw)
-                .children("ul")
-                .children("li")
-                .eq(-1)
-                .height()
-          )) ||
-      prevProps.messages.length === 0 ||
+          Math.floor(this.mw[0].scrollHeight) -
+            Math.floor($(this.mw).height()) -
+            Math.floor(height)) ||
+      this.messCount === 0 ||
       this.props.messages[this.props.messages.length - 1].author == null
     )
       this.scrollToBot();
+
+    this.messCount = this.props.messages.length;
   }
 
   onLoadHandler = () => {

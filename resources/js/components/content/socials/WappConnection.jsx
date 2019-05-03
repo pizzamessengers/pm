@@ -54,11 +54,11 @@ export default class Wapp extends Component {
             </div>
             <div className="step">
               <div className="text">{translate("connection.wapp.2.2")}</div>
-              <img src="http://localhost:8000/storage/connectionInstructions/wapp_2_2.png" />
+              <img src={window.location.origin + "/storage/connectionInstructions/wapp_2_2.png"} />
             </div>
             <div className="step">
               <div className="text">{translate("connection.wapp.2.3")}</div>
-              <img src="http://localhost:8000/storage/connectionInstructions/wapp_2_3.png" />
+              <img src={window.location.origin + "/storage/connectionInstructions/wapp_2_3.png"} />
             </div>
           </div>
         </div>

@@ -99,7 +99,7 @@ class GetMessagesVk extends Command
      */
     private function addMessage(object $message, array $profiles, array $groups, Messenger $messenger)
     {
-      $dialog = $this->dialogId($message->peer_id, $messenger);
+      $dialog = $this->dialog($message->peer_id, $messenger);
       $authorId = $this->authorId($message->from_id, $dialog->id, $profiles, $groups);
 
       $newMessage = Message::firstOrCreate([
@@ -234,7 +234,7 @@ class GetMessagesVk extends Command
      * @param Messenger $messenger
      * @return Dialog $dialog
      */
-    private function dialogId(int $dialogId, Messenger $messenger)
+    private function dialog(int $dialogId, Messenger $messenger)
     {
       if (($dialog = Dialog::where([
         ['messenger_id', $messenger->id],

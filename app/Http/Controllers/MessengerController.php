@@ -225,7 +225,7 @@ class MessengerController extends Controller
             $data = json_encode([
               'webhookUrl' => 'http://localhost:8000/api/v1/messages/wapp?api_token='.$token,
             ]);
-            $options = stream_context_create(['https' => [
+            $options = stream_context_create(['http' => [
               'method'  => 'POST',
               'header'  => 'Content-type: application/json',
               'content' => $data
@@ -278,13 +278,10 @@ class MessengerController extends Controller
      * @param  \App\Messenger  $messenger
      * @return \Illuminate\Http\Response
      */
-    public function toggleWatching(Messenger $messenger)
-    {
-      if ($messenger->watching === 'dialogs')
-      {
+    public function toggleWatching(Messenger $messenger) {
+      if ($messenger->watching === 'dialogs') {
         $messenger->dialogs()->get()->each(
-          function(Dialog $dialog)
-          {
+          function(Dialog $dialog) {
             $dialog->updating = false;
             $dialog->save();
           }
@@ -293,19 +290,9 @@ class MessengerController extends Controller
         $messenger->watching = 'all';
         $messenger->save();
       }
-      else
-      {
+      else {
         $messenger->dialogs()->get()->each(
-          function(Dialog $dialog)
-          {
-            $dialog->authors()->each(function($author)
-            {
-              if (count($author->dialogs()) === 1)
-              {
-                $author->delete();
-              }
-            });
-
+          function(Dialog $dialog) {
             $dialog->delete();
           }
         );

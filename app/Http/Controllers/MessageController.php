@@ -61,6 +61,7 @@ class MessageController extends Controller
       if ($messenger->updating === false) return;
       $watching = $messenger->watching;
 
+      $messages = array();
       foreach($request->messages as $message)
       {
         // если watching поменяется во время выполнения запроса, то сообщения создавать не нужно
@@ -76,8 +77,10 @@ class MessageController extends Controller
         else if ($dialog->updating === false) continue;
 
         // если диалог существует и updating true или messenger watching 'all'
-        $this->addMessage($message, $messenger);
+        array_push($messages, $this->addMessage($message, $messenger));
       }
+
+      event(new MessagesCreated($messages));
     }
 
     /**
@@ -85,6 +88,7 @@ class MessageController extends Controller
      *
      * @param array $message
      * @param Messenger $messenger
+     * @return Message
      */
     private function addMessage(array $message, Messenger $messenger)
     {
@@ -114,6 +118,8 @@ class MessageController extends Controller
       {
         $this->attachments($message, $newMessage->id);
       }
+
+      return $newMessage;
     }
 
     /**

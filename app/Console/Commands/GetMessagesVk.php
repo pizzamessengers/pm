@@ -67,6 +67,8 @@ class GetMessagesVk extends Command
           {
             $profiles = property_exists($response, 'profiles') ? $response->profiles : [];
             $groups = property_exists($response, 'groups') ? $response->groups : [];
+
+            $messages = array();
             foreach ($messages->items as $message)
             {
               if ($watching !== Messenger::find($messenger->id)->watching) break;
@@ -79,8 +81,10 @@ class GetMessagesVk extends Command
               }
               else if ($dialog->updating === false) continue;
 
-              $this->addMessage($message, $profiles, $groups, $messenger);
+              array_push($messages, $this->addMessage($message, $profiles, $groups, $messenger));
             }
+
+            event(new MessagesCreated($messages));
 
             $lp['pts'] = $response->new_pts;
             $messenger->lp = $lp;
@@ -96,6 +100,7 @@ class GetMessagesVk extends Command
      * @param array array of profiles from response $profiles
      * @param array array of groups from response $groups
      * @param Messenger $messenger
+     * @return Message
      */
     private function addMessage(object $message, array $profiles, array $groups, Messenger $messenger)
     {
@@ -134,6 +139,8 @@ class GetMessagesVk extends Command
       {
         $this->attachments($message->attachments, $newMessage->id, $messenger);
       }
+
+      return $newMessage;
     }
 
     /**

@@ -18,3 +18,7 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 Broadcast::channel('messages.{dialog}', function ($user, App\Dialog $dialog) {
     return $user->id === $dialog->user()->id;
 });
+
+Broadcast::channel('{token}.crm', function ($user, string $token) {
+    return $user->api_token === $token;
+});

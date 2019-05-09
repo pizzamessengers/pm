@@ -27,6 +27,7 @@ class Controller extends BaseController
         'apiToken' => $user->api_token,
         'lang' => $user->lang,
         'userName' => $user->name,
+        'crm' => $user->crm ? $user->crm->name : null,
         'socials' => [
           'vk' => $vk !== null ? [
             'id' => $vk->id,

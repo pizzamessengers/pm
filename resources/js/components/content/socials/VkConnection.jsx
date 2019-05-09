@@ -6,7 +6,7 @@ export default class VkConnection extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stage: 0
+      stage: window.location.search ? 1 : 0
     };
 
     this.urlInput = React.createRef();
@@ -15,9 +15,11 @@ export default class VkConnection extends Component {
         <div className="operation">
           <a
             className="main-button"
-            target="_blank"
-            href="https://oauth.vk.com/authorize?client_id=6869374&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=messages,offline,video,photos,docs&response_type=token&v=5.92"
-            onClick={() => this.setState({ stage: 1 })}
+            href={
+              "https://oauth.vk.com/authorize?client_id=6869374&display=modal&redirect_uri=" +
+              window.location.origin +
+              "/app/socials/vk&scope=messages,offline,video,photos,docs&response_type=code&v=5.92"
+            }
           >
             {translate("connection.all.get-token")}
           </a>
@@ -30,7 +32,7 @@ export default class VkConnection extends Component {
           </div>
         </div>
       </Fragment>,
-      <Fragment>
+      /*<Fragment>
         <div className="operation">
           <form
             className="form"
@@ -56,15 +58,25 @@ export default class VkConnection extends Component {
           <div className="instruction">
             <div className="step">
               <div className="text">{translate("connection.vk.2.1")}</div>
-              <img src={window.location.origin + "/storage/connectionInstructions/vk_2_1.png"} />
+              <img
+                src={
+                  window.location.origin +
+                  "/storage/connectionInstructions/vk_2_1.png"
+                }
+              />
             </div>
             <div className="step">
               <div className="text">{translate("connection.vk.2.2")}</div>
-              <img src={window.location.origin + "/storage/connectionInstructions/vk_2_2.png"} />
+              <img
+                src={
+                  window.location.origin +
+                  "/storage/connectionInstructions/vk_2_2.png"
+                }
+              />
             </div>
           </div>
         </div>
-      </Fragment>,
+      </Fragment>,*/
       <Fragment>
         <div className="operation">
           <div className="d-flex">
@@ -104,7 +116,6 @@ export default class VkConnection extends Component {
       <Waiting />
     ];
 
-    this.token;
     this.watching;
   }
 
@@ -160,12 +171,12 @@ export default class VkConnection extends Component {
   connect = () => {
     if (this.watching) {
       this.setState({ stage: 3 });
-      if (this.token) {
+      if (window.location.search) {
         this.props
           .connect(
             "vk",
             {
-              token: this.token
+              token: window.location.search.split("=")[1]
             },
             this.watching
           )

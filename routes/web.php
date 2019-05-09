@@ -34,6 +34,12 @@ Route::group(['middleware' => 'auth'], function() {
       'module' => 'vk||wapp||inst||user||payment',
     ])
     ->name('app');
+
+  Route::get('app/settings/profile/crm/{crm?}', 'Controller@createSocials')
+    ->where([
+      'crm' => 'amo||bitrix',
+    ])
+    ->name('app');
 });
 
 Route::get('home', 'HomeController@index')->name('home');

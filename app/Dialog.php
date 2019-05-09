@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Message;
+use App\Author;
 
 class Dialog extends Model
 {
@@ -35,22 +36,6 @@ class Dialog extends Model
     protected $casts = [
         'last_message' => 'array',
     ];
-
-    public static function boot() {
-        parent::boot();
-
-        self::deleting(function () {
-          (new self)->messages()->each(function($message) {
-            $message->delete();
-          });
-
-          (new self)->authors()->each(function($author) {
-            if (count($author->dialogs()) === 1) {
-              $author->delete();
-            }
-          });
-        });
-    }
 
     /**
      * Get the messages for the dialog.

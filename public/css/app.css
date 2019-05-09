@@ -11580,6 +11580,7 @@ a.text-dark:focus {
 .menu-fade {
   width: 100vw;
   height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: absolute;
   top: 0;
   left: 0;
@@ -11595,7 +11596,7 @@ a.text-dark:focus {
 .menu {
   position: relative;
   width: 100%;
-  height: 10%;
+  height: 75px;
   z-index: 101;
 }
 
@@ -11829,9 +11830,7 @@ a.text-dark:focus {
 
 .modules-settings {
   width: 90%;
-  max-width: 960px;
-  height: 80vh;
-  padding: 0;
+  padding: 0 !important;
 }
 
 .modules-settings .modules-list {
@@ -11847,6 +11846,8 @@ a.text-dark:focus {
 }
 
 .modules-settings .modules-list a {
+  width: calc((100% - 0.5rem) / 3);
+  max-width: 100px;
   text-decoration: none;
 }
 
@@ -11887,6 +11888,10 @@ a.text-dark:focus {
 .modules-settings .modules-list .modules-list-item.payment,
 .modules-settings .modules-list .modules-list-item.user {
   background: #b6d6ff;
+}
+
+.modules-settings .modules-list .modules-list-item.amo {
+  background: #339dc7;
 }
 
 .modules-settings .modules-list .modules-list-item.active,
@@ -11930,6 +11935,17 @@ a.text-dark:focus {
 .modules-settings .module-settings .settings-wrapper .settings .module-setting .setting-name {
   font-size: 16px;
   font-weight: 500;
+}
+
+.modules-settings .module-settings .settings-wrapper .settings .module-setting .setting-value.token {
+  font-size: 12px;
+  cursor: pointer;
+}
+
+@media (min-width: 360px) {
+  .modules-settings .module-settings .settings-wrapper .settings .module-setting .setting-value.token {
+    font-size: 14px;
+  }
 }
 
 .modules-settings .module-settings .settings-wrapper .settings .module-setting .dialogs-connection {
@@ -12179,9 +12195,9 @@ a.text-dark:focus {
 
 .messenger-connection .form,
 .messenger-connection .operation,
+.messenger-connection .step,
 .messenger-connection .title,
-.messenger-connection .watching-choosing,
-.messenger-connection .step {
+.messenger-connection .watching-choosing {
   width: 100%;
   display: -ms-flex;
   display: -webkit-box;
@@ -12202,14 +12218,20 @@ a.text-dark:focus {
 }
 
 .messenger-connection .progress-wrapper {
-  height: 8%;
+  height: 4%;
   width: 90%;
   margin-left: auto;
   margin-right: auto;
 }
 
+@media (min-width: 992px) {
+  .messenger-connection .progress-wrapper {
+    height: 8%;
+  }
+}
+
 .messenger-connection .progress-wrapper .progress {
-  height: 8px;
+  height: 10px;
   -webkit-box-shadow: 0.5px 0.5px 8px #7fb7ff;
           box-shadow: 0.5px 0.5px 8px #7fb7ff;
 }
@@ -12219,15 +12241,21 @@ a.text-dark:focus {
 }
 
 .messenger-connection .connection {
-  height: 82%;
+  height: 86%;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
 }
 
+@media (min-width: 992px) {
+  .messenger-connection .connection {
+    height: 82%;
+  }
+}
+
 .messenger-connection .connection .operation {
-  height: 40%;
+  height: 50%;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
@@ -12273,14 +12301,71 @@ a.text-dark:focus {
   height: 50px;
 }
 
+.messenger-connection .connection .operation .form input[type="submit"] {
+  padding: 0;
+}
+
+.messenger-connection .connection .operation .dropdown-toggle {
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+          box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.messenger-connection .connection .operation .dropdown-toggle:focus {
+  border: 0;
+  outline: none;
+  -webkit-box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
+          box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
+}
+
+.messenger-connection .connection .operation .dropdown-toggle:after {
+  margin-left: 30px;
+}
+
+.messenger-connection .connection .operation .dropdown .dropdown-toggle {
+  width: 192px;
+}
+
+.messenger-connection .connection .operation .dropdown .dropdown-menu {
+  width: 120px;
+  padding: 10px 0;
+}
+
+.messenger-connection .connection .operation .dropdown .dropdown-menu .dropdown-item {
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.messenger-connection .connection .operation .dropdown .value {
+  font-weight: 500;
+  color: #123;
+  width: 100%;
+}
+
+.messenger-connection .connection .operation .dropdown .icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
 .messenger-connection .connection .instruction-wrapper {
-  width: 70%;
-  height: 60%;
-  padding: 6px;
+  width: 80%;
+  height: 50%;
+  padding: 0;
   margin-left: auto;
   margin-right: auto;
   overflow-y: auto;
   position: relative;
+}
+
+@media (min-width: 480px) {
+  .messenger-connection .connection .instruction-wrapper {
+    width: 70%;
+  }
 }
 
 .messenger-connection .connection .instruction-wrapper .instruction {
@@ -12533,7 +12618,7 @@ a.text-dark:focus {
 }
 
 .wrapper .messagesWindow {
-  height: 88%;
+  height: calc(100% - 75px - 2%);
   position: absolute;
   bottom: 2%;
   left: -100%;
@@ -12555,7 +12640,7 @@ a.text-dark:focus {
 
 .wrapper .content {
   margin-left: auto;
-  height: 90%;
+  height: calc(100% - 75px);
   overflow: hidden;
 }
 
@@ -12609,12 +12694,12 @@ a.text-dark:focus {
 }
 
 .wrapper .content .dialog-view .list-wrapper {
-  height: 90%;
+  height: calc(100% - 59.16px);
 }
 
 .wrapper .content .dialog-view .card-footer {
   width: 100%;
-  height: 10%;
+  height: 59.16px;
   padding: 0 6px;
 }
 

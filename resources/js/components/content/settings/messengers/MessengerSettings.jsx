@@ -78,7 +78,7 @@ export default class MessengerSettings extends Component {
               <div className="col-7 setting-name">
                 {translate("settings.updating")}
               </div>
-              <div className="d-flex justify-content-center col-5">
+              <div className="setting-value d-flex justify-content-center col-5">
                 <CheckBox
                   checked={updating}
                   handleChange={e => this.toggleUpdating(e)}
@@ -91,7 +91,7 @@ export default class MessengerSettings extends Component {
               <div className="col-7 setting-name">
                 {translate("settings.mode")}
               </div>
-              <div className="d-flex justify-content-center col-5">
+              <div className="setting-value d-flex justify-content-center col-5">
                 <div className="label">
                   {translate("messenger.watching.all")}
                 </div>

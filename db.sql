@@ -100,6 +100,36 @@ LOCK TABLES `authors` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `crms`
+--
+
+DROP TABLE IF EXISTS `crms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `crms` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `crm_user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `api_token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `crms_user_id_foreign` (`user_id`),
+  CONSTRAINT `crms_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=10000000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `crms`
+--
+
+LOCK TABLES `crms` WRITE;
+/*!40000 ALTER TABLE `crms` DISABLE KEYS */;
+/*!40000 ALTER TABLE `crms` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `dialogs`
 --
 
@@ -271,7 +301,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=575 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=687 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -280,7 +310,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (565,'2014_10_12_000000_create_users_table',1),(566,'2014_10_12_100000_create_password_resets_table',1),(567,'2018_11_07_095506_create_messengers_table',1),(568,'2018_11_07_095550_create_authors_table',1),(569,'2018_11_07_095602_create_dialogs_table',1),(570,'2018_11_07_095658_create_messages_table',1),(571,'2018_12_18_044758_create_author_dialog_table',1),(572,'2019_01_10_075632_create_jobs_table',1),(573,'2019_01_10_093432_create_failed_jobs_table',1),(574,'2019_01_13_082522_create_attachments_table',1);
+INSERT INTO `migrations` VALUES (676,'2014_10_12_000000_create_users_table',1),(677,'2014_10_12_100000_create_password_resets_table',1),(678,'2018_11_07_095506_create_messengers_table',1),(679,'2018_11_07_095550_create_authors_table',1),(680,'2018_11_07_095602_create_dialogs_table',1),(681,'2018_11_07_095658_create_messages_table',1),(682,'2018_12_18_044758_create_author_dialog_table',1),(683,'2019_01_10_075632_create_jobs_table',1),(684,'2019_01_10_093432_create_failed_jobs_table',1),(685,'2019_01_13_082522_create_attachments_table',1),(686,'2019_05_07_113517_create_crms_table',1);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -323,6 +353,7 @@ CREATE TABLE `users` (
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lang` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `api_token` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `paid` tinyint(1) NOT NULL DEFAULT '0',
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -350,4 +381,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-04-20 10:31:02
+-- Dump completed on 2019-05-07 21:31:33

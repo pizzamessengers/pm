@@ -7,6 +7,7 @@ use App\Messenger;
 use App\Dialog;
 use App\Author;
 use App\Attachment;
+use App\Events\MessagesCreated;
 use Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;

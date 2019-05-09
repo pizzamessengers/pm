@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import translate from "./../../../functions/translate";
 import Waiting from "./../elements/Waiting";
 
-export default class Wapp extends Component {
+export default class WappConnection extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,11 +54,21 @@ export default class Wapp extends Component {
             </div>
             <div className="step">
               <div className="text">{translate("connection.wapp.2.2")}</div>
-              <img src={window.location.origin + "/storage/connectionInstructions/wapp_2_2.png"} />
+              <img
+                src={
+                  window.location.origin +
+                  "/storage/connectionInstructions/wapp_2_2.png"
+                }
+              />
             </div>
             <div className="step">
               <div className="text">{translate("connection.wapp.2.3")}</div>
-              <img src={window.location.origin + "/storage/connectionInstructions/wapp_2_3.png"} />
+              <img
+                src={
+                  window.location.origin +
+                  "/storage/connectionInstructions/wapp_2_3.png"
+                }
+              />
             </div>
           </div>
         </div>
@@ -161,31 +171,27 @@ export default class Wapp extends Component {
     e.preventDefault();
     this.token = this.tokenRef.current.value;
     this.url = this.urlRef.current.value;
-    delete axios.defaults.headers.common['X-Requested-With'];
-    delete axios.defaults.headers.common['X-CSRF-TOKEN'];
+    delete axios.defaults.headers.common["X-Requested-With"];
+    delete axios.defaults.headers.common["X-CSRF-TOKEN"];
     let url = this.url + "status?token=" + this.token;
     axios.get(url).then(response => {
       switch (response.data.accountStatus) {
         case "got qr code":
           alert(translate("messenger.error.qr"));
-          axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-            if (token) {
-              window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-            } else {
-              console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
-            }
+          axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+          window.axios.defaults.headers.common[
+            "X-CSRF-TOKEN"
+          ] = document.head.querySelector('meta[name="csrf-token"]').content;
           break;
         case "loading":
           this.installWapp();
           break;
         case "authenticated":
           this.setState({ stage: 2 });
-          axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-            if (token) {
-              window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-            } else {
-              console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
-            }
+          axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+          window.axios.defaults.headers.common[
+            "X-CSRF-TOKEN"
+          ] = document.head.querySelector('meta[name="csrf-token"]').content;
           break;
       }
     });

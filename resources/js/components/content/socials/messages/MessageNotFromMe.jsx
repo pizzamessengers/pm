@@ -1,16 +1,16 @@
 import React from "react";
 import Attachments from "./attachments/Attachments";
 
-const MessageNotFromMe = ({ message, same, onLoadAtta }) => (
+const MessageNotFromMe = ({ message, same, onLoadAtta, double }) => (
   <div className="message d-flex float-left">
-    {!same ? <img className="avatar" src={message.author.avatar} /> : null}
+    {!same && !double ? <img className="avatar" src={message.author.avatar} /> : null}
     <div className="body-author">
-      {!same ? (
+      {!same && !double ? (
         <div className="authorName">
           <b>{message.author.name}</b>
         </div>
       ) : null}
-      <div className={same ? "message-body not-from-me-same" : "message-body"}>
+      <div className={same && !double ? "message-body not-from-me-same" : "message-body"}>
         {(message.attachments.length > 0 && message.text.length === 0) ||
         (message.text.length === 0 &&
           message.attachments.length === 1 &&

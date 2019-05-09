@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Events\MessagesCreated;
 use App\Attachment;
 use App\Messenger;
 use App\Dialog;

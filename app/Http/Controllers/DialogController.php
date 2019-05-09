@@ -424,13 +424,21 @@ class DialogController extends Controller
     public function getMessages(Dialog $dialog)
     {
       $dialog->unread_count = 0;
+      $dialog->subscribed = true;
       $dialog->save();
 
       return response()->json([
         'success' => true,
         'dialogName' => $dialog->name,
+        'double' => $dialog->members_count === 2,
         'messages' => $dialog->messages()->sortBy('timestamp')->values(),
       ]);
+    }
+
+    public function unsubscribe(Dialog $dialog)
+    {
+      $dialog->subscribed = false;
+      $dialog->save();
     }
 
     /**
@@ -464,6 +472,12 @@ class DialogController extends Controller
      */
     public function deleteDialog(Dialog $dialog)
     {
+      $dialog->authors()->each(function(Author $author) {
+        if (count($author->dialogs()) === 1) {
+          $author->delete();
+        }
+      });
+
       $dialog->delete();
 
       return response()->json([

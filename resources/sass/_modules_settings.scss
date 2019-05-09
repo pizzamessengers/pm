@@ -1,8 +1,6 @@
 .modules-settings {
     width: 90%;
-    max-width: 960px;
-    height: 80vh;
-    padding: 0;
+    padding: 0 !important;
 
     .modules-list {
         display: -webkit-flex;
@@ -13,6 +11,8 @@
         height: 50px;
 
         a {
+            width: calc((100% - 0.5rem) / 3);
+            max-width: 100px;
             text-decoration: none;
         }
 
@@ -46,6 +46,10 @@
             &.payment,
             &.user {
                 background: $firstColor;
+            }
+
+            &.amo {
+                background: $amo;
             }
 
             &.active,
@@ -83,6 +87,16 @@
                         font-weight: 500;
                     }
 
+                    .setting-value {
+                        &.token {
+                            font-size: 12px;
+                            cursor: pointer;
+                            @media (min-width: 360px) {
+                                font-size: 14px;
+                            }
+                        }
+                    }
+
                     .dialogs-connection {
                         width: 100%;
 
@@ -109,7 +123,7 @@
             justify-content: center;
         }
     }
-
+    
     .lang-panel-wrapper {
         .dropdown-toggle {
             cursor: pointer;

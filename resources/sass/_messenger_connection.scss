@@ -4,9 +4,9 @@
 
     .form,
     .operation,
+    .step,
     .title,
-    .watching-choosing,
-    .step {
+    .watching-choosing {
         width: 100%;
         display: -webkit-flex;
         display: -ms-flex;
@@ -22,13 +22,16 @@
     }
 
     .progress-wrapper {
-        height: 8%;
+        height: 4%;
         width: 90%;
         margin-left: auto;
         margin-right: auto;
+        @media (min-width: 992px) {
+            height: 8%;
+        }
 
         .progress {
-            height: 8px;
+            height: 10px;
             box-shadow: 0.5px 0.5px 8px $firstColorShadow;
 
             .progress-bar {
@@ -38,11 +41,14 @@
     }
 
     .connection {
-        height: 82%;
+        height: 86%;
         flex-direction: column;
+        @media (min-width: 992px) {
+            height: 82%;
+        }
 
         .operation {
-            height: 40%;
+            height: 50%;
             flex-direction: column;
 
             .watching-choosing {
@@ -58,12 +64,12 @@
                 transition: color 0.3s, background-color 0.3s;
 
                 &.hovered {
-                  box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
+                    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
                 }
 
                 &.active {
-                  color: #fff;
-                  background-color: $firstColor;
+                    color: #fff;
+                    background-color: $firstColor;
                 }
             }
 
@@ -76,17 +82,71 @@
                     width: 240px;
                     height: 50px;
                 }
+
+                input[type="submit"] {
+                    padding: 0;
+                }
+            }
+
+            .dropdown-toggle {
+                cursor: pointer;
+                background-color: transparent;
+                border: 0;
+                padding: 8px 12px;
+                border-radius: 8px;
+                box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+
+                &:focus {
+                    border: 0;
+                    outline: none;
+                    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.2);
+                }
+
+                &:after {
+                    margin-left: 30px;
+                }
+            }
+
+            .dropdown {
+                .dropdown-toggle {
+                    width: 192px;
+                }
+
+                .dropdown-menu {
+                    width: 120px;
+                    padding: 10px 0;
+
+                    .dropdown-item {
+                        padding: 0 12px;
+                        cursor: pointer;
+                    }
+                }
+
+                .value {
+                    font-weight: 500;
+                    color: #123;
+                    width: 100%;
+                }
+
+                .icon {
+                    width: 24px;
+                    height: 24px;
+                    margin-right: 8px;
+                }
             }
         }
 
         .instruction-wrapper {
-            width: 70%;
-            height: 60%;
-            padding: 6px;
+            width: 80%;
+            height: 50%;
+            padding: 0;
             margin-left: auto;
             margin-right: auto;
             overflow-y: auto;
             position: relative;
+            @media (min-width: 480px) {
+                width: 70%;
+            }
 
             .instruction {
                 width: 100%;

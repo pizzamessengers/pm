@@ -23,7 +23,7 @@ class GetMessagesInst extends Command
      *
      * @var string
      */
-    protected $signature = 'getMessages:inst';
+    protected $signature = 'getMessages:inst {importDays}';
 
     /**
      * The console command description.
@@ -90,7 +90,7 @@ class GetMessagesInst extends Command
 
         if (($dialog = Dialog::where('dialog_id', $threadId)->where('messenger_id', $messenger->id)->first()) === null)
         {
-          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp.'000';
+          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp-(86400*$this->argument('importDays')).'000';
           $lastMessageTimestamp = substr($lastItem->getTimestamp(), 0, 13);
 
           //если время последнего сообщения раньше регистрации мессенджера
@@ -205,7 +205,7 @@ class GetMessagesInst extends Command
         else break;
       }
 
-      event(new MessagesCreated($messages));
+      if ($dialog->subscribed) event(new MessagesCreated($messages));
     }
 
     /**
@@ -239,7 +239,7 @@ class GetMessagesInst extends Command
         else break;
       }
 
-      event(new MessagesCreated($messages));
+      if ($dialog->subscribed) event(new MessagesCreated($messages));
     }
 
     /**
@@ -302,6 +302,16 @@ class GetMessagesInst extends Command
                 $name = null;
                 break;
             }
+            break;
+          case 'link':
+            $linkContext = $message->getLink()->getLinkContext();
+            $type = 'link';
+            $url = $linkContext->getLinkUrl();
+            $name = $linkContext->getLinkTitle();
+          default:
+            $type = 'undefined';
+            $url = '';
+            $name = null;
         }
 
         Attachment::create([

@@ -70,7 +70,7 @@ export default class Messages extends Component {
   };
 
   render() {
-    let { messages } = this.props;
+    let { messages, double } = this.props;
 
     return (
       <div className="list-wrapper" ref={this.messagesWrapper}>
@@ -87,6 +87,7 @@ export default class Messages extends Component {
                       : false
                   }
                   onLoadAtta={this.onLoadHandler}
+                  double={double}
                 />
               </li>
             </Fragment>

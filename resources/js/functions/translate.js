@@ -40,6 +40,15 @@ const translate = (message, props = {}) => {
             choosing: "Выберите режим работы для данного мессенджера",
             all: "all Этот режим то-то то-то.. (написать в словаре)",
             dialogs: "dialogs Этот режим то-то то-то.. (написать в словаре)"
+          },
+          import: {
+            noimport: "Не импортировать",
+            instruction:
+              "Вы можете импортировать сообщения из мессенджера за последние X дней, если это необходимо. Для большего количества дней обращайтесь в поддержку",
+            done: "Принять",
+            day: "день",
+            daysq: "дня",
+            days: "дней"
           }
         },
         dialogs: {
@@ -64,7 +73,7 @@ const translate = (message, props = {}) => {
         },
         wapp: {
           "1":
-            "Вотсап подключается с помощью специального токена. (Вы перейдете на страницу вотсапп)",
+            "Во время подключения вам нужно будет сканировать QR код с экрана. Поэтому вам необходим второй гаджет по рукой. Вотсап подключается с помощью специального токена. (Вы перейдете на страницу вотсапп)",
           "2": {
             "1": "Зарегистрируйте аккаунт WhatsApp Api на этой странице",
             "2": "Следуйте инструкции по настройке WhatsApp Web",
@@ -85,7 +94,9 @@ const translate = (message, props = {}) => {
         inst: "Инстаграм",
         wapp: "Вотсап",
         user: "Профиль",
-        payment: "Оплата"
+        payment: "Оплата",
+        crm: "CRM",
+        amo: "amoCRM"
       },
       messenger: {
         watching: {
@@ -162,6 +173,15 @@ const translate = (message, props = {}) => {
             choosing: "Select the service mode for this messenger",
             all: "all Этот режим то-то то-то.. (написать в словаре)",
             dialogs: "dialogs Этот режим то-то то-то.. (написать в словаре)"
+          },
+          import: {
+            noimport: "Don't import",
+            instruction:
+              "You can import messages from the messenger for the last X days, if necessary. For more days, contact support",
+            done: "Accept",
+            day: "day",
+            daysq: "days",
+            days: "days"
           }
         },
         dialogs: {
@@ -186,7 +206,7 @@ const translate = (message, props = {}) => {
         },
         wapp: {
           "1":
-            "WhatsApp connects using a special token. (You will be taken to the WhatsApp page)",
+            "During the connection, you will need to scan the QR code from the screen. Therefore, you need a second gadget at hand. WhatsApp connects using a special token. (You will be taken to the WhatsApp page)",
           "2": {
             "1": "Register WhatsApp Api account on this page",
             "2": "Follow the instructions for setting up WhatsApp Web",
@@ -207,7 +227,9 @@ const translate = (message, props = {}) => {
         inst: "Instagram",
         wapp: "WhatsApp",
         user: "User",
-        payment: "Payment"
+        payment: "Payment",
+        crm: "CRM",
+        amo: "amoCRM"
       },
       messenger: {
         watching: {

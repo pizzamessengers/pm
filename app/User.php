@@ -11,6 +11,13 @@ class User extends Authenticatable
     use Notifiable;
 
     /**
+     * dialogs.
+     *
+     * @var array
+     */
+    protected $dialogs;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -27,13 +34,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'api_token',
     ];
-
-    /**
-     * messages.
-     *
-     * @var array
-     */
-    protected $dialogs;
 
     /**
      * Get the vk messenger for the user.
@@ -57,6 +57,14 @@ class User extends Authenticatable
     public function wapp()
     {
         return $this->hasOne('App\Messenger')->where('name', 'wapp')->first();
+    }
+
+    /**
+     * Get the crm for the user.
+     */
+    public function crm()
+    {
+        return $this->hasOne('App\Crm');
     }
 
     /**

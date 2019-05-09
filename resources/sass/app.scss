@@ -94,7 +94,7 @@
     }
 
     .messagesWindow {
-        height: 88%;
+        height: calc(100% - 75px - 2%);
         position: absolute;
         bottom: 2%;
         left: -100%;
@@ -113,7 +113,7 @@
 
     .content {
         margin-left: auto;
-        height: 90%;
+        height: calc(100% - 75px);
         overflow: hidden;
 
         .container {
@@ -161,12 +161,12 @@
 
         .dialog-view {
             .list-wrapper {
-                height: 90%;
+                height: calc(100% - 59.16px);
             }
 
             .card-footer {
                 width: 100%;
-                height: 10%;
+                height: 59.16px;
                 padding: 0 6px;
 
                 .send-message-wrapper {

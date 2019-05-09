@@ -13,14 +13,18 @@ const ModulesList = ({
       changeCurrentModule($(e.target).attr("module"));
     }
   };
-
+  
   return (
     <div className="modules-list">
       {modules.map((module, i) => (
         <Link
           className={i > 0 ? "ml-1" : null}
           key={i}
-          to={"/app/settings/" + setting + "/" + module}
+          to={
+            module === "user" || module === "payment"
+              ? "/app/settings/" + setting + "/" + module
+              : "/app/settings/" + setting + "/crm/" + module
+          }
         >
           <div
             className={

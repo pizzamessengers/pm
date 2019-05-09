@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Validator;
+use Artisan;
 use Illuminate\Validation\Rule;
 use App\Messenger;
+use App\Author;
 use App\Dialog;
 use App\Message;
 use Illuminate\Http\Request;
@@ -53,6 +55,11 @@ class MessengerController extends Controller
             'required',
             Rule::in(['all', 'dialogs']),
           ],
+          'importValue' => [
+            'required',
+            'min:0',
+            'max:20'
+          ],
         ])->fails()) {
           return response()->json([
             'success' => false,
@@ -75,7 +82,7 @@ class MessengerController extends Controller
         switch ($request->name) {
           case 'vk':
             if (Validator::make($request->all(), [
-              'props.token' => [
+              'props.code' => [
                 'required'
               ]
             ])->fails()) {
@@ -85,8 +92,16 @@ class MessengerController extends Controller
               ]);
             };
 
-            $token = $request->props['token'];
+            $code = $request->props['token'];
+
+            $token = json_decode(file_get_contents(
+              'https://oauth.vk.com/access_token?client_id=6869374&client_secret=5KVNq6CVDcdcXe0L0bNW&redirect_uri='.
+              $request->root().'/app/socials/vk&code='.$code))->response;
+            info($token);
+
             $messengerData['token'] = $token;
+
+
 
             $lp = json_decode(file_get_contents('https://api.vk.com/method/execute.lp?dialogs='.
             ($messengerData['watching'] === 'dialogs').'&access_token='.$token.'&v=5.92'))->response;
@@ -98,9 +113,8 @@ class MessengerController extends Controller
 
             if ($messengerData['watching'] === 'dialogs')
             {
-              $profiles = $lp->convs->profiles;
-              info(json_encode($lp->convs->items));
-              foreach ($lp->convs->items as $item) {
+              $profiles = $lp->conversations->profiles;
+              foreach ($lp->conversations->items as $item) {
                 $dialog = $item->conversation;
                 $lastMessage = $item->last_message;
 
@@ -183,11 +197,12 @@ class MessengerController extends Controller
                 }
                 else
                 {
+                  info($e);
                   $message = 'all.error.smth';
                 }
 
                 $response['success'] = false;
-                $response += array('message' => $message);
+                $response['message'] = $message;
 
                 return response()->json($response, 200);
             }
@@ -223,7 +238,7 @@ class MessengerController extends Controller
             $url = $messengerData['url'].'webhook?token='.$messengerData['token'];
             $token = $request->user()->api_token;
             $data = json_encode([
-              'webhookUrl' => 'http://localhost:8000/api/v1/messages/wapp?api_token='.$token,
+              'webhookUrl' => $request->root().'/api/v1/messages/wapp?api_token='.$token,
             ]);
             $options = stream_context_create(['http' => [
               'method'  => 'POST',
@@ -241,6 +256,22 @@ class MessengerController extends Controller
         }
 
         $messenger = Messenger::create($messengerData);
+
+        if ($request->importValue > 0) {
+          switch ($request->name) {
+            case 'vk':
+              // code...
+              break;
+            case 'inst':
+              Artisan::queue('getMessages:inst', array(
+                'importDays' => $request->importValue
+              ));
+              break;
+            case 'wapp':
+              // code...
+              break;
+          }
+        }
 
         $response += array('messengerId' => $messenger->id);
 
@@ -293,6 +324,12 @@ class MessengerController extends Controller
       else {
         $messenger->dialogs()->get()->each(
           function(Dialog $dialog) {
+            $dialog->authors()->each(function(Author $author) {
+              if (count($author->dialogs()) === 1) {
+                $author->delete();
+              }
+            });
+
             $dialog->delete();
           }
         );
@@ -343,8 +380,14 @@ class MessengerController extends Controller
         };
 
         $messenger = $request->user()->{$request->name}();
-        $messenger->dialogs()->get()->each(function($dialog)
+        $messenger->dialogs()->get()->each(function(Dialog $dialog)
         {
+          $dialog->authors()->each(function(Author $author) {
+            if (count($author->dialogs()) === 1) {
+              $author->delete();
+            }
+          });
+
           $dialog->delete();
         });
 

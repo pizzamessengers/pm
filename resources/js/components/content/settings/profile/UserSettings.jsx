@@ -25,7 +25,7 @@ export default class UserSettings extends Component {
             <div className="col-7 setting-name">
               {translate("settings.lang")}
             </div>
-            <div className="d-flex justify-content-center col-5">
+            <div className="setting-value d-flex justify-content-center col-5">
               <LangChoosing refresh={this.props.refresh} />
             </div>
           </div>
@@ -33,7 +33,7 @@ export default class UserSettings extends Component {
             <div className="col-7 setting-name">
               {translate("settings.user")}
             </div>
-            <div className="d-flex justify-content-center col-5">
+            <div className="setting-value d-flex justify-content-center col-5">
               {userName}
             </div>
           </div>
@@ -42,7 +42,7 @@ export default class UserSettings extends Component {
               API Token
             </div>
             <div
-              className="d-flex justify-content-center col-md-5"
+              className="setting-value token d-flex justify-content-center col-md-5"
               style={{ cursor: "pointer" }}
               onClick={e => this.copyToken(e)}
             >

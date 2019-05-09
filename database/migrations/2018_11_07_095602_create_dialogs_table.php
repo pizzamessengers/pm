@@ -29,6 +29,7 @@ class CreateDialogsTable extends Migration
           $table->string('photo');
           $table->boolean('updating')
                 ->default(true);
+          $table->boolean('subscribed')->default(false);
           $table->timestamps();
         });
 

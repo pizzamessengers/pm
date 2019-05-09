@@ -6,6 +6,7 @@
     let apiToken  = @json($apiToken),
         lang      = @json($lang),
         userName  = @json($userName),
+        crm       = @json($crm),
         socials   = @json($socials);
   </script>
 @endsection

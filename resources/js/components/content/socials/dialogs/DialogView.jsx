@@ -15,6 +15,7 @@ export default class DialogView extends Component {
     this.dialogId = this.props.match.params.dialogId;
     this.mess = this.props.match.params.messenger;
     this.needCheck = false;
+    this.double;
 
     axios
       .get("api/v1/dialogs/" + this.dialogId + "?api_token=" + apiToken)
@@ -24,6 +25,8 @@ export default class DialogView extends Component {
           messages: response.data.messages,
           waiting: false
         });
+
+        this.double = response.data.double;
       });
     this.listenChannel();
   }
@@ -110,6 +113,8 @@ export default class DialogView extends Component {
   };
 
   componentWillUnmount() {
+    axios
+      .post("api/v1/dialogs/" + this.dialogId + "?api_token=" + apiToken)
     Echo.leaveChannel(`messages.${this.dialogId}`);
   }
 
@@ -120,7 +125,7 @@ export default class DialogView extends Component {
         <div className="card-header">{this.state.name}</div>
 
         <div className="card-body dialog-view">
-          {waiting ? <Waiting /> : <Messages messages={messages} />}
+          {waiting ? <Waiting /> : <Messages messages={messages} double={this.double} />}
 
           <div className="card-footer">
             <SendMessage

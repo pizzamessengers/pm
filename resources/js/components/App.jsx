@@ -3,7 +3,7 @@ import MessagesWindow from "./MessagesWindow";
 import Content from "./content/Content";
 import Menu from "./menu/Menu";
 
-const App = ({ history }) => (
+const App = () => (
   <div className="wrapper">
     <MessagesWindow />
     <Menu />

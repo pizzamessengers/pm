@@ -1,6 +1,7 @@
 .menu-fade {
   width: 100vw;
   height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: absolute;
   top: 0;
   left: 0;
@@ -16,7 +17,7 @@
 .menu {
     position: relative;
     width: 100%;
-    height: 10%;
+    height: 75px;
     z-index: 101;
 
     .blob-nav {

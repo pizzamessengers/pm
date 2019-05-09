@@ -1,0 +1,26 @@
+{
+  "widget": {
+    "name": "widget.name",
+    "description": "widget.description",
+    "short_description": "widget.short_description",
+    "code": "keep_in_touch",
+    "secret_key": "c089ba5619a5a5c4d07d8b47d1376b9160aa0685db183d4614affb664898ceda",
+    "version": "0.0.1",
+    "interface_version": 2,
+    "init_once": true,
+    "locale": ["ru", "en"],
+    "installation": true,
+    "support": {
+      "link": "https://www.amocrm.com",
+      "email": "support@amocrm.com"
+    }
+  },
+  "locations": ["settings", "lead_sources"],
+  "settings": {
+    "token": {
+      "name": "settings.api_key",
+      "type": "text",
+      "required": true
+    }
+  }
+}

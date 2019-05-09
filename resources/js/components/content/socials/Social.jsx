@@ -30,11 +30,12 @@ export default class Social extends Component {
     }
   }
 
-  connect = async (mess, props, watching) => {
+  connect = async (mess, props, watching, importValue) => {
     let data = {
       name: mess,
       props: props,
-      watching: watching
+      watching: watching,
+      importValue, importValue
     };
     await axios
       .post("api/v1/messengers?api_token=" + apiToken, data)

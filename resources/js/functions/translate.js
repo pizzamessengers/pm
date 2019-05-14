@@ -93,6 +93,7 @@ const translate = (message, props = {}) => {
         vk: "ВКонтакте",
         inst: "Инстаграм",
         wapp: "Вотсап",
+        tlgrm: "Телеграм",
         user: "Профиль",
         payment: "Оплата",
         crm: "CRM",
@@ -109,6 +110,7 @@ const translate = (message, props = {}) => {
           password: "Неверный пароль",
           "login-password": "Неверный логин или пароль",
           "token-url": "Неверный токен или ссылка",
+          "token": "Неверный токен",
           qr: "Просканируйте QR код",
           "incorrect-vk-url": "Скопируйте и вставьте всю ссылку"
         }
@@ -226,6 +228,7 @@ const translate = (message, props = {}) => {
         vk: "VKontakte",
         inst: "Instagram",
         wapp: "WhatsApp",
+        tlgrm: "Telegram",
         user: "User",
         payment: "Payment",
         crm: "CRM",
@@ -242,6 +245,7 @@ const translate = (message, props = {}) => {
           password: "Invalid password",
           "login-password": "Invalid login or password",
           "token-url": "Invalid token or url",
+          "token": "Invalid token",
           qr: "Scan the QR code",
           "incorrect-vk-url": "Copy and paste the entire link"
         }

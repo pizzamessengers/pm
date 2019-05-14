@@ -60,28 +60,45 @@ class MessageController extends Controller
     {
       $messenger = Messenger::where('instance', $request->instanceId)->first();
       if ($messenger->updating === false) return;
-      $watching = $messenger->watching;
 
-      $messages = array();
       foreach($request->messages as $message)
       {
-        // если watching поменяется во время выполнения запроса, то сообщения создавать не нужно
-        if ($watching !== Messenger::where('instance', $request->instanceId)->first()->watching) break;
-
         if (($dialog = Dialog::where([
           ['dialog_id', $message['chatId']],
           ['messenger_id', $messenger->id]
         ])->first()) === null)
         {
-          if ($watching === 'dialogs') continue;
+          if ($messenger->watching === 'dialogs') continue;
         }
         else if ($dialog->updating === false) continue;
 
         // если диалог существует и updating true или messenger watching 'all'
-        array_push($messages, $this->addMessage($message, $messenger));
+        if ($dialog->subscribed) event(new MessagesCreated([$this->addMessage($message, $messenger)]));
       }
+    }
 
-      event(new MessagesCreated($messages));
+    /**
+     * Processing telegram webhook.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function tlgrm(Request $request)
+    {
+      $messenger = Messenger::where('instance', $request->instanceId)->first();
+      if ($messenger->updating === false) return;
+
+      if (($dialog = Dialog::where([
+        ['dialog_id', $message['chatId']],
+        ['messenger_id', $messenger->id]
+      ])->first()) === null)
+      {
+        if ($watching === 'dialogs') continue;
+      }
+      else if ($dialog->updating === false) continue;
+
+      // если диалог существует и updating true или messenger watching 'all'
+      if ($dialog->subscribed) event(new MessagesCreated([$this->addMessage($message, $messenger)]));
     }
 
     /**

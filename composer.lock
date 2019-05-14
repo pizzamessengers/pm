@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8131eb28a5f0d5af7310bcfce8f5a54",
+    "content-hash": "29883e34f099da9b7c6305776c1836d4",
     "packages": [
         {
             "name": "binsoul/net-mqtt",
@@ -1589,6 +1589,43 @@
                 "private"
             ],
             "time": "2019-04-26T23:11:51+00:00"
+        },
+        {
+            "name": "mgp25/telegram-bot-api",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mgp25/Telegram-Bot-API.git",
+                "reference": "b3e4140729fd9f842f1b8b3ec9832fa97b03e8bb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mgp25/Telegram-Bot-API/zipball/b3e4140729fd9f842f1b8b3ec9832fa97b03e8bb",
+                "reference": "b3e4140729fd9f842f1b8b3ec9832fa97b03e8bb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Telegram Bot PHP API",
+            "keywords": [
+                "Telegram-API",
+                "Telegram-Bot-API",
+                "Telegram-Bot-PHP",
+                "telegram"
+            ],
+            "time": "2017-02-15T19:43:01+00:00"
         },
         {
             "name": "monolog/monolog",

@@ -3,6 +3,7 @@ import translate from './../../../functions/translate';
 import VkConnection from "./VkConnection";
 import InstConnection from "./InstConnection";
 import WappConnection from "./WappConnection";
+import TlgrmConnection from "./TlgrmConnection";
 
 const MessengerConnection = ({ mess, connect }) => {
   let rightComponentForConnection = () => {
@@ -13,6 +14,8 @@ const MessengerConnection = ({ mess, connect }) => {
         return <InstConnection connect={connect} />;
       case "wapp":
         return <WappConnection connect={connect} />;
+      case "tlgrm":
+        return <TlgrmConnection connect={connect} />;
     }
   };
 

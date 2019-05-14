@@ -32,8 +32,11 @@ Route::group(['middleware' => 'CheckForValidDialog'], function() {
 Route::post('v1/messages/send', 'MessageController@sendMessage');
 
 Route::post('v1/messages/wapp', 'MessageController@wapp');// TODO: validation
+Route::post('v1/messages/tlgrm', 'MessageController@tlgrm');// TODO: validation
 
 Route::get('v1/users/getDialogs', 'UserController@getDialogsSortedByLastMessageTimestamp');
 Route::post('v1/users/language', 'UserController@changeLanguage');
-Route::post('v1/users/crm', 'UserController@connectCrm');
-Route::post('v1/users/crm/disconnect', 'UserController@disconnectCrm');
+
+Route::get('v1/crm', 'CrmController@disconnectCrm');
+Route::post('v1/crm', 'CrmController@connectCrm');
+Route::post('v1/crm/disconnect', 'CrmController@disconnectCrm');

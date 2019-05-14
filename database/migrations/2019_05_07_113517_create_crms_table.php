@@ -23,6 +23,7 @@ class CreateCrmsTable extends Migration
             $table->string('name');
             $table->string('crm_user_id');
             $table->string('api_token');
+            $table->boolean('unparsed')->default(true);
             $table->timestamps();
         });
 

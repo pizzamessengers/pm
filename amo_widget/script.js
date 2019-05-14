@@ -39,7 +39,7 @@ define([
         // Вернем Promise и после ответа
         // сохраним или покажем ошибку ввода данных
         self.crm_post(
-          "http://dmitrilya.beget.tech/api/v1/users/crm?api_token=" +
+          "http://dmitrilya.beget.tech/api/v1/crm?api_token=" +
             self.get_settings().token,
           {
             crm: "amo",
@@ -57,7 +57,7 @@ define([
 
       destroy: function() {
         self.crm_post(
-          "http://dmitrilya.beget.tech/api/v1/users/crm/disconnect?api_token=" +
+          "http://dmitrilya.beget.tech/api/v1/crm/disconnect?api_token=" +
             self.get_settings().token,
           {},
           function(response) {

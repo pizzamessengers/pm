@@ -22,7 +22,7 @@ Route::group(['middleware' => 'auth'], function() {
 
   Route::get('app/socials/{messenger?}/{dialog?}/{dialogId?}', 'Controller@createSocials')
     ->where([
-      'messenger' => 'vk||wapp||inst',
+      'messenger' => 'vk||wapp||inst||tlgrm',
       'dialog' => 'dialog',
       'dialogId' => '[0-9]{8}',
     ])
@@ -31,7 +31,7 @@ Route::group(['middleware' => 'auth'], function() {
   Route::get('app/settings/{setting?}/{module?}', 'Controller@createSocials')
     ->where([
       'setting' => 'messenger||profile||support',
-      'module' => 'vk||wapp||inst||user||payment',
+      'module' => 'vk||wapp||inst||tlgrm||user||payment',
     ])
     ->name('app');
 

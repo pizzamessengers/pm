@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Jobs\StoreAuthors;
 use InstagramAPI\Instagram;
+use \telegramBot;
 use InstagramAPI\Response\Model\DirectThread;
 
 class DialogController extends Controller
@@ -234,6 +235,51 @@ class DialogController extends Controller
     }
 
     /**
+     * Create tlgrm dialog.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    private function addDialogsTlgrm(Request $request)
+    {
+      $user = $request->user();
+      $token = $request->q;
+
+      try {
+        $tg = new telegramBot($token);
+        $name = $tg->getMe()['result']['first_name'];
+      } catch (\Exception $e) {
+        return response()->json([
+          'success' => false,
+          'message' => 'messenger.error.token',
+        ], 404);
+      }
+
+      $apiToken = $user->api_token;
+      $tg->setWebhook($request->root().'/api/v1/messages/tlgrm?api_token='.$apiToken);
+
+      $dialog = Dialog::create([
+        'name' => $name,
+        'messenger_id' => $user->tlgrm()->id,
+        'dialog_id' => $token,
+        'last_message' => array(
+          'id' => null,
+          'text' => 'no messages',
+          'timestamp' => time(),
+          'with_attachments' => false
+        ),
+        'members_count' => 0,
+        'photo' => 'https://vk.com/images/camera_100.png',
+        'unread_count' => 0,
+      ]);
+
+      return array(
+        'success' => true,
+        'dialogList' => [$dialog]
+      );
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param string $query
@@ -265,7 +311,7 @@ class DialogController extends Controller
       if (Validator::make($request->all(), [
         'mess' => [
           'required',
-          Rule::in(['vk', 'inst', 'wapp']),
+          Rule::in(['vk', 'inst', 'wapp', 'tlgrm']),
         ],
         'q' => [
           'string',
@@ -289,6 +335,9 @@ class DialogController extends Controller
           break;
         case 'wapp':
           $result = $this->addWapp($request);
+          break;
+        case 'tlgrm':
+          $result = $this->addDialogsTlgrm($request);
           break;
       }
 

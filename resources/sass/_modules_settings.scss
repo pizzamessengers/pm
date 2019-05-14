@@ -43,6 +43,10 @@
                 background: $inst;
             }
 
+            &.tlgrm {
+                background: $tlgrm;
+            }
+
             &.payment,
             &.user {
                 background: $firstColor;
@@ -123,7 +127,7 @@
             justify-content: center;
         }
     }
-    
+
     .lang-panel-wrapper {
         .dropdown-toggle {
             cursor: pointer;

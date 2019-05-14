@@ -151,6 +151,10 @@
                 &.inst {
                     background: $inst;
                 }
+
+                &.tlgrm {
+                    background: $tlgrm;
+                }
             }
 
             .card-body {
@@ -621,6 +625,10 @@
 
             &.inst {
                 background: $inst;
+            }
+
+            &.tlgrm {
+                background: $tlgrm;
             }
 
             &:hover {

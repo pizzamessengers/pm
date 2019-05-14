@@ -60,6 +60,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the tlgrm messenger for the user.
+     */
+    public function tlgrm()
+    {
+        return $this->hasOne('App\Messenger')->where('name', 'tlgrm')->first();
+    }
+
+    /**
      * Get the crm for the user.
      */
     public function crm()

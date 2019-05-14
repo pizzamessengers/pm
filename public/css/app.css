@@ -11708,6 +11708,10 @@ a.text-dark:focus {
   top: 11em;
 }
 
+.menu .blob-nav .menu-line.open .menu-item:nth-of-type(4) {
+  top: 14em;
+}
+
 .menu .blob-nav .wobble {
   width: 54px;
   height: 54px;
@@ -11883,6 +11887,10 @@ a.text-dark:focus {
 
 .modules-settings .modules-list .modules-list-item.inst {
   background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+}
+
+.modules-settings .modules-list .modules-list-item.tlgrm {
+  background: linear-gradient(160deg, #0088cc, #FFFFFF);
 }
 
 .modules-settings .modules-list .modules-list-item.payment,
@@ -12688,6 +12696,10 @@ a.text-dark:focus {
   background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
 }
 
+.wrapper .content .card .card-header.tlgrm {
+  background: linear-gradient(160deg, #0088cc, #FFFFFF);
+}
+
 .wrapper .content .card .card-body {
   height: 92%;
   padding: 0;
@@ -13223,6 +13235,10 @@ a.text-dark:focus {
 
 .wrapper .list .dialog.inst {
   background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+}
+
+.wrapper .list .dialog.tlgrm {
+  background: linear-gradient(160deg, #0088cc, #FFFFFF);
 }
 
 .wrapper .list .dialog:hover {

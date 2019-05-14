@@ -26,6 +26,14 @@ const MessengersMenu = ({ opened }) => {
         direction: "right",
         title: "WhatsApp"
       }
+    },
+    {
+      icon: ["fab", "telegram-plane"],
+      link: "socials/tlgrm",
+      tooltip: {
+        direction: "right",
+        title: "Telegram"
+      }
     }
   ];
 

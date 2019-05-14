@@ -11,6 +11,7 @@ use App\Dialog;
 use App\Message;
 use Illuminate\Http\Request;
 use InstagramAPI\Instagram;
+use \telegramBot;
 use InstagramAPI\Exception\InvalidUserException;
 use InstagramAPI\Exception\IncorrectPasswordException;
 use InstagramAPI\Exception\InvalidArgumentException;
@@ -49,14 +50,13 @@ class MessengerController extends Controller
         if (Validator::make($request->all(), [
           'name' => [
             'required',
-            Rule::in(['vk', 'inst', 'wapp']),
+            Rule::in(['vk', 'inst', 'wapp', 'tlgrm']),
           ],
           'watching' => [
             'required',
             Rule::in(['all', 'dialogs']),
           ],
           'importValue' => [
-            'required',
             'min:0',
             'max:20'
           ],
@@ -67,10 +67,12 @@ class MessengerController extends Controller
           ]);
         };
 
+        $user = $request->user();
+
         $messengerData = [
           'name' => $request->name,
           'watching' => $request->watching,
-          'user_id' => $request->user()->id,
+          'user_id' => $user->id,
         ];
 
         $dialogs = array();
@@ -236,7 +238,7 @@ class MessengerController extends Controller
             $messengerData['instance'] = substr($messengerData['url'], -6, 5);
 
             $url = $messengerData['url'].'webhook?token='.$messengerData['token'];
-            $token = $request->user()->api_token;
+            $token = $user->api_token;
             $data = json_encode([
               'webhookUrl' => $request->root().'/api/v1/messages/wapp?api_token='.$token,
             ]);
@@ -253,22 +255,66 @@ class MessengerController extends Controller
             }
 
             break;
+          case 'tlgrm':
+            if (Validator::make($request->all(), [
+              'props.token' => [
+                'required'
+              ],
+            ])->fails()) {
+              return response()->json([
+                'success' => false,
+                'message' => 'messenger.error.token',
+              ], 200);
+            };
+
+            $token = $request->props['token'];
+
+            try {
+              $tg = new telegramBot($token);
+              $name = $tg->getMe()['result']['first_name'];
+            } catch (\Exception $e) {
+              return response()->json([
+                'success' => false,
+                'message' => 'messenger.error.token',
+              ], 404);
+            }
+
+            $apiToken = $user->api_token;
+            $tg->setWebhook($request->root().'/api/v1/messages/tlgrm?api_token='.$apiToken);
+
+            if ($messengerData['watching'] === 'dialogs')
+            {
+              // TODO:
+            }
+
+            break;
         }
 
         $messenger = Messenger::create($messengerData);
 
+        if ($request->name === 'tlgrm') {
+          $dialog = Dialog::create([
+            'name' => $name,
+            'messenger_id' => $messenger->id,
+            'dialog_id' => $token,
+            'last_message' => array(
+              'id' => null,
+              'text' => 'no messages',
+              'timestamp' => time(),
+              'with_attachments' => false
+            ),
+            'members_count' => 0,
+            'photo' => 'https://vk.com/images/camera_100.png',
+            'unread_count' => 0,
+          ]);
+        }
+
         if ($request->importValue > 0) {
           switch ($request->name) {
-            case 'vk':
-              // code...
-              break;
             case 'inst':
               Artisan::queue('getMessages:inst', array(
                 'importDays' => $request->importValue
               ));
-              break;
-            case 'wapp':
-              // code...
               break;
           }
         }
@@ -370,7 +416,7 @@ class MessengerController extends Controller
         if (Validator::make($request->all(), [
           'name' => [
               'required',
-              Rule::in(['vk', 'inst', 'wapp']),
+              Rule::in(['vk', 'inst', 'wapp', 'tlgrm']),
           ],
         ])->fails()) {
           return response()->json([

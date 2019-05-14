@@ -48,11 +48,11 @@ if (token) {
 import Echo from "laravel-echo";
 // window.io = require('socket.io-client');
 
-window.Pusher = require('pusher-js');
+window.Pusher = require("pusher-js");
 
 window.Echo = new Echo({
   broadcaster: "pusher",
-  key: '38e0e162fd7a0ae26fe2',
-  cluster: 'ap3',
+  key: "38e0e162fd7a0ae26fe2",
+  cluster: "ap3",
   forceTLS: true
 });

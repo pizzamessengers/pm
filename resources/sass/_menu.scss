@@ -115,7 +115,7 @@
                 visibility: visible;
                 $top: 2em;
 
-                @for $i from 1 through 3 {
+                @for $i from 1 through 4 {
                     .menu-item:nth-of-type(#{$i}) {
                       top: $top + 3 * $i;
                     }

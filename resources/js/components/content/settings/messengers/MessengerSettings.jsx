@@ -49,7 +49,7 @@ export default class MessengerSettings extends Component {
   };
 
   remove = mess => {
-    if (/vk||inst||wapp/.test(mess)) {
+    if (/vk||inst||wapp||tlgrm/.test(mess)) {
       let data = {
         name: mess
       };

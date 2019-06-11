@@ -1,31 +1,32 @@
 import React, { Component, Fragment } from "react";
-import translate from "./../../../../functions/translate";
 import DialogChoosing from "./DialogChoosing";
 
 export default class DialogsConnection extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      q: "",
       modal: {
         show: false,
         dialogs: []
       }
     };
-    this.q = React.createRef();
   }
+
+  handleChange = e => {
+    this.setState({ q: e.target.value });
+  };
 
   createDialog = e => {
     e.preventDefault();
+    this.props.connectionOn();
     let data = {
       mess: this.props.mess
     };
     axios
-      .post(
-        "api/v1/dialogs?q=" + this.q.current.value + "&api_token=" + apiToken,
-        data
-      )
+      .post("api/v1/dialogs?q=" + this.state.q + "&api_token=" + apiToken, data)
       .then(response => {
-        this.q.current.value = "";
+        this.setState({ q: "" });
         if (!response.data.success) {
           let props = {};
           if (response.data.message.substr(0, 14) === "all.error.user") {
@@ -43,9 +44,9 @@ export default class DialogsConnection extends Component {
                 dialogs: response.data.dialogs
               }
             });
-          } else {
-            alert(translate('connection.dialogs.ok'));
           }
+
+          this.props.connectDialogs(response.data.dialogList);
         }
       });
   };
@@ -60,37 +61,32 @@ export default class DialogsConnection extends Component {
   };
 
   render() {
-    let { dialogs } = this.state.modal;
+    let { modal } = this.state;
     return (
       <Fragment>
-        <div className="dialogs-connection d-flex flex-column flex-sm-row">
-          <div className="col-sm-7 text-center text-sm-left mb-4 mb-sm-0 setting-name">
+        <div className="dialogs-connection d-flex flex-column flex-md-row">
+          <div className="col-md-6 d-flex align-items-center justify-content-center justify-content-md-start mb-4 mb-md-0 setting-name">
             {translate("dialog.connect")}
           </div>
-          <div className="d-flex justify-content-center col-sm-5">
+          <div className="d-flex justify-content-center col-md-6">
             <form
               onSubmit={e => this.createDialog(e)}
-              className="d-flex flex-column align-items-center"
+              className="d-flex align-items-center"
             >
-              <div className="f-flex justify-content-center align-items-center mb-2">
-                <input
-                  type="text"
-                  placeholder={translate("all.query")}
-                  ref={this.q}
-                />
-              </div>
               <input
-                className="main-button"
-                type="submit"
-                value={translate("connection.all.connect")}
+                className="mr-2"
+                type="text"
+                placeholder={translate("all.query")}
+                onChange={e => this.handleChange(e)}
               />
+              <input className="main-button" type="submit" value="Ok" />
             </form>
           </div>
         </div>
-        {this.state.modal.show ? (
+        {modal.show ? (
           <DialogChoosing
             one={true}
-            dialogs={dialogs}
+            dialogs={modal.dialogs}
             hide={this.handleClose}
             title={translate("dialog.choose-dialog")}
             mess={this.props.mess}

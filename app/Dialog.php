@@ -16,7 +16,15 @@ class Dialog extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'dialog_id', 'messenger_id', 'last_message', 'photo', 'members_count', 'unread_count',
+        'name',
+        'dialog_id',
+        'messenger_id',
+        'last_message',
+        'photo',
+        'members_count',
+        'updating',
+        'token',
+        'group'
     ];
 
     /**

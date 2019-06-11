@@ -11,6 +11,8 @@ use App\Dialog;
 use App\Message;
 use Illuminate\Http\Request;
 use InstagramAPI\Instagram;
+use VK\Client\VKApiClient;
+use VK\OAuth\VKOAuth;
 use \telegramBot;
 use InstagramAPI\Exception\InvalidUserException;
 use InstagramAPI\Exception\IncorrectPasswordException;
@@ -47,6 +49,12 @@ class MessengerController extends Controller
      */
       public function addMessenger(Request $request)
       {
+        $user = $request->user();
+        $name = $request->name;
+
+        if ($user->$name() !== null)
+          return response()->json(['success' => false]);
+
         if (Validator::make($request->all(), [
           'name' => [
             'required',
@@ -67,10 +75,8 @@ class MessengerController extends Controller
           ]);
         };
 
-        $user = $request->user();
-
         $messengerData = [
-          'name' => $request->name,
+          'name' => $name,
           'watching' => $request->watching,
           'user_id' => $user->id,
         ];
@@ -81,7 +87,7 @@ class MessengerController extends Controller
           'success' => true,
         );
 
-        switch ($request->name) {
+        switch ($name) {
           case 'vk':
             if (Validator::make($request->all(), [
               'props.code' => [
@@ -90,79 +96,67 @@ class MessengerController extends Controller
             ])->fails()) {
               return response()->json([
                 'success' => false,
-                'message' => 'messenger.error.url',
+                'message' => 'error.smth',
               ]);
             };
 
-            $code = $request->props['token'];
+            $redirect_uri = $request->root().'/app/socials/vk';
+            $code = $request->props['code'];
 
-            $token = json_decode(file_get_contents(
-              'https://oauth.vk.com/access_token?client_id=6869374&client_secret=5KVNq6CVDcdcXe0L0bNW&redirect_uri='.
-              $request->root().'/app/socials/vk&code='.$code))->response;
-            info($token);
+            $messengerData['token'] = json_decode(file_get_contents(
+              'https://oauth.vk.com/access_token?client_id=6995405&client_secret=EMBAaQ5AazBzEYb8HroZ&redirect_uri='.
+              $redirect_uri.'&code='.$code
+            ))->access_token;
 
-            $messengerData['token'] = $token;
+           /*if ($messengerData['watching'] === 'dialogs')
+           {
+             $profiles = $lp->conversations->profiles;
+             foreach ($lp->conversations->items as $item) {
+               $dialog = $item->conversation;
+               $lastMessage = $item->last_message;
 
+               $lastMessageText = strlen($lastMessage->text) > 40 ?
+                 mb_substr($lastMessage->text, 0, 40, 'UTF-8').'...' :
+                 $lastMessage->text;
 
+               $data = array();
+               if ($dialog->peer->type === 'chat')
+               {
+                 $settings = $dialog->chat_settings;
 
-            $lp = json_decode(file_get_contents('https://api.vk.com/method/execute.lp?dialogs='.
-            ($messengerData['watching'] === 'dialogs').'&access_token='.$token.'&v=5.92'))->response;
+                 $data['name'] = $settings->title;
+                 $data['photo'] = property_exists($settings, 'photo') ?
+                   $settings->photo->photo_100 :
+                   'https://vk.com/images/camera_100.png';
+                 $data['members_count'] = $settings->members_count;
+               }
+               else
+               {
+                 foreach ($profiles as $profile) {
+                   if ($profile->id === $dialog->peer->id) break;
+                 }
 
-            $messengerData['lp'] = array(
-              'ts' => $lp->ts,
-              'pts' => $lp->pts,
-            );
+                 $data['name'] = $profile->first_name.' '.$profile->last_name;
+                 $data['photo'] = $profile->photo_100;
+                 $data['members_count'] = 2;
+               }
 
-            if ($messengerData['watching'] === 'dialogs')
-            {
-              $profiles = $lp->conversations->profiles;
-              foreach ($lp->conversations->items as $item) {
-                $dialog = $item->conversation;
-                $lastMessage = $item->last_message;
+               array_push($dialogs, array(
+                 'dialog_id' => $dialog->peer->id,
+                 'name' => $data['name'],
+                 'photo' => $data['photo'],
+                 'last_message' => array(
+                   'text' => $lastMessageText,
+                   'timestamp' => $lastMessage->date.'000',
+                   'with_attachments' => count($lastMessage->attachments) > 0,
+                 ),
+                 'members_count' => $data['members_count'],
+               ));
+             }
 
-                $lastMessageText = strlen($lastMessage->text) > 40 ?
-                  mb_substr($lastMessage->text, 0, 40, 'UTF-8').'...' :
-                  $lastMessage->text;
-
-                $data = array();
-                if ($dialog->peer->type === 'chat')
-                {
-                  $settings = $dialog->chat_settings;
-
-                  $data['name'] = $settings->title;
-                  $data['photo'] = property_exists($settings, 'photo') ?
-                    $settings->photo->photo_100 :
-                    'https://vk.com/images/camera_100.png';
-                  $data['members_count'] = $settings->members_count;
-                }
-                else
-                {
-                  foreach ($profiles as $profile) {
-                    if ($profile->id === $dialog->peer->id) break;
-                  }
-
-                  $data['name'] = $profile->first_name.' '.$profile->last_name;
-                  $data['photo'] = $profile->photo_100;
-                  $data['members_count'] = 2;
-                }
-
-                array_push($dialogs, array(
-                  'dialog_id' => $dialog->peer->id,
-                  'name' => $data['name'],
-                  'photo' => $data['photo'],
-                  'last_message' => array(
-                    'text' => $lastMessageText,
-                    'timestamp' => $lastMessage->date.'000',
-                    'with_attachments' => count($lastMessage->attachments) > 0,
-                  ),
-                  'members_count' => $data['members_count'],
-                ));
-              }
-
-              $response += array('dialogs' => $dialogs);
-            }
-
-            break;
+             $response += array('dialogs' => $dialogs);
+           }*/
+           break;
           case 'inst':
             if (Validator::make($request->all(), [
               'props.login' => [
@@ -292,7 +286,35 @@ class MessengerController extends Controller
 
         $messenger = Messenger::create($messengerData);
 
-        if ($request->name === 'tlgrm') {
+        if ($name === 'vk') {
+          $groups = json_decode(file_get_contents(
+            'https://api.vk.com/method/execute.getGroups?access_token='.
+            $messengerData['token'].'&v=5.95'
+          ))->response;
+
+          foreach ($groups as $group) {
+            if (!Dialog::where([
+                ['dialog_id', $group->id],
+                ['messenger_id', $messenger->id]
+              ])->exists()) {
+
+              $dialog = Dialog::create([
+                'name' => $group->name,
+                'messenger_id' => $messenger->id,
+                'dialog_id' => $group->id,
+                'members_count' => 0,
+                'photo' => $group->photo_100,
+                'last_message' => array(
+                  'text' => '',
+                  'timestamp' => '',
+                  'with_attachments' => false,
+                ),
+                'updating' => false,
+                'group' => true
+              ]);
+            }
+          }
+        } else if ($name === 'tlgrm') {
           $dialog = Dialog::create([
             'name' => $name,
             'messenger_id' => $messenger->id,
@@ -305,12 +327,11 @@ class MessengerController extends Controller
             ),
             'members_count' => 0,
             'photo' => 'https://vk.com/images/camera_100.png',
-            'unread_count' => 0,
           ]);
         }
 
         if ($request->importValue > 0) {
-          switch ($request->name) {
+          switch ($name) {
             case 'inst':
               Artisan::queue('getMessages:inst', array(
                 'importDays' => $request->importValue
@@ -319,9 +340,25 @@ class MessengerController extends Controller
           }
         }
 
-        $response += array('messengerId' => $messenger->id);
+        $response['messengerId'] = $messenger->id;
 
         return response()->json($response, 200);
+      }
+
+      /**
+       * Do request to wapp server for api account status
+       *
+       * @param  \App\Messenger  $messenger
+       * @return \Illuminate\Http\Response
+       */
+      public function getStatusWapp(Request $request)
+      {
+        $response = json_decode(file_get_contents($request->url));
+
+        return response()->json([
+          'success' => true,
+          'status' => $response->accountStatus
+        ]);
       }
 
     /**
@@ -335,6 +372,20 @@ class MessengerController extends Controller
         return response()->json([
           'success' => true,
           'dialogs' => $messenger->getDialogsWithLastMessageTimestamp()->sortByDesc('last_message_timestamp')->values(),
+        ], 200);
+    }
+
+    /**
+     * Display the dialogs for the specified messenger.
+     *
+     * @param  \App\Messenger  $messenger
+     * @return \Illuminate\Http\Response
+     */
+    public function getSettingsDialogs(Messenger $messenger)
+    {
+        return response()->json([
+          'success' => true,
+          'dialogs' => $messenger->name === 'vk' ? $messenger->groups() : $messenger->dialogs(),
         ], 200);
     }
 

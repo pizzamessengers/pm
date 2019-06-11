@@ -1,5 +1,6 @@
 import React from "react";
 import Attachments from "./attachments/Attachments";
+import Waiting from "./../../elements/Waiting";
 
 const MessageFromMe = ({ message, onLoadAtta }) => (
   <div className="message d-flex flex-row-reverse float-right justify-content-between">
@@ -21,16 +22,20 @@ const MessageFromMe = ({ message, onLoadAtta }) => (
         </div>
       )}
       {message.attachments.length > 0 ? (
-        <Attachments
-          attachments={message.attachments}
-          withCaption={
-            message.text.length > 0 &&
-            message.attachments.length === 1 &&
-            message.attachments[0].type !== "link"
-          }
-          onLoadAtta={onLoadAtta}
-          messageId={message.id}
-        />
+        message.author === undefined ? (
+          <Waiting />
+        ) : (
+          <Attachments
+            attachments={message.attachments}
+            withCaption={
+              message.text.length > 0 &&
+              message.attachments.length === 1 &&
+              message.attachments[0].type !== "link"
+            }
+            onLoadAtta={onLoadAtta}
+            messageId={message.id}
+          />
+        )
       ) : null}
     </div>
   </div>

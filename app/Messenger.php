@@ -65,6 +65,14 @@ class Messenger extends Model
     }
 
     /**
+     * Get the vk groups.
+     */
+    public function groups()
+    {
+        return $this->dialogs()->where('group', true)->get();
+    }
+
+    /**
      * Get the dialogs for the messenger.
      *
      * @param  \App\Messenger  $messenger
@@ -72,7 +80,7 @@ class Messenger extends Model
      */
     public function getDialogsWithLastMessageTimestamp()
     {
-        return $this->dialogs()->get()
+        return $this->dialogs()->where('group', false)->get()
                   ->each(function($dialog) {
                     $dialog->last_message_timestamp = $dialog->last_message['timestamp'];
                     $dialog->mess = $this->name;

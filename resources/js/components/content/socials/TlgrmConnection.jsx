@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from "react";
-import translate from "./../../../functions/translate";
 import Waiting from "./../elements/Waiting";
 
 export default class TlgrmConnection extends Component {
@@ -35,7 +34,10 @@ export default class TlgrmConnection extends Component {
         <div className="instruction-wrapper">
           <div className="instruction">
             <div className="step">
-              <div className="text">{translate("connection.wapp.1")}</div>
+              <div className="text">{translate("connection.tlgrm.1.1")}</div>
+            </div>
+            <div className="step">
+              <div className="text">{translate("connection.tlgrm.1.2")}</div>
             </div>
           </div>
         </div>
@@ -50,10 +52,7 @@ export default class TlgrmConnection extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.stage !== prevState.stage) {
-      $(".progress-bar").css(
-        "width",
-        50 * (this.state.stage + 1) + "%"
-      );
+      $(".progress-bar").css("width", 50 * (this.state.stage + 1) + "%");
     }
   }
 
@@ -94,18 +93,18 @@ export default class TlgrmConnection extends Component {
   };
 
   connect = () => {
-      if (this.token.current.value) {
-        this.props
-          .connect(
-            "tlgrm",
-            {
-              token: this.token.current.value
-            },
-            'all'
-          )
-          .then(null, error => this.setState({ stage: 0 }));
-      }
-      this.setState({ stage: 1 });
+    if (this.token.current.value) {
+      this.props
+        .connect(
+          "tlgrm",
+          {
+            token: this.token.current.value
+          },
+          "dialogs"
+        )
+        .then(null, error => this.setState({ stage: 0 }));
+    }
+    this.setState({ stage: 1 });
   };
 
   render() {

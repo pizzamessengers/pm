@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from "react";
-import translate from "./../../../../functions/translate";
 import Dialogs from "./../dialogs/Dialogs";
 import Waiting from "./../../elements/Waiting";
 
@@ -57,13 +56,6 @@ export default class MessengerDialogs extends Component {
     clearInterval(this.interval);
   }
 
-  deleteDialog = dialog => {
-    axios.delete("api/v1/dialogs/" + dialog + "?api_token=" + apiToken);
-    let { dialogs } = this.state;
-    dialogs.splice(dialogs.map(x => x.id).indexOf(dialog), 1);
-    this.setState({ dialogs });
-  };
-
   render() {
     let { waiting, dialogs } = this.state;
     let { mess } = this.props;
@@ -73,8 +65,6 @@ export default class MessengerDialogs extends Component {
     ) : dialogs.length > 0 ? (
       <Dialogs
         dialogs={dialogs}
-        withController={messenger.watching === "dialogs" ? true : false}
-        deleteDialog={this.deleteDialog}
         mess={mess}
       />
     ) : (

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import translate from "./../../../../functions/translate";
 import LangChoosing from "./LangChoosing";
 
 export default class UserSettings extends Component {

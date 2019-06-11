@@ -2,11 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Dialog from "./Dialog";
 
-const LinkedDialog = ({ dialog, mess, fromMessagesWindow }) => (
+const LinkedDialog = ({ dialog, fromMessagesWindow }) => (
   <Link
     className="linked-dialog d-block"
     to={{
-      pathname: "/app/socials/" + mess + "/dialog/" + dialog.id,
+      pathname: "/app/socials/" + dialog.mess + "/dialog/" + dialog.id,
       state: { name: dialog.name }
     }}
     onClick={() => {

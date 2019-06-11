@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from "react";
-import translate from "./../../../functions/translate";
 import Waiting from "./../elements/Waiting";
 
 export default class WappConnection extends Component {
@@ -171,30 +170,24 @@ export default class WappConnection extends Component {
     e.preventDefault();
     this.token = this.tokenRef.current.value;
     this.url = this.urlRef.current.value;
-    delete axios.defaults.headers.common["X-Requested-With"];
-    delete axios.defaults.headers.common["X-CSRF-TOKEN"];
     let url = this.url + "status?token=" + this.token;
-    axios.get(url).then(response => {
-      switch (response.data.accountStatus) {
-        case "got qr code":
-          alert(translate("messenger.error.qr"));
-          axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-          window.axios.defaults.headers.common[
-            "X-CSRF-TOKEN"
-          ] = document.head.querySelector('meta[name="csrf-token"]').content;
-          break;
-        case "loading":
-          this.installWapp();
-          break;
-        case "authenticated":
-          this.setState({ stage: 2 });
-          axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-          window.axios.defaults.headers.common[
-            "X-CSRF-TOKEN"
-          ] = document.head.querySelector('meta[name="csrf-token"]').content;
-          break;
-      }
-    });
+    axios
+      .get(
+        "api/v1/messengers/wapp/status?url=" + url + "&api_token=" + apiToken
+      )
+      .then(response => {
+        switch (response.data.status) {
+          case "got qr code":
+            alert(translate("messenger.error.qr"));
+            break;
+          case "loading":
+            this.installWapp();
+            break;
+          case "authenticated":
+            this.setState({ stage: 2 });
+            break;
+        }
+      });
   };
 
   connect = () => {

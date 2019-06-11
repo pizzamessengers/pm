@@ -89,7 +89,6 @@ class DialogController extends Controller
           ),
           'members_count' => $dialogData['members_count'],
           'photo' => $dialogData['photo'],
-          'unread_count' => 0,
         ]);
 
         StoreAuthors::dispatch('vk', $profiles, $dialog->id);
@@ -121,7 +120,6 @@ class DialogController extends Controller
             'last_message' => $dialog['last_message'],
             'members_count' => $dialog['members_count'],
             'photo' => $dialog['photo'],
-            'unread_count' => 0,
           ]);
 
           StoreAuthors::dispatch('vk', $profiles, $dialog->id);
@@ -222,11 +220,10 @@ class DialogController extends Controller
         ),
         'members_count' => count($thread->getUsers()) + 1,
         'photo' => $photo,
-        'unread_count' => 0,
       ]);
-      StoreAuthors::dispatch('inst', $profiles, $dialog->id);
-
       $dialogList[] = $dialog;
+
+      StoreAuthors::dispatch('inst', $profiles, $dialog->id);
 
       return array(
         'success' => true,
@@ -270,7 +267,6 @@ class DialogController extends Controller
         ),
         'members_count' => 0,
         'photo' => 'https://vk.com/images/camera_100.png',
-        'unread_count' => 0,
       ]);
 
       return array(
@@ -325,10 +321,10 @@ class DialogController extends Controller
 
       switch ($request->mess) {
         case 'vk':
-          $messenger = $request->user()->vk();
+          /*$messenger = $request->user()->vk();
           $result = isset($request->q) ?
             $this->processQueryVk($request->q, $messenger) :
-            $this->addDialogsVk((object) $request->dialogs, $messenger, false);
+            $this->addDialogsVk((object) $request->dialogs, $messenger, false);*/
           break;
         case 'inst':
           $result = $this->addDialogsInst($request);
@@ -342,6 +338,95 @@ class DialogController extends Controller
       }
 
       return response()->json($result, 200);
+    }
+
+    /**
+     * Get urls for vk attachments
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getVkAttaUrls(Request $request)
+    {
+      $dialog = Dialog::find($request->dialog_id);
+      $response = json_decode(file_get_contents(
+        "https://api.vk.com/method/execute.getAttaUrls?peer_id=".
+        $dialog->dialog_id."&access_token=".
+        $request->token."&v=5.95"
+      ))->response;
+
+      $photoUrl = json_decode(file_get_contents(
+        'https://api.vk.com/method/photos.getMessagesUploadServer?peer_id='.
+        $dialog->dialog_id.'&access_token='.$dialog->token.'&v=5.95'
+      ))->response->upload_url;
+
+      $response->photoUrl = $photoUrl;
+
+      return response()->json([
+        'success' => true,
+        'response' => $response
+      ], 200);
+    }
+
+    /**
+     * Refresh vk groups list
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function vkRefresh(Request $request)
+    {
+      $vk = $request->user()->vk();
+
+      $groups = json_decode(file_get_contents(
+        'https://api.vk.com/method/execute.getGroups?access_token='.
+        $vk->token.'&v=5.95'
+      ))->response;
+
+      $existsDialogs = $vk->dialogs()->where('group', true)->get();
+      $dialogs = array();
+
+      foreach ($groups as $group) {
+        $id = $group->id;
+
+        if (!Dialog::where([
+            ['dialog_id', $id],
+            ['messenger_id', $vk->id]
+          ])->exists()) {
+
+          $dialog = Dialog::create([
+            'name' => $group->name,
+            'messenger_id' => $vk->id,
+            'dialog_id' => $id,
+            'members_count' => 0,
+            'photo' => $group->photo_100,
+            'last_message' => array(
+              'text' => '',
+              'timestamp' => '',
+              'with_attachments' => false,
+            ),
+            'updating' => false,
+            'group' => true
+          ]);
+
+          $dialogs[] = $dialog;
+        } else {
+          $dialogs[] = $existsDialogs->where('dialog_id', $id)->first();
+          $i = $existsDialogs->search(function($dialog) use ($group) {
+            return $dialog->dialog_id === $id;
+          });
+          $existsDialogs->forget($i);
+        }
+      }
+
+      $existsDialogs->each(function($dialog) {
+        $dialog->delete();
+      });
+
+      return response()->json([
+        'success' => true,
+        'dialogs' => $dialogs
+      ]);
     }
 
     /**
@@ -502,6 +587,85 @@ class DialogController extends Controller
     }
 
     /**
+     * Connect vk dialog
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function connectVkDialog(Request $request)
+    {
+      $redirect_uri = $request->root().'/app/settings/messenger/vk';
+      $code = $request->code;
+
+      $result = file_get_contents(
+        'https://oauth.vk.com/access_token?client_id=6995405&client_secret=EMBAaQ5AazBzEYb8HroZ&redirect_uri='.
+        $redirect_uri.'&code='.$code
+      );
+
+      $q = explode(':', explode(',', $result)[1]);
+      $dialogId = substr($q[0], -10, 9);
+      $user = $request->user();
+      $vk = $user->vk();
+      $callbackUrl = $request->root().
+        '/api/v1/messages/vk?api_token='.$user->api_token;
+      $token = substr($q[1], 1, 85);
+
+      $dialog = Dialog::where([
+        ['dialog_id', $dialogId],
+        ['messenger_id', $vk->id]
+      ])->first();
+
+      $conf = json_decode(file_get_contents(
+        'https://api.vk.com/method/groups.getCallbackConfirmationCode?group_id='.
+        $dialogId.'&access_token='.$token.'&v=5.95'
+      ))->response->code;
+
+      $dialog->code = $conf;
+      $dialog->save();
+
+      $serverId = json_decode(file_get_contents(
+        'https://api.vk.com/method/groups.addCallbackServer?group_id='.
+        $dialogId.'&url='.$callbackUrl.'&title=kit&access_token='.
+        $token.'&v=5.95'
+      ))->response->server_id;
+
+      file_get_contents(
+        'https://api.vk.com/method/groups.setCallbackSettings?group_id='.
+        $dialogId.'&server_id='.$serverId.
+        '&api_version=5.95&message_new=1&message_reply=1&access_token='.
+        $token.'&v=5.95'
+      );
+
+      $author = Author::create([
+        'author_id' => '-'.$dialog->dialog_id,
+        'first_name' => $dialog->name,
+        'last_name' => '',
+        'avatar' => $dialog->photo,
+      ]);
+
+      if (DB::table('author_dialog')->where([
+        'dialog_id' => $dialog->id,
+        'author_id' => $author->id,
+      ])->count() === 0)
+      {
+        DB::table('author_dialog')->insert([
+          'dialog_id' => $dialog->id,
+          'author_id' => $author->id,
+        ]);
+      }
+
+      $dialog->token = $token;
+      $dialog->server_id = $serverId;
+      $dialog->updating = true;
+      $dialog->save();
+
+      return response()->json([
+        'success' => true,
+        'dialog' => $dialog->id
+      ]);
+    }
+
+    /**
      * toggle updating of the specified resource in storage.
      *
      * @param  \App\Dialog $dialog
@@ -511,6 +675,10 @@ class DialogController extends Controller
     {
         $dialog->updating = !$dialog->updating;
         $dialog->save();
+
+        return response()->json([
+          'success' => true
+        ]);
     }
 
     /**

@@ -1,7 +1,9 @@
 import React, { Component, Fragment } from "react";
-import translate from "./../../../../functions/translate";
+import Waiting from "./../../elements/Waiting";
 import CheckBox from "./../../elements/CheckBox";
 import DialogsConnection from "./../../socials/dialogs/DialogsConnection";
+import Dialogs from "./../../socials/dialogs/Dialogs";
+import VkRefresh from "./VkRefresh";
 
 export default class MessengerSettings extends Component {
   constructor(props) {
@@ -9,8 +11,35 @@ export default class MessengerSettings extends Component {
     this.mess = socials[this.props.currentMess];
     this.state = {
       updating: this.mess ? this.mess.updating : null,
-      watching: this.mess ? this.mess.watching : null
+      watching: this.mess ? this.mess.watching : null,
+      connection: false,
+      waiting: true,
+      dialogs: []
     };
+
+    if (window.location.search) {
+      let code = window.location.search.split("=")[1];
+      axios
+        .post("api/v1/dialogs/vk?api_token=" + apiToken, { code: code })
+        .then(response => {
+          if (response.data.success) {
+            connectDialogs(response.data.dialogs);
+          }
+        });
+    }
+
+    if (this.state.watching === "dialogs") {
+      axios
+        .get(
+          "api/v1/messengers/settings/" +
+            this.mess.id +
+            "/getDialogs?api_token=" +
+            apiToken
+        )
+        .then(response => {
+          this.setState({ dialogs: response.data.dialogs, waiting: false });
+        });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -67,8 +96,51 @@ export default class MessengerSettings extends Component {
     }
   };
 
+  waitingOn = () => {
+    this.setState({ waiting: true });
+  };
+
+  connectionOn = () => {
+    this.setState({ connection: true });
+  };
+
+  connectDialogs = dialogList => {
+    let dialogs = this.props.currentMess === "vk" ? [] : this.state.dialogs;
+    dialogList.forEach(dialog => {
+      dialogs.push(dialog);
+    });
+    this.setState(() =>
+      this.state.waiting
+        ? { dialogs, waiting: false }
+        : { dialogs, connection: false }
+    );
+  };
+
+  deleteDialog = dialog => {
+    axios.delete("api/v1/dialogs/" + dialog + "?api_token=" + apiToken);
+    let { dialogs } = this.state;
+    dialogs.splice(dialogs.map(x => x.id).indexOf(dialog), 1);
+    this.setState({ dialogs });
+  };
+
+  dialogsHeight = () => {
+    return (
+      $(".settings-wrapper").height() -
+      $(".module-setting")
+        .eq(0)
+        .outerHeight() -
+      $(".module-setting")
+        .eq(1)
+        .outerHeight() -
+      $(".module-setting")
+        .eq(2)
+        .outerHeight() +
+      "px"
+    );
+  };
+
   render() {
-    let { updating, watching } = this.state;
+    let { updating, watching, dialogs, waiting, connection } = this.state;
     let mess = this.props.currentMess;
     return (
       <div className="module-settings">
@@ -106,9 +178,47 @@ export default class MessengerSettings extends Component {
               </div>
             </div>
             {this.state.watching === "dialogs" ? (
-              <div className="module-setting">
-                <DialogsConnection mess={mess} />
-              </div>
+              <Fragment>
+                <div className="module-setting">
+                  {mess !== "vk" ? (
+                    connection ? (
+                      <Waiting />
+                    ) : (
+                      <DialogsConnection
+                        mess={mess}
+                        connectDialogs={this.connectDialogs}
+                        connectionOn={this.connectionOn}
+                      />
+                    )
+                  ) : (
+                    <VkRefresh
+                      connectDialogs={this.connectDialogs}
+                      waitingOn={this.waitingOn}
+                    />
+                  )}
+                </div>
+                <div
+                  className="module-setting d-flex justify-content-center"
+                  style={{ height: this.dialogsHeight() }}
+                >
+                  {waiting ? (
+                    <Waiting />
+                  ) : dialogs.length > 0 ? (
+                    <Dialogs
+                      dialogs={dialogs}
+                      withController
+                      deleteDialog={this.deleteDialog}
+                      mess={mess}
+                    />
+                  ) : (
+                    <div className="no-messages-wrapper">
+                      <div className="no-messages">
+                        {translate("all.info.dialog-list")}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Fragment>
             ) : null}
           </div>
         </div>

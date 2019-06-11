@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import Swipe from "react-easy-swipe";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Attachment from "./Attachment";
+import AttachmentList from "./AttachmentList";
+import Indicators from "./Indicators";
+import Controls from "./Controls";
 
 export default class Attachments extends Component {
   constructor(props) {
@@ -73,54 +75,18 @@ export default class Attachments extends Component {
           {/*<div className="counter">
           {currentSlide + 1}/{attachments.length}
         </div>*/}
-          <ol className="carousel-indicators" ref={this.indicators}>
-            {attachments.map((attachment, i) => (
-              <li
-                key={i}
-                slide={i}
-                className={i === 0 ? "active" : null}
-                onClick={e => this.goTo(e)}
-              />
-            ))}
-          </ol>
-          <div className="my-carousel-inner" ref={this.carouselInner}>
-            {attachments.map((attachment, i) => (
-              <div
-                key={i}
-                className={
-                  i === 0 ? "my-carousel-item active" : "my-carousel-item"
-                }
-              >
-                <Attachment
-                  attachment={attachment}
-                  withCaption={withCaption}
-                  onLoadAtta={this.onLoadAtta}
-                />
-              </div>
-            ))}
-          </div>
-          <a
-            className="carousel-control-prev"
-            role="button"
-            onClick={this.prev}
-          >
-            <FontAwesomeIcon
-              className="carousel-control-prev-icon"
-              icon="chevron-left"
-            />
-            <span className="sr-only">Previous</span>
-          </a>
-          <a
-            className="carousel-control-next"
-            role="button"
-            onClick={this.next}
-          >
-            <FontAwesomeIcon
-              className="carousel-control-next-icon"
-              icon="chevron-right"
-            />
-            <span className="sr-only">Next</span>
-          </a>
+          <Indicators
+            attachments={attachments}
+            goTo={this.goTo}
+            indicators={this.indicators}
+          />
+          <AttachmentList
+            attachments={attachments}
+            carouselInner={this.carouselInner}
+            withCaption={withCaption}
+            onLoadAtta={this.onLoadAtta}
+          />
+          <Controls prev={this.prev} next={this.next} />
         </div>
       </Swipe>
     ) : (

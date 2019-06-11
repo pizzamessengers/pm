@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import translate from "./../../../../../functions/translate";
 
 const Video = ({ attachment }) => (
   <Fragment key={attachment.url}>

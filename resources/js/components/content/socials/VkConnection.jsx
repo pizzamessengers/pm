@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from "react";
-import translate from "./../../../functions/translate";
 import Waiting from "./../elements/Waiting";
 
 export default class VkConnection extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stage: window.location.search ? 1 : 0
+      stage: window.location.search ? 2 : 0
     };
 
     this.urlInput = React.createRef();
@@ -15,13 +14,14 @@ export default class VkConnection extends Component {
         <div className="operation">
           <a
             className="main-button"
+            onClick={() => this.setState({ stage: 1 })}
             href={
-              "https://oauth.vk.com/authorize?client_id=6869374&display=modal&redirect_uri=" +
-              window.location.origin +
-              "/app/socials/vk&scope=messages,offline,video,photos,docs&response_type=code&v=5.92"
+              "https://oauth.vk.com/authorize?client_id=6995405&display=popup&redirect_uri=" +
+              window.location.href +
+              "&scope=groups,video,photos,docs,offline&response_type=code&v=5.92"
             }
           >
-            {translate("connection.all.get-token")}
+            {translate("connection.all.connect")}
           </a>
         </div>
         <div className="instruction-wrapper">
@@ -76,7 +76,7 @@ export default class VkConnection extends Component {
             </div>
           </div>
         </div>
-      </Fragment>,*/
+      </Fragment>,
       <Fragment>
         <div className="operation">
           <div className="d-flex">
@@ -112,27 +112,37 @@ export default class VkConnection extends Component {
             </div>
           </div>
         </div>
-      </Fragment>,
-      <Waiting />
+      </Fragment>,*/
+      <Waiting />,
+      <Fragment>
+        <Waiting />
+        {this.connect()}
+      </Fragment>
     ];
 
     this.watching;
   }
 
   componentDidMount() {
-    $(".progress-bar").css("width", "25%");
+    $(".progress-bar").css("width", "50%");
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.stage !== prevState.stage) {
-      $(".progress-bar").css(
-        "width",
-        (100 / this.stages.length) * (this.state.stage + 1) + "%"
-      );
+      $(".progress-bar").css("width", 50 * (this.state.stage + 1) + "%");
     }
   }
 
-  instructionText = watching => {
+  connect = () => {
+    if (window.location.search) {
+      let code = window.location.search.split("=")[1];
+      this.props
+        .connect("vk", { code: code }, "dialogs")
+        .then(null, error => this.setState({ stage: 0 }));
+    }
+  };
+
+  /*instructionText = watching => {
     switch (watching) {
       case "all":
         $(".instruction .text").html(translate("connection.all.watching.all"));
@@ -168,23 +178,6 @@ export default class VkConnection extends Component {
     this.instructionText($(e.target).attr("watching"));
   };
 
-  connect = () => {
-    if (this.watching) {
-      this.setState({ stage: 3 });
-      if (window.location.search) {
-        this.props
-          .connect(
-            "vk",
-            {
-              token: window.location.search.split("=")[1]
-            },
-            this.watching
-          )
-          .then(null, error => this.setState({ stage: 0 }));
-      }
-    } else alert(translate("connection.error.watching"));
-  };
-
   processUrlInput = () => {
     let url = this.urlInput.current.value;
     if (url.substr(0, 8) !== "https://") {
@@ -210,7 +203,7 @@ export default class VkConnection extends Component {
           }
         });
     }
-  };
+  };*/
 
   render() {
     let { stage } = this.state;

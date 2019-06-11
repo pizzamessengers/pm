@@ -17,11 +17,14 @@ const translate = (message, props = {}) => {
         delete: "Удалить",
         query: "Запрос",
         "token-copied": "Токен скопирован",
+        accept: "Вы уверены?",
         info: {
           dialogs:
             "В этом окне будут отображаться диалоги со всех мессенджеров",
           "dialog-list":
-            "В этом окне будут отображаться диалоги данного мессенджера"
+            "В этом окне будут отображаться диалоги данного мессенджера",
+          "dialog-connection":
+            "Теперь вы можете перейти на страницу настроек мессенджера и отдельно подключить каждый диалог"
         },
         error: {
           connection: "Нестабильное интернет соединение",
@@ -58,14 +61,17 @@ const translate = (message, props = {}) => {
           watching: "Необходимо выбрать режим работы сервиса"
         },
         vk: {
+          refresh: "Обновить список групп",
           "1":
+            "На данный момент сервис обрабатывает только сообщения ваших групп и публичных страниц ВКонтакте"
+          /*"1":
             "ВКонтакте подключается с помощью специального токена. (Вы перейдете на страницу вконтакте)",
           "2": {
             "1":
               "На этой странице вам нужно дать согласие нашему приложению обрабатывать ваши сообщения и вложения",
             "2":
               "Вам нужно скопировать информацию из адресной строки (URL) и вставить в соответствующее поле. Не переживайте насчет предупреждения. Нам вы можете доверять)"
-          }
+          }*/
         },
         inst: {
           "1":
@@ -79,6 +85,13 @@ const translate = (message, props = {}) => {
             "2": "Следуйте инструкции по настройке WhatsApp Web",
             "3":
               "Так же нужно скопировать эти данные (Api URL, токен) в соответствующие поля"
+          }
+        },
+        tlgrm: {
+          "1": {
+            "1": "1",
+            "2": "2",
+            "3": "3"
           }
         }
       },
@@ -110,7 +123,7 @@ const translate = (message, props = {}) => {
           password: "Неверный пароль",
           "login-password": "Неверный логин или пароль",
           "token-url": "Неверный токен или ссылка",
-          "token": "Неверный токен",
+          token: "Неверный токен",
           qr: "Просканируйте QR код",
           "incorrect-vk-url": "Скопируйте и вставьте всю ссылку"
         }
@@ -153,11 +166,14 @@ const translate = (message, props = {}) => {
         delete: "Delete",
         query: "Query",
         "token-copied": "Token copied",
+        accept: "Are you sure?",
         info: {
           dialogs:
             "Dialogs from all instant messengers will be displayed in this window",
           "dialog-list":
-            "The dialogs of this messenger will be displayed in this window"
+            "The dialogs of this messenger will be displayed in this window",
+          "dialog-connection":
+            "Now you can go to the settings page of messenger and connect each dialog separately"
         },
         error: {
           connection: "Unstable internet connection",
@@ -193,14 +209,17 @@ const translate = (message, props = {}) => {
           watching: "You must select the service mode"
         },
         vk: {
+          refresh: "Refresh group list",
           "1":
+            "At the moment, the service processes only messages from your groups and public VK pages"
+          /*"1":
             "VKontakte connects using a special token. (You will be taken to the VKontakte page)",
           "2": {
             "1":
               "On this page you need to give consent to our application process your messages and attachments",
             "2":
               "You need to copy the information from the address bar (URL) and insert in the appropriate field. Do not worry about warnings. You can trust us)"
-          }
+          }*/
         },
         inst: {
           "1":
@@ -214,6 +233,13 @@ const translate = (message, props = {}) => {
             "2": "Follow the instructions for setting up WhatsApp Web",
             "3":
               "You also need to copy this data (Api URL, token) into the appropriate fields"
+          }
+        },
+        tlgrm: {
+          "1": {
+            "1": "1",
+            "2": "2",
+            "3": "3"
           }
         }
       },
@@ -245,7 +271,7 @@ const translate = (message, props = {}) => {
           password: "Invalid password",
           "login-password": "Invalid login or password",
           "token-url": "Invalid token or url",
-          "token": "Invalid token",
+          token: "Invalid token",
           qr: "Scan the QR code",
           "incorrect-vk-url": "Copy and paste the entire link"
         }

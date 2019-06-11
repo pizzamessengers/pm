@@ -1,5 +1,4 @@
 import React from "react";
-import translate from './../../../functions/translate';
 import VkConnection from "./VkConnection";
 import InstConnection from "./InstConnection";
 import WappConnection from "./WappConnection";

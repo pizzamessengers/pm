@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import translate from "./../../../../functions/translate";
 
 export default class Crm extends Component {
   constructor(props) {

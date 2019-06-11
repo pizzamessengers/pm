@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import translate from "./../../../functions/translate";
 import { Link } from "react-router-dom";
 
 const ModulesList = ({
@@ -13,7 +12,7 @@ const ModulesList = ({
       changeCurrentModule($(e.target).attr("module"));
     }
   };
-  
+
   return (
     <div className="modules-list">
       {modules.map((module, i) => (
@@ -21,7 +20,9 @@ const ModulesList = ({
           className={i > 0 ? "ml-1" : null}
           key={i}
           to={
-            module === "user" || module === "payment"
+            module === "user" ||
+            module === "payment" ||
+            setting === "messenger"
               ? "/app/settings/" + setting + "/" + module
               : "/app/settings/" + setting + "/crm/" + module
           }

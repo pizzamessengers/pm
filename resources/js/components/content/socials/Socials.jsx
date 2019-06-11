@@ -14,7 +14,7 @@ const Socials = () => (
           render={browser => <Social mess={browser.match.params.messenger} />}
         />
         <Route
-          path="/app/socials/:messenger/dialog/:dialogId/"
+          path="/app/socials/:messenger/dialog/:id/"
           component={DialogView}
         />
       </Switch>

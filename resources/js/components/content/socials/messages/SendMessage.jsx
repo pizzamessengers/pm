@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import translate from "./../../../../functions/translate";
 import AttachmentList from "./AttachmentList";
 
 export default class SendMessage extends Component {
@@ -24,11 +23,12 @@ export default class SendMessage extends Component {
         //urls for attachments
         axios
           .get(
-            "https://api.vk.com/method/execute.getAttaUrls?peer_id=" +
-              this.props.dialogId +
-              "&access_token=" +
+            "api/v1/dialogs/vk/attaurls?dialog_id=" +
+              this.props.id +
+              "&token=" +
               socials[this.props.mess].token +
-              "&v=5.92"
+              "&api_token=" +
+              apiToken
           )
           .then(response => {
             let r = response.data.response;
@@ -67,7 +67,10 @@ export default class SendMessage extends Component {
   };
 
   trimALW = al => {
-    $(".attachment-list-wrapper").css("height", al * 21 + 5 + "px");
+    $(".attachment-list-wrapper").css(
+      "height",
+      al > 0 ? al * 21 + 5 + "px" : "0"
+    );
   };
 
   trimList = () => {
@@ -175,7 +178,7 @@ export default class SendMessage extends Component {
 
   sendMessage = e => {
     e.preventDefault();
-    let { addMessage, mess, dialogId } = this.props;
+    let { addMessage, mess, id } = this.props;
     let { attachments } = this.state;
     let text = this.text.current.value;
 
@@ -184,7 +187,7 @@ export default class SendMessage extends Component {
 
       let data = {
         mess: mess,
-        dialogId: dialogId,
+        dialogId: id,
         text: text,
         attachments: this.attachments
       };

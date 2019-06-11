@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import { Switch, Route } from "react-router-dom";
-import translate from "./../../../../functions/translate";
 import ModulesList from "./../ModulesList";
 import MessengerSettings from "./MessengerSettings";
 
@@ -23,7 +22,6 @@ export default class MessengersSettings extends Component {
 
     if (currentMess === "" && connectedMessengers[0]) {
       currentMess = connectedMessengers[0];
-      this.props.history.push("/app/settings/messenger/" + currentMess);
     }
 
     this.setState({ connectedMessengers, currentMess });
@@ -32,6 +30,17 @@ export default class MessengersSettings extends Component {
   rightRoutes = (routes = "") => {
     return this.state.connectedMessengers.join("||");
   };
+
+  componentDidUpdate(prevProps) {
+    let currentMess = this.props.location.pathname.substr(24);
+
+    if (currentMess === "" && this.state.connectedMessengers[0]) {
+      currentMess = this.state.connectedMessengers[0];
+      this.props.history.push(
+        "/app/settings/messenger/" + this.state.currentMess
+      );
+    }
+  }
 
   remove = mess => {
     let { connectedMessengers } = this.state,
@@ -51,6 +60,17 @@ export default class MessengersSettings extends Component {
 
   changeCurrentMess = currentMess => {
     this.setState({ currentMess });
+  };
+
+  withWatching = () => {
+    switch (this.state.currentMess) {
+      case "vk":
+      case "tlgrm":
+        return false;
+      case "inst":
+      case "wapp":
+        return true;
+    }
   };
 
   render() {
@@ -73,6 +93,7 @@ export default class MessengersSettings extends Component {
                   currentMess={currentMess}
                   match={browser.match}
                   remove={this.remove}
+                  withWatching={this.withWatching()}
                 />
               )}
             />{" "}

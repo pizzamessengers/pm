@@ -22,14 +22,21 @@ class CreateDialogsTable extends Migration
                 ->onDelete('cascade');
           $table->string('name');
           $table->string('dialog_id');
-          $table->json('last_message')
-                ->nullable();
-          $table->integer('unread_count');
+          $table->json('last_message');
+          $table->integer('unread_count')->default(0);
           $table->string('members_count');
           $table->string('photo');
           $table->boolean('updating')
                 ->default(true);
           $table->boolean('subscribed')->default(false);
+          $table->string('token')
+                ->nullable();
+          $table->string('server_id')
+                ->nullable();
+          $table->string('code')
+                ->nullable();
+          $table->string('group')
+                ->default(false);
           $table->timestamps();
         });
 

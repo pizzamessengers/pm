@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from "react";
-import translate from "./../../../functions/translate";
 import MessengerConnection from "./MessengerConnection";
 import MessengerDialogs from "./dialogs/MessengerDialogs";
 import DialogChoosing from "./dialogs/DialogChoosing";
@@ -35,17 +34,17 @@ export default class Social extends Component {
       name: mess,
       props: props,
       watching: watching,
-      importValue, importValue
+      importValue: importValue
     };
     await axios
       .post("api/v1/messengers?api_token=" + apiToken, data)
       .then(response => {
         if (response.data.success) {
-          if (data.watching === "all") {
+          if (data.watching === "all" || mess === "vk") {
             socials[mess] = {
               id: response.data.messengerId,
               updating: true,
-              watching: watching,
+              watching: watching
             };
 
             this.setState({ watching });
@@ -53,7 +52,7 @@ export default class Social extends Component {
             socials[mess] = {
               id: response.data.messengerId,
               updating: true,
-              watching: watching,
+              watching: watching
             };
 
             this.setState({
@@ -78,8 +77,8 @@ export default class Social extends Component {
   };
 
   accept = () => {
-    this.setState({ watching: 'dialogs' });
-  }
+    this.setState({ watching: "dialogs" });
+  };
 
   handleClose = () => {
     this.setState({

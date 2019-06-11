@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import translate from "./../functions/translate";
 import Waiting from "./content/elements/Waiting";
 import Dialogs from "./content/socials/dialogs/Dialogs";
 

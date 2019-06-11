@@ -1,6 +1,5 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import translate from "./../../../../functions/translate";
 import Dialog from "./Dialog";
 
 const DialogChoosing = ({ handleAccept, one, dialogs, hide, title, mess }) => {

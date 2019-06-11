@@ -1,5 +1,3 @@
-import translate from "./translate";
-
 const timestamp = (time, fullTime = false) => {
   let rightDecl = count => {
     switch (lang) {

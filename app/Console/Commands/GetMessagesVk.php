@@ -300,7 +300,6 @@ class GetMessagesVk extends Command
           ),
           'members_count' => $membersCount,
           'photo' => $photo,
-          'unread_count' => 0,
         ]);
       }
 

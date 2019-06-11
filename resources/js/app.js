@@ -40,16 +40,6 @@ axios.defaults.baseURL = window.location.origin;
 let vh = window.innerHeight * 0.01;
 document.documentElement.style.setProperty("--vh", `${vh}px`);
 
-/**
- * vk open API init
- */
-
-VK.init({
-  apiId: 6869374
-});
-
-
-
 const Index = () => {
   /**
    * CSRF

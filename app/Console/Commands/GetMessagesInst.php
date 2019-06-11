@@ -134,7 +134,6 @@ class GetMessagesInst extends Command
             ),
             'members_count' => count($thread->getUsers()) + 1,
             'photo' => $photo,
-            'unread_count' => 0,
           ]);
 
           $thread = $inst->direct->getThread($threadId)->getThread();

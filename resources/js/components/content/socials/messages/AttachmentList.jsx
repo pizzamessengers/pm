@@ -1,10 +1,10 @@
 import React from "react";
-import AttachmentDownloading from "./AttachmentDownloading";
+import AttachmentUploading from "./AttachmentUploading";
 
 const AttachmentList = ({ attachments, remove, mess, handleLoaded, photoUrl, docUrl, videoUrl }) => (
   <ul className="attachment-list">
     {attachments.map((attachment, i) => (
-      <AttachmentDownloading
+      <AttachmentUploading
         key={attachment.lastModified}
         id={i}
         attachment={attachment}

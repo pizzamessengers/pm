@@ -11909,7 +11909,7 @@ a.text-dark:focus {
 
 .modules-settings .module-settings {
   width: 100%;
-  height: calc(80% - 50px);
+  height: calc(95% - 50px);
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   border-bottom-left-radius: 8px;
@@ -11919,8 +11919,28 @@ a.text-dark:focus {
 }
 
 .modules-settings .module-settings .settings-wrapper {
-  height: 85%;
+  height: 90%;
   overflow-y: auto;
+}
+
+.modules-settings .module-settings .settings-wrapper::-webkit-scrollbar {
+  width: 0;
+  position: absolute;
+  right: -10px;
+}
+
+@media (min-width: 992px) {
+  .modules-settings .module-settings .settings-wrapper::-webkit-scrollbar {
+    width: 10px;
+  }
+}
+
+.modules-settings .module-settings .settings-wrapper::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.modules-settings .module-settings .settings-wrapper::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
 }
 
 .modules-settings .module-settings .settings-wrapper .settings {
@@ -11967,11 +11987,18 @@ a.text-dark:focus {
 
 .modules-settings .module-settings .settings-wrapper .settings .module-setting .dialogs-connection input[type="submit"] {
   padding: 9px 18px;
-  margin: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: .7rem !important;
+}
+
+.modules-settings .module-settings .settings-wrapper .settings .module-setting .list-wrapper {
+  height: 100%;
 }
 
 .modules-settings .module-settings .btn-delete-wrapper {
-  height: 15%;
+  height: 10%;
   display: -ms-flex;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -12577,6 +12604,30 @@ a.text-dark:focus {
   text-decoration: none;
 }
 
+#root .modal,
+.app .modal {
+  display: -ms-flex !important;
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+#root .modal .modal-dialog,
+.app .modal .modal-dialog {
+  width: 100%;
+}
+
+#root .modal .modal-dialog .modal-body,
+.app .modal .modal-dialog .modal-body {
+  text-align: center;
+}
+
 #root .form-group input[type="text"],
 #root .form-group input[type="password"],
 #root .form-group input[type="email"],
@@ -12705,8 +12756,9 @@ a.text-dark:focus {
   padding: 0;
 }
 
-.wrapper .content .dialog-view .list-wrapper {
+.wrapper .content .list-wrapper {
   height: calc(100% - 59.16px);
+  width: 100%;
 }
 
 .wrapper .content .dialog-view .card-footer {
@@ -13241,7 +13293,7 @@ a.text-dark:focus {
   background: linear-gradient(160deg, #0088cc, #FFFFFF);
 }
 
-.wrapper .list .dialog:hover {
+.wrapper .list .dialog:hover:not(.with-controller) {
   opacity: 1;
   -webkit-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
           box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
@@ -13252,6 +13304,19 @@ a.text-dark:focus {
   height: 60px;
   margin-right: 14px;
   border-radius: 50%;
+}
+
+.wrapper .list .dialog.with-controller {
+  color: #123;
+  margin-right: 20px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.wrapper .list .dialog.with-controller .avatar {
+  width: 40px;
+  height: 40px;
 }
 
 .wrapper .list .dialog .dialog-data {
@@ -13409,5 +13474,26 @@ a.text-dark:focus {
 .btn-delete:hover {
   background-color: #ab302c;
   color: white;
+}
+
+.btn-delete.btn-delete-controller {
+  border-radius: 50%;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  display: -ms-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.btn-delete .close-icon {
+  font-size: 18px;
 }
 

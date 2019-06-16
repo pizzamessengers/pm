@@ -13,12 +13,11 @@ export default class MessagesList extends Component {
 
   componentDidMount() {
     let { messages } = this.props;
+    this.mw = $(this.messagesWrapper.current);
 
     this.moreMessages();
 
     //this.messCount = messages[messages.length - 1].length;
-    this.mw = $(this.messagesWrapper.current);
-    this.scrollToBot();
 
     $(".list-wrapper").on("scroll", e => {
       if (this.page < messages.length && this.mw.scrollTop() < 300) {
@@ -28,17 +27,25 @@ export default class MessagesList extends Component {
   }
 
   addMessage = (sending = false) => {
-    this.peaces[this.peaces.length - 1].current.setState({
-      messages: this.props.messages[this.props.messages.length - 1]
-    });
-    if (sending) this.scrollToBot();
+    let isOnBot =
+      Math.abs(
+        Math.floor(this.mw.scrollTop()) -
+          Math.floor(this.mw[0].scrollHeight) +
+          Math.floor($(this.mw).height())
+      ) < 40;
+
+    this.peaces[this.peaces.length - 1].current.loadMessages(
+      this.props.messages[this.props.messages.length - 1],
+      sending || isOnBot
+    );
   };
 
   moreMessages = () => {
     let { messages, isDouble } = this.props;
 
     this.peaces[this.peaces.length - 1 - this.page].current.loadMessages(
-      messages[messages.length - 1 - this.page]
+      messages[messages.length - 1 - this.page],
+      true
     );
     this.page++;
   };
@@ -103,6 +110,7 @@ export default class MessagesList extends Component {
                 messages={[]}
                 isDouble={isDouble}
                 onLoadHandler={this.onLoadHandler}
+                scrollToBot={this.scrollToBot}
               />
             );
           })}

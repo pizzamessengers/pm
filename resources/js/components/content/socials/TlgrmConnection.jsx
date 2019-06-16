@@ -94,6 +94,7 @@ export default class TlgrmConnection extends Component {
 
   connect = () => {
     if (this.token.current.value) {
+      this.setState({ stage: 1 });
       this.props
         .connect(
           "tlgrm",
@@ -104,7 +105,6 @@ export default class TlgrmConnection extends Component {
         )
         .then(null, error => this.setState({ stage: 0 }));
     }
-    this.setState({ stage: 1 });
   };
 
   render() {

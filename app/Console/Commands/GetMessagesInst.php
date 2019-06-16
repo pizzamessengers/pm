@@ -90,7 +90,7 @@ class GetMessagesInst extends Command
 
         if (($dialog = Dialog::where('dialog_id', $threadId)->where('messenger_id', $messenger->id)->first()) === null)
         {
-          $messengerCreatedAt = Carbon::parse(Messenger::find($messenger->id)->created_at)->timestamp-(86400*$this->argument('importDays')).'000';
+          $messengerCreatedAt = Carbon::parse($messenger->created_at)->timestamp-(86400*$this->argument('importDays')).'000';
           $lastMessageTimestamp = substr($lastItem->getTimestamp(), 0, 13);
 
           //если время последнего сообщения раньше регистрации мессенджера

@@ -11,6 +11,7 @@ export default class Messages extends Component {
 
     this.lastTimestamp = 0;
     this.timestamp = timestamp;
+    this.needScrollToBot = true;
   }
 
   onLoadHandler = () => {
@@ -22,9 +23,17 @@ export default class Messages extends Component {
     return true;
   }
 
-  loadMessages = messages => {
+  loadMessages = (messages, needScrollToBot = false) => {
+    this.needScrollToBot = needScrollToBot;
     this.setState({ messages });
   };
+
+  componentDidUpdate() {
+    if (this.props.id === 0 && this.needScrollToBot) {
+      this.props.scrollToBot();
+      this.needScrollToBot = false;
+    }
+  }
 
   listTimestamp = timestamp => {
     if (this.lastTimestamp === 0 || timestamp - this.lastTimestamp > 3600000) {
